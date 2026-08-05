@@ -1,25 +1,34 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Box, Typography, Button, Link } from '@mui/material'
+import { Box, Typography, Link } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import Seo from '@/components/common/Seo'
 import FormProvider from '@/components/forms/FormProvider'
 import InputField from '@/components/forms/InputField'
+import LoadingButton from '@/components/buttons/LoadingButton'
 import { forgotPasswordSchema } from '@/validators/authValidator'
 import { ROUTES } from '@/constants/routes'
+import { authService } from '@/services/modules'
+import { useToast } from '@/contexts/ToastContext'
 
 /**
  * Forgot password page.
  */
 function ForgotPasswordPage() {
+  const { showSuccess, showError } = useToast()
   const methods = useForm({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: '' },
   })
 
-  const onSubmit = (values) => {
-    // API service call will be wired here.
-    void values
+  const onSubmit = async (values) => {
+    try {
+      await authService.forgotPassword(values.email)
+      showSuccess('If that email exists, a reset link has been sent.')
+      methods.reset()
+    } catch (error) {
+      showError(error?.message || 'Failed to send reset link. Please try again.')
+    }
   }
 
   return (
@@ -39,9 +48,9 @@ function ForgotPasswordPage() {
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
             <InputField name="email" label="Email" type="email" />
-            <Button type="submit" variant="contained" color="primary" size="large">
+            <LoadingButton type="submit" size="large">
               Send Reset Link
-            </Button>
+            </LoadingButton>
           </Box>
         </FormProvider>
         <Box sx={{ mt: 2, textAlign: 'center' }}>

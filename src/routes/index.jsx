@@ -28,6 +28,13 @@ const ContactPage = lazy(() => import('@/pages/Contact'))
 const FaqPage = lazy(() => import('@/pages/FAQ'))
 const BlogPage = lazy(() => import('@/pages/Blog'))
 const LegalPage = lazy(() => import('@/pages/Legal'))
+const CarCategoriesPage = lazy(() => import('@/pages/CarCategories'))
+const MembershipPage = lazy(() => import('@/pages/Membership'))
+const LocationsPage = lazy(() => import('@/pages/Locations'))
+const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicy'))
+const TermsConditionsPage = lazy(() => import('@/pages/TermsConditions'))
+const RefundPolicyPage = lazy(() => import('@/pages/RefundPolicy'))
+const CancellationPolicyPage = lazy(() => import('@/pages/CancellationPolicy'))
 const LoginPage = lazy(() => import('@/pages/Login'))
 const RegisterPage = lazy(() => import('@/pages/Register'))
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPassword'))
@@ -60,6 +67,13 @@ function AppRoutes() {
         <Route path={ROUTES.FAQ} element={withSuspense(FaqPage)} />
         <Route path={ROUTES.BLOG} element={withSuspense(BlogPage)} />
         <Route path={ROUTES.LEGAL} element={withSuspense(LegalPage)} />
+        <Route path={ROUTES.CAR_CATEGORIES} element={withSuspense(CarCategoriesPage)} />
+        <Route path={ROUTES.MEMBERSHIP} element={withSuspense(MembershipPage)} />
+        <Route path={ROUTES.LOCATIONS} element={withSuspense(LocationsPage)} />
+        <Route path={ROUTES.PRIVACY_POLICY} element={withSuspense(PrivacyPolicyPage)} />
+        <Route path={ROUTES.TERMS_CONDITIONS} element={withSuspense(TermsConditionsPage)} />
+        <Route path={ROUTES.REFUND_POLICY} element={withSuspense(RefundPolicyPage)} />
+        <Route path={ROUTES.CANCELLATION_POLICY} element={withSuspense(CancellationPolicyPage)} />
       </Route>
 
       {/* ── Guest-only routes (AuthLayout) ─────────────────────────────── */}

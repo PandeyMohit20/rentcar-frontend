@@ -1,18 +1,29 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Box, Typography, Button, Link } from '@mui/material'
-import { Link as RouterLink } from 'react-router-dom'
+import { Box, Typography, Link } from '@mui/material'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import Seo from '@/components/common/Seo'
 import FormProvider from '@/components/forms/FormProvider'
 import InputField from '@/components/forms/InputField'
 import CheckboxField from '@/components/forms/CheckboxField'
+import LoadingButton from '@/components/buttons/LoadingButton'
 import { registerSchema } from '@/validators/authValidator'
 import { ROUTES } from '@/constants/routes'
+import { authService } from '@/services/modules'
+import { useAppDispatch } from '@/hooks/useRedux'
+import { loginSuccess, loginFailure } from '@/redux/slices/authSlice'
+import { useToast } from '@/contexts/ToastContext'
+import storage from '@/utils/storage'
+import { STORAGE_KEYS } from '@/constants/app'
 
 /**
  * Register page.
  */
 function RegisterPage() {
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const { showSuccess, showError } = useToast()
+
   const methods = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -26,9 +37,27 @@ function RegisterPage() {
     },
   })
 
-  const onSubmit = (values) => {
-    // API service call will be wired here.
-    void values
+  const onSubmit = async (values) => {
+    try {
+      const { confirmPassword, acceptTerms, ...payload } = values
+      const response = await authService.register(payload)
+      const data = response?.data ?? response
+      const token = data?.token ?? data?.accessToken
+      const user = data?.user ?? data?.profile
+
+      if (token) {
+        storage.set(STORAGE_KEYS.AUTH_TOKEN, token)
+        dispatch(loginSuccess({ user, token }))
+        showSuccess('Account created successfully.')
+        navigate(ROUTES.HOME)
+      } else {
+        showSuccess('Account created. Please sign in.')
+        navigate(ROUTES.LOGIN)
+      }
+    } catch (error) {
+      dispatch(loginFailure(error?.message || 'Registration failed'))
+      showError(error?.message || 'Registration failed. Please try again.')
+    }
   }
 
   return (
@@ -51,9 +80,9 @@ function RegisterPage() {
             <InputField name="password" label="Password" type="password" />
             <InputField name="confirmPassword" label="Confirm Password" type="password" />
             <CheckboxField name="acceptTerms" label="I accept the terms and conditions" />
-            <Button type="submit" variant="contained" color="primary" size="large">
+            <LoadingButton type="submit" size="large">
               Register
-            </Button>
+            </LoadingButton>
           </Box>
         </FormProvider>
         <Box sx={{ mt: 2, textAlign: 'center' }}>

@@ -10,8 +10,7 @@ import {
   REGISTER,
 } from 'redux-persist'
 import { combineReducers } from 'redux'
-import storage from 'redux-persist/lib/storage'
-import sessionStorage from 'redux-persist/lib/storage/session'
+import { storage, sessionStorage } from '@/utils/reduxPersistStorage'
 import authReducer from '@/redux/slices/authSlice'
 import uiReducer from '@/redux/slices/uiSlice'
 import wishlistReducer from '@/redux/slices/wishlistSlice'

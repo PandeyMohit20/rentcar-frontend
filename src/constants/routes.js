@@ -14,6 +14,13 @@ export const ROUTES = {
   FAQ: '/faq',
   BLOG: '/blog',
   LEGAL: '/legal',
+  PRIVACY_POLICY: '/privacy-policy',
+  TERMS_CONDITIONS: '/terms-and-conditions',
+  REFUND_POLICY: '/refund-policy',
+  CANCELLATION_POLICY: '/cancellation-policy',
+  CAR_CATEGORIES: '/car-categories',
+  MEMBERSHIP: '/membership',
+  LOCATIONS: '/locations',
   NOT_FOUND: '/404',
 
   // Auth routes (guest only)
