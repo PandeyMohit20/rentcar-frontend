@@ -7,11 +7,29 @@ export const carSearchSchema = z.object({
   location: z.string().trim().optional().or(z.literal('')),
   pickupDate: z.string().optional().or(z.literal('')),
   dropDate: z.string().optional().or(z.literal('')),
+  pickupTime: z.string().optional().or(z.literal('')),
+  dropTime: z.string().optional().or(z.literal('')),
   minPrice: z.coerce.number().nonnegative().optional(),
   maxPrice: z.coerce.number().nonnegative().optional(),
   fuelType: z.string().optional().or(z.literal('')),
   transmission: z.string().optional().or(z.literal('')),
   seatingCapacity: z.coerce.number().int().positive().optional(),
+})
+
+export const carFilterSchema = z.object({
+  brands: z.array(z.string()).optional().default([]),
+  categories: z.array(z.string()).optional().default([]),
+  transmissions: z.array(z.string()).optional().default([]),
+  fuelTypes: z.array(z.string()).optional().default([]),
+  seats: z.array(z.coerce.number().int().positive()).optional().default([]),
+  minPrice: z.coerce.number().nonnegative().optional(),
+  maxPrice: z.coerce.number().nonnegative().optional(),
+  minMileage: z.coerce.number().nonnegative().optional(),
+  minRating: z.coerce.number().min(0).max(5).optional(),
+  amenities: z.array(z.string()).optional().default([]),
+  instantBooking: z.boolean().optional(),
+  isAvailable: z.boolean().optional(),
+  sort: z.string().optional(),
 })
 
 export const carReviewSchema = z.object({
@@ -20,4 +38,4 @@ export const carReviewSchema = z.object({
   comment: z.string().trim().min(10, 'Review must be at least 10 characters').max(1000),
 })
 
-export default { carSearchSchema, carReviewSchema }
+export default { carSearchSchema, carFilterSchema, carReviewSchema }

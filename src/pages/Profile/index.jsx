@@ -1,66 +1,61 @@
-import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Box, Container, Typography, Avatar, Chip, Grid, CircularProgress } from '@mui/material'
+import { useMemo } from 'react'
+import { Box, Container, Typography, Grid, Avatar, CircularProgress, Chip } from '@mui/material'
 import Seo from '@/components/common/Seo'
 import FormProvider from '@/components/forms/FormProvider'
 import InputField from '@/components/forms/InputField'
-import LoadingButton from '@/components/buttons/LoadingButton'
 import MaterialCard from '@/components/ui/MaterialCard'
+import LoadingButton from '@/components/buttons/LoadingButton'
 import EmptyState from '@/components/common/EmptyState'
 import { userService } from '@/services/modules'
 import { useApiQuery, useApiMutation } from '@/hooks/useApi'
-import { useAuth } from '@/hooks/useAuth'
-import { useAppDispatch } from '@/hooks/useRedux'
+import { QUERY_KEYS } from '@/constants/queryKeys'
+import { useAppSelector, useAppDispatch } from '@/hooks/useRedux'
 import { updateUser } from '@/redux/slices/authSlice'
 import { useToast } from '@/contexts/ToastContext'
-import { QUERY_KEYS } from '@/constants/queryKeys'
-import { profileSchema, changePasswordSchema } from '@/validators'
-import { initials, titleCase } from '@/utils/formatters'
-import { formatDate } from '@/utils/date'
+import { profileSchema, changePasswordSchema } from '@/validators/userValidator'
+import { initials } from '@/utils/formatters'
 import { pageStyles } from './styles'
 
-const profileDefaultValues = { firstName: '', lastName: '', email: '', phone: '' }
-const passwordDefaultValues = { currentPassword: '', password: '', confirmPassword: '' }
-
 /**
- * Profile page — user info, edit form and password change.
+ * Profile page — view and update account info, and change password.
  */
 function ProfilePage() {
   const dispatch = useAppDispatch()
   const { showSuccess, showError } = useToast()
-  const { user: authUser } = useAuth()
+  const authUser = useAppSelector((state) => state.auth.user)
 
   const { data, isLoading, error } = useApiQuery({
     queryKey: QUERY_KEYS.USER.PROFILE,
     queryFn: userService.getProfile,
   })
 
-  const profile = data?.data ?? data ?? authUser
+  const profile = data?.data ?? data?.user ?? authUser
 
   const profileMethods = useForm({
     resolver: zodResolver(profileSchema),
-    defaultValues: profileDefaultValues,
+    defaultValues: useMemo(
+      () => ({
+        firstName: profile?.firstName ?? '',
+        lastName: profile?.lastName ?? '',
+        email: profile?.email ?? '',
+        phone: profile?.phone ?? '',
+      }),
+      [profile]
+    ),
   })
 
   const passwordMethods = useForm({
     resolver: zodResolver(changePasswordSchema),
-    defaultValues: passwordDefaultValues,
+    defaultValues: {
+      currentPassword: '',
+      password: '',
+      confirmPassword: '',
+    },
   })
 
-  // Populate edit form once profile data is available.
-  useEffect(() => {
-    if (profile) {
-      profileMethods.reset({
-        firstName: profile.firstName ?? profile.first_name ?? '',
-        lastName: profile.lastName ?? profile.last_name ?? '',
-        email: profile.email ?? '',
-        phone: profile.phone ?? '',
-      })
-    }
-  }, [profile, profileMethods])
-
-  const { mutate: updateProfile, isPending: isUpdating } = useApiMutation({
+  const { mutate: updateProfileMutate, isPending: isUpdating } = useApiMutation({
     mutationFn: userService.updateProfile,
     invalidateKeys: [QUERY_KEYS.USER.PROFILE],
     onSuccess: (response) => {
@@ -69,35 +64,33 @@ function ProfilePage() {
       showSuccess('Profile updated successfully.')
     },
     onError: (err) => {
-      showError(err?.message || 'Failed to update profile. Please try again.')
+      showError(err?.message || 'Failed to update profile.')
     },
   })
 
-  const { mutate: changePassword, isPending: isChangingPassword } = useApiMutation({
+  const { mutate: changePasswordMutate, isPending: isChanging } = useApiMutation({
     mutationFn: userService.changePassword,
     onSuccess: () => {
-      passwordMethods.reset()
       showSuccess('Password changed successfully.')
+      passwordMethods.reset()
     },
     onError: (err) => {
-      showError(err?.message || 'Failed to change password. Please try again.')
+      showError(err?.message || 'Failed to change password.')
     },
   })
 
   const onProfileSubmit = (values) => {
-    updateProfile(values)
+    updateProfileMutate(values)
   }
 
   const onPasswordSubmit = (values) => {
-    changePassword({
-      currentPassword: values.currentPassword,
-      password: values.password,
-    })
+    const { confirmPassword, ...payload } = values
+    changePasswordMutate(payload)
   }
 
   return (
     <>
-      <Seo title="Profile" description="Manage your profile, preferences and documents." />
+      <Seo title="Profile" description="Manage your profile and account settings." />
       <Container maxWidth="lg" sx={pageStyles.container}>
         <Typography variant="h4" gutterBottom sx={pageStyles.header}>
           Profile
@@ -111,65 +104,47 @@ function ProfilePage() {
           <EmptyState title="Unable to load profile" description="Please try again later." />
         ) : (
           <Grid container spacing={3}>
-            {/* ── User summary card ─────────────────────────────────────── */}
+            {/* User info card */}
             <Grid item xs={12} md={4}>
               <MaterialCard sx={pageStyles.card}>
                 <Box sx={pageStyles.avatarBox}>
-                  <Avatar src={profile?.avatar} sx={{ width: 64, height: 64, fontSize: 24 }}>
-                    {initials(
-                      profile?.firstName ?? profile?.first_name,
-                      profile?.lastName ?? profile?.last_name
-                    )}
+                  <Avatar sx={{ width: 64, height: 64 }}>
+                    {initials(profile?.firstName, profile?.lastName)}
                   </Avatar>
                   <Box>
                     <Typography variant="h6">
-                      {[
-                        profile?.firstName ?? profile?.first_name,
-                        profile?.lastName ?? profile?.last_name,
-                      ]
-                        .filter(Boolean)
-                        .join(' ') || 'User'}
+                      {profile?.firstName} {profile?.lastName}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {profile?.email}
                     </Typography>
                   </Box>
                 </Box>
-
                 <Box sx={pageStyles.metaItem}>
-                  <Typography variant="body2" color="text.secondary">
-                    Member since
+                  <Typography variant="caption" color="text.secondary">
+                    Phone
                   </Typography>
-                  <Typography variant="body1">
-                    {profile?.createdAt ? formatDate(profile.createdAt) : '—'}
-                  </Typography>
+                  <Typography variant="body2">{profile?.phone || '—'}</Typography>
                 </Box>
-
                 <Box sx={pageStyles.metaItem}>
-                  <Typography variant="body2" color="text.secondary">
-                    Status
-                  </Typography>
-                  <Chip
-                    label={titleCase(profile?.status ?? 'active')}
-                    color={profile?.status === 'inactive' ? 'default' : 'success'}
-                    size="small"
-                  />
-                </Box>
-
-                <Box sx={pageStyles.metaItem}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary">
                     Role
                   </Typography>
-                  <Typography variant="body1">{titleCase(profile?.role ?? 'user')}</Typography>
+                  <Typography variant="body2">{profile?.role || 'customer'}</Typography>
                 </Box>
+                {profile?.isEmailVerified ? (
+                  <Chip label="Email verified" color="success" size="small" />
+                ) : (
+                  <Chip label="Email not verified" color="default" size="small" />
+                )}
               </MaterialCard>
             </Grid>
 
-            {/* ── Edit profile form ────────────────────────────────────── */}
+            {/* Update profile form */}
             <Grid item xs={12} md={8}>
               <MaterialCard sx={pageStyles.card}>
                 <Typography variant="h6" gutterBottom>
-                  Edit Profile
+                  Update Profile
                 </Typography>
                 <FormProvider {...profileMethods}>
                   <Box
@@ -184,10 +159,10 @@ function ProfilePage() {
                       <Grid item xs={12} sm={6}>
                         <InputField name="lastName" label="Last Name" />
                       </Grid>
-                      <Grid item xs={12}>
+                      <Grid item xs={12} sm={6}>
                         <InputField name="email" label="Email" type="email" />
                       </Grid>
-                      <Grid item xs={12}>
+                      <Grid item xs={12} sm={6}>
                         <InputField name="phone" label="Phone" />
                       </Grid>
                       <Grid item xs={12}>
@@ -199,8 +174,11 @@ function ProfilePage() {
                   </Box>
                 </FormProvider>
               </MaterialCard>
+            </Grid>
 
-              <MaterialCard sx={{ ...pageStyles.card, mt: 3 }}>
+            {/* Change password */}
+            <Grid item xs={12}>
+              <MaterialCard sx={pageStyles.card}>
                 <Typography variant="h6" gutterBottom>
                   Change Password
                 </Typography>
@@ -210,16 +188,30 @@ function ProfilePage() {
                     onSubmit={passwordMethods.handleSubmit(onPasswordSubmit)}
                     sx={pageStyles.formBox}
                   >
-                    <InputField name="currentPassword" label="Current Password" type="password" />
-                    <InputField name="password" label="New Password" type="password" />
-                    <InputField
-                      name="confirmPassword"
-                      label="Confirm New Password"
-                      type="password"
-                    />
-                    <LoadingButton type="submit" loading={isChangingPassword}>
-                      Change Password
-                    </LoadingButton>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={4}>
+                        <InputField
+                          name="currentPassword"
+                          label="Current Password"
+                          type="password"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <InputField name="password" label="New Password" type="password" />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <InputField
+                          name="confirmPassword"
+                          label="Confirm New Password"
+                          type="password"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <LoadingButton type="submit" loading={isChanging}>
+                          Change Password
+                        </LoadingButton>
+                      </Grid>
+                    </Grid>
                   </Box>
                 </FormProvider>
               </MaterialCard>

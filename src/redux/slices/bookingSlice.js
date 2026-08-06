@@ -9,6 +9,8 @@ const initialState = {
   currentBooking: null,
   selectedPaymentMethod: null,
   couponCode: null,
+  wizardStep: 0,
+  reservation: null,
   isLoading: false,
   error: null,
 }
@@ -38,6 +40,15 @@ const bookingSlice = createSlice({
     clearCouponCode: (state) => {
       state.couponCode = null
     },
+    setWizardStep: (state, action) => {
+      state.wizardStep = action.payload
+    },
+    setReservation: (state, action) => {
+      state.reservation = action.payload
+    },
+    clearReservation: (state) => {
+      state.reservation = null
+    },
     bookingStart: (state) => {
       state.isLoading = true
       state.error = null
@@ -61,6 +72,9 @@ export const {
   setPaymentMethod,
   setCouponCode,
   clearCouponCode,
+  setWizardStep,
+  setReservation,
+  clearReservation,
   bookingStart,
   bookingSuccess,
   bookingFailure,

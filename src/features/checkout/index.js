@@ -1,0 +1,7 @@
+export { default as CheckoutBookingSummary } from './BookingSummary'
+export { default as PriceSummary } from './PriceSummary'
+export { default as TaxBreakdown } from './TaxBreakdown'
+export { default as InsuranceOptions } from './InsuranceOptions'
+export { default as AddOns } from './AddOns'
+export { default as TermsAcceptance } from './TermsAcceptance'
+export { default as CancellationPolicy } from './CancellationPolicy'

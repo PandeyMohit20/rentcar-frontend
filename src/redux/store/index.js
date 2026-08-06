@@ -16,11 +16,21 @@ import uiReducer from '@/redux/slices/uiSlice'
 import wishlistReducer from '@/redux/slices/wishlistSlice'
 import bookingReducer from '@/redux/slices/bookingSlice'
 import notificationReducer from '@/redux/slices/notificationSlice'
+import comparisonReducer from '@/redux/slices/comparisonSlice'
+import checkoutReducer from '@/redux/slices/checkoutSlice'
+import paymentReducer from '@/redux/slices/paymentSlice'
+import couponReducer from '@/redux/slices/couponSlice'
+import tripReducer from '@/redux/slices/tripSlice'
+import dashboardReducer from '@/redux/slices/dashboardSlice'
+import profileReducer from '@/redux/slices/profileSlice'
+import walletReducer from '@/redux/slices/walletSlice'
+import supportReducer from '@/redux/slices/supportSlice'
+import settingsReducer from '@/redux/slices/settingsSlice'
 
 const persistConfig = {
   key: import.meta.env.VITE_PERSIST_KEY || 'rentcar-root',
   storage: import.meta.env.VITE_PERSIST_STORAGE === 'sessionStorage' ? sessionStorage : storage,
-  whitelist: ['auth', 'ui', 'wishlist'],
+  whitelist: ['auth', 'ui', 'wishlist', 'comparison'],
   version: 1,
 }
 
@@ -30,6 +40,16 @@ const rootReducer = combineReducers({
   wishlist: wishlistReducer,
   booking: bookingReducer,
   notification: notificationReducer,
+  comparison: comparisonReducer,
+  checkout: checkoutReducer,
+  payment: paymentReducer,
+  coupon: couponReducer,
+  trip: tripReducer,
+  dashboard: dashboardReducer,
+  profile: profileReducer,
+  wallet: walletReducer,
+  support: supportReducer,
+  settings: settingsReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

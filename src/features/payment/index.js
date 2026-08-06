@@ -1,0 +1,7 @@
+export { default as PaymentMethod } from './PaymentMethod'
+export { default as PaymentCard } from './PaymentCard'
+export { default as WalletPayment } from './WalletPayment'
+export { default as UPIPayment } from './UPIPayment'
+export { default as NetBanking } from './NetBanking'
+export { default as SuccessCard } from './SuccessCard'
+export { default as FailureCard } from './FailureCard'

@@ -23,6 +23,9 @@ export const API_ENDPOINTS = {
     POPULAR: '/cars/popular',
     REVIEWS: (id) => `/cars/${id}/reviews`,
     PRICE: '/cars/price-estimate',
+    SIMILAR: (id) => `/cars/${id}/similar`,
+    AVAILABILITY: (id) => `/cars/${id}/availability`,
+    BY_IDS: '/cars/by-ids',
   },
 
   // ── Bookings ───────────────────────────────────────────────────────────

@@ -15,6 +15,9 @@ export const QUERY_KEYS = {
     POPULAR: ['cars', 'popular'],
     REVIEWS: (id) => ['cars', 'reviews', id],
     PRICE: (params) => ['cars', 'price', params],
+    SIMILAR: (id) => ['cars', 'similar', id],
+    AVAILABILITY: (id, params) => ['cars', 'availability', id, params],
+    BY_IDS: (ids) => ['cars', 'by-ids', ids],
   },
   BOOKINGS: {
     ALL: ['bookings'],
@@ -44,6 +47,64 @@ export const QUERY_KEYS = {
     LOCATIONS: ['content', 'locations'],
     ABOUT: ['content', 'about'],
     LEGAL: ['content', 'legal'],
+  },
+
+  // ── Account / Dashboard ──────────────────────────────────────────────
+  DASHBOARD: {
+    OVERVIEW: ['dashboard', 'overview'],
+    WIDGETS: ['dashboard', 'widgets'],
+  },
+  PROFILE: {
+    DETAILS: ['profile', 'details'],
+    EMERGENCY_CONTACT: ['profile', 'emergency-contact'],
+    COMPLETION: ['profile', 'completion'],
+  },
+  KYC: {
+    STATUS: ['kyc', 'status'],
+    DOCUMENTS: ['kyc', 'documents'],
+  },
+  WALLET: {
+    BALANCE: ['wallet', 'balance'],
+    TRANSACTIONS: ['wallet', 'transactions'],
+    REFUNDS: ['wallet', 'refunds'],
+  },
+  TRIPS: {
+    ALL: ['trips'],
+    DETAILS: (id) => ['trips', 'details', id],
+    TIMELINE: (id) => ['trips', 'timeline', id],
+  },
+  ADDRESSES: {
+    ALL: ['addresses'],
+  },
+  REVIEWS: {
+    ALL: ['reviews'],
+    SUMMARY: ['reviews', 'summary'],
+  },
+  SUPPORT: {
+    TICKETS: ['support', 'tickets'],
+    TICKET_DETAILS: (id) => ['support', 'tickets', id],
+    FAQS: ['support', 'faqs'],
+  },
+  REFERRAL: {
+    DETAILS: ['referral', 'details'],
+  },
+  REWARDS: {
+    BALANCE: ['rewards', 'balance'],
+    HISTORY: ['rewards', 'history'],
+  },
+  SETTINGS: {
+    PREFERENCES: ['settings', 'preferences'],
+    NOTIFICATIONS: ['settings', 'notifications'],
+    LANGUAGE: ['settings', 'language'],
+  },
+  SECURITY: {
+    SESSIONS: ['security', 'sessions'],
+    DEVICES: ['security', 'devices'],
+    LOGIN_HISTORY: ['security', 'login-history'],
+    TWO_FACTOR: ['security', 'two-factor'],
+  },
+  DOCUMENTS: {
+    ALL: ['documents'],
   },
 }
 

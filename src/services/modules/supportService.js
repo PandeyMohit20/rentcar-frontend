@@ -13,6 +13,26 @@ export const supportService = {
     // Support inquiries are submitted via the contact endpoint.
     return httpClient.post(API_ENDPOINTS.CONTENT.SUPPORT, payload)
   },
+
+  async getTickets() {
+    return Promise.resolve({ data: { tickets: [] } })
+  },
+
+  async getTicketDetails(id) {
+    return Promise.resolve({ data: { id, messages: [], status: 'open' } })
+  },
+
+  async createTicket(payload) {
+    return Promise.resolve({ data: { id: `TKT-${Date.now()}`, ...payload, status: 'open' } })
+  },
+
+  async replyToTicket(id, payload) {
+    return Promise.resolve({ data: { id, ...payload } })
+  },
+
+  async getFaqs() {
+    return Promise.resolve({ data: { faqs: [] } })
+  },
 }
 
 export default supportService

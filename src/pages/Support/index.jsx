@@ -3,28 +3,17 @@ import { Box, Container, Typography, Grid, Alert, CircularProgress } from '@mui/
 import Seo from '@/components/common/Seo'
 import FormProvider from '@/components/forms/FormProvider'
 import InputField from '@/components/forms/InputField'
-import SelectField from '@/components/forms/SelectField'
-import LoadingButton from '@/components/buttons/LoadingButton'
 import MaterialCard from '@/components/ui/MaterialCard'
+import LoadingButton from '@/components/buttons/LoadingButton'
+import EmptyState from '@/components/common/EmptyState'
 import { supportService } from '@/services/modules'
 import { useApiQuery, useApiMutation } from '@/hooks/useApi'
-import { useToast } from '@/contexts/ToastContext'
 import { QUERY_KEYS } from '@/constants/queryKeys'
+import { useToast } from '@/contexts/ToastContext'
 import { pageStyles } from './styles'
 
-const inquiryDefaultValues = { name: '', email: '', subject: '', message: '', category: '' }
-
-const CATEGORY_OPTIONS = [
-  { value: 'general', label: 'General Inquiry' },
-  { value: 'booking', label: 'Booking Support' },
-  { value: 'payment', label: 'Payment / Refund' },
-  { value: 'account', label: 'Account & Profile' },
-  { value: 'vehicle', label: 'Vehicle Issue' },
-  { value: 'other', label: 'Other' },
-]
-
 /**
- * Support page — help topics, contact info and inquiry form.
+ * Support page — contact info and inquiry form.
  */
 function SupportPage() {
   const { showSuccess, showError } = useToast()
@@ -34,21 +23,20 @@ function SupportPage() {
     queryFn: supportService.getSupportContent,
   })
 
-  const content = data?.data ?? data ?? {}
-  const topics = content.topics ?? content.faqs ?? []
+  const support = data?.data ?? data ?? {}
 
   const methods = useForm({
-    defaultValues: inquiryDefaultValues,
+    defaultValues: { name: '', email: '', subject: '', message: '' },
   })
 
   const { mutate, isPending } = useApiMutation({
     mutationFn: supportService.submitInquiry,
     onSuccess: () => {
-      showSuccess('Your inquiry has been submitted. We will get back to you soon.')
+      showSuccess('Your support request has been submitted. We will get back to you soon.')
       methods.reset()
     },
     onError: (err) => {
-      showError(err?.message || 'Failed to submit your inquiry. Please try again.')
+      showError(err?.message || 'Failed to submit your request. Please try again.')
     },
   })
 
@@ -56,96 +44,97 @@ function SupportPage() {
     mutate(values)
   }
 
+  const faqs = support.faqs ?? support.topics ?? support.helpTopics ?? []
+
   return (
     <>
       <Seo title="Support" description="Get help with bookings, payments and more." />
       <Container maxWidth="lg" sx={pageStyles.container}>
         <Typography variant="h4" gutterBottom sx={pageStyles.header}>
-          Support Center
+          Support
         </Typography>
 
-        <Grid container spacing={3}>
-          {/* ── Contact info & help topics ─────────────────────────────── */}
-          <Grid item xs={12} md={5}>
-            <MaterialCard sx={pageStyles.card}>
-              <Typography variant="h6" gutterBottom>
-                Get in touch
-              </Typography>
-              <Typography variant="body1" color="text.secondary" paragraph>
-                Need help with a booking, payment or your account? Our support team is here 24/7.
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Email:</strong> support@rentcar.com
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Phone:</strong> +91 00000 00000
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <strong>Hours:</strong> Mon–Sun, 24/7
-              </Typography>
-            </MaterialCard>
-
-            <MaterialCard sx={{ ...pageStyles.card, mt: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Common topics
-              </Typography>
-              {isLoading ? (
-                <Box sx={{ py: 3, textAlign: 'center' }}>
-                  <CircularProgress />
-                </Box>
-              ) : error ? (
-                <Typography variant="body2" color="text.secondary">
-                  Help topics are temporarily unavailable.
-                </Typography>
-              ) : topics.length === 0 ? (
-                <Typography variant="body2" color="text.secondary">
-                  No help topics available right now.
-                </Typography>
-              ) : (
-                topics.map((topic) => (
-                  <Typography key={topic.id ?? topic.title} variant="body2" sx={pageStyles.topic}>
-                    • {topic.title ?? topic.question}
+        {isLoading ? (
+          <Box sx={{ py: 8, textAlign: 'center' }}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <EmptyState title="Unable to load support" description="Please try again later." />
+        ) : (
+          <Grid container spacing={3}>
+            {/* Support info */}
+            <Grid item xs={12} md={5}>
+              <Box sx={pageStyles.infoBox}>
+                <MaterialCard sx={pageStyles.card}>
+                  <Typography variant="h6" gutterBottom>
+                    How can we help?
                   </Typography>
-                ))
-              )}
-            </MaterialCard>
-          </Grid>
+                  <Typography variant="body1" color="text.secondary" paragraph>
+                    {support.phone && (
+                      <>
+                        <strong>Phone:</strong> {support.phone}
+                      </>
+                    )}
+                  </Typography>
+                  <Typography variant="body2" paragraph>
+                    <strong>Email:</strong> {support.email ?? 'support@rentcar.com'}
+                  </Typography>
+                  <Typography variant="body2" paragraph>
+                    <strong>Hours:</strong> {support.hours ?? 'Mon–Sun, 24/7'}
+                  </Typography>
+                </MaterialCard>
+              </Box>
 
-          {/* ── Inquiry form ───────────────────────────────────────────── */}
-          <Grid item xs={12} md={7}>
-            <MaterialCard sx={pageStyles.formBox}>
-              <Alert severity="info" sx={{ mb: 3 }}>
-                We typically respond within 24 hours.
-              </Alert>
-              <FormProvider {...methods}>
-                <Box component="form" onSubmit={methods.handleSubmit(onSubmit)}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <InputField name="name" label="Name" />
+              {faqs.length > 0 && (
+                <MaterialCard sx={pageStyles.card}>
+                  <Typography variant="h6" gutterBottom>
+                    Common Topics
+                  </Typography>
+                  {faqs.map((faq) => (
+                    <Box key={faq.id ?? faq.question ?? faq.title} sx={pageStyles.topic}>
+                      <Typography variant="subtitle2">{faq.question ?? faq.title}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {faq.answer ?? faq.description}
+                      </Typography>
+                    </Box>
+                  ))}
+                </MaterialCard>
+              )}
+            </Grid>
+
+            {/* Inquiry form */}
+            <Grid item xs={12} md={7}>
+              <MaterialCard sx={pageStyles.formBox}>
+                <Alert severity="info" sx={{ mb: 3 }}>
+                  We typically respond within 24 hours.
+                </Alert>
+                <FormProvider {...methods}>
+                  <Box component="form" onSubmit={methods.handleSubmit(onSubmit)}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <InputField name="name" label="Name" />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <InputField name="email" label="Email" type="email" />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <InputField name="subject" label="Subject" />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <InputField name="message" label="Message" multiline rows={4} />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <LoadingButton type="submit" loading={isPending}>
+                          Submit Request
+                        </LoadingButton>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <InputField name="email" label="Email" type="email" />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <InputField name="subject" label="Subject" />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <SelectField name="category" label="Category" options={CATEGORY_OPTIONS} />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <InputField name="message" label="Message" multiline rows={4} />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <LoadingButton type="submit" loading={isPending}>
-                        Submit Inquiry
-                      </LoadingButton>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </FormProvider>
-            </MaterialCard>
+                  </Box>
+                </FormProvider>
+              </MaterialCard>
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </Container>
     </>
   )

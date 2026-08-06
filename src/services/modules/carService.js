@@ -32,6 +32,18 @@ export const carService = {
   async getPriceEstimate(params) {
     return httpClient.get(API_ENDPOINTS.CARS.PRICE, { params })
   },
+
+  async getSimilarCars(id) {
+    return httpClient.get(API_ENDPOINTS.CARS.SIMILAR(id))
+  },
+
+  async getAvailability(id, params) {
+    return httpClient.get(API_ENDPOINTS.CARS.AVAILABILITY(id), { params })
+  },
+
+  async getCarsByIds(ids) {
+    return httpClient.post(API_ENDPOINTS.CARS.BY_IDS, { ids })
+  },
 }
 
 export default carService

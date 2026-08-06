@@ -42,4 +42,77 @@ export const checkoutSchema = z.object({
     .regex(/^[+]?[\d\s-]{10,15}$/, 'Please enter a valid phone number'),
 })
 
-export default { bookingSchema, checkoutSchema }
+export const driverDetailsSchema = z.object({
+  firstName: z
+    .string({ required_error: 'First name is required' })
+    .trim()
+    .min(2, 'First name must be at least 2 characters'),
+  lastName: z
+    .string({ required_error: 'Last name is required' })
+    .trim()
+    .min(2, 'Last name must be at least 2 characters'),
+  email: z
+    .string({ required_error: 'Email is required' })
+    .trim()
+    .email('Please enter a valid email address'),
+  phone: z
+    .string({ required_error: 'Phone is required' })
+    .trim()
+    .regex(/^[+]?[\d\s-]{10,15}$/, 'Please enter a valid phone number'),
+  licenseNumber: z
+    .string({ required_error: 'License number is required' })
+    .trim()
+    .min(5, 'Please enter a valid license number'),
+})
+
+export const additionalDriverSchema = z
+  .object({
+    includeAdditionalDriver: z.boolean().default(false),
+    firstName: z.string().trim().optional().or(z.literal('')),
+    lastName: z.string().trim().optional().or(z.literal('')),
+    licenseNumber: z.string().trim().optional().or(z.literal('')),
+  })
+  .refine(
+    (data) =>
+      !data.includeAdditionalDriver || (data.firstName && data.lastName && data.licenseNumber),
+    {
+      message: 'Please complete additional driver details',
+      path: ['firstName'],
+    }
+  )
+
+export const emergencyContactSchema = z.object({
+  contactName: z
+    .string({ required_error: 'Contact name is required' })
+    .trim()
+    .min(2, 'Please enter the contact name'),
+  contactPhone: z
+    .string({ required_error: 'Contact phone is required' })
+    .trim()
+    .regex(/^[+]?[\d\s-]{10,15}$/, 'Please enter a valid phone number'),
+  relation: z
+    .string({ required_error: 'Relation is required' })
+    .trim()
+    .min(2, 'Please enter the relation'),
+})
+
+export const checkoutAgreementSchema = z.object({
+  acceptTerms: z.literal(true, {
+    errorMap: () => ({ message: 'You must accept the terms and conditions' }),
+  }),
+  acceptPrivacy: z.literal(true, {
+    errorMap: () => ({ message: 'You must accept the privacy policy' }),
+  }),
+  acceptCancellation: z.literal(true, {
+    errorMap: () => ({ message: 'You must accept the cancellation policy' }),
+  }),
+})
+
+export default {
+  bookingSchema,
+  checkoutSchema,
+  driverDetailsSchema,
+  additionalDriverSchema,
+  emergencyContactSchema,
+  checkoutAgreementSchema,
+}
