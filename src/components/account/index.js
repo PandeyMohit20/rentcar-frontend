@@ -1,4 +1,5 @@
 export { default as DashboardLayout } from './DashboardLayout'
+export { default as AccountPageShell } from './AccountPageShell'
 export { default as Sidebar } from './Sidebar'
 export { default as Topbar } from './Topbar'
 export { default as ProfileCard } from './ProfileCard'

@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import MainLayout from '@/layouts/MainLayout'
 import AuthLayout from '@/layouts/AuthLayout'
 import DashboardLayout from '@/layouts/DashboardLayout'
+import AccountDashboardLayout from '@/components/account/DashboardLayout'
 import ProtectedRoute from '@/components/authentication/ProtectedRoute'
 import GuestRoute from '@/components/authentication/GuestRoute'
 import PageLoader from '@/components/common/PageLoader'
@@ -40,6 +41,34 @@ const RegisterPage = lazy(() => import('@/pages/Register'))
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPassword'))
 const ResetPasswordPage = lazy(() => import('@/pages/ResetPassword'))
 const NotFoundPage = lazy(() => import('@/pages/NotFound'))
+
+/* ── Account / Dashboard pages ─────────────────────────────────────── */
+const DashboardPage = lazy(() => import('@/pages/account/Dashboard'))
+const MyProfilePage = lazy(() => import('@/pages/account/Profile'))
+const EditProfilePage = lazy(() => import('@/pages/account/EditProfile'))
+const KycPage = lazy(() => import('@/pages/account/KYC'))
+const DrivingLicensePage = lazy(() => import('@/pages/account/DrivingLicense'))
+const WalletPage = lazy(() => import('@/pages/account/Wallet'))
+const WalletHistoryPage = lazy(() => import('@/pages/account/WalletHistory'))
+const MyBookingsPage = lazy(() => import('@/pages/account/Bookings'))
+const BookingDetailsPage = lazy(() => import('@/pages/account/BookingDetails'))
+const TripHistoryPage = lazy(() => import('@/pages/account/Trips'))
+const TripDetailsPage = lazy(() => import('@/pages/account/TripDetails'))
+const SavedAddressesPage = lazy(() => import('@/pages/account/SavedAddresses'))
+const AccountWishlistPage = lazy(() => import('@/pages/account/AccountWishlist'))
+const AccountNotificationsPage = lazy(() => import('@/pages/account/Notifications'))
+const ReviewsPage = lazy(() => import('@/pages/account/Reviews'))
+const AccountSupportPage = lazy(() => import('@/pages/account/Support'))
+const CreateTicketPage = lazy(() => import('@/pages/account/CreateTicket'))
+const TicketDetailsPage = lazy(() => import('@/pages/account/TicketDetails'))
+const ReferralPage = lazy(() => import('@/pages/account/Referral'))
+const RewardsPage = lazy(() => import('@/pages/account/Rewards'))
+const AccountSettingsPage = lazy(() => import('@/pages/account/Settings'))
+const SecurityPage = lazy(() => import('@/pages/account/Security'))
+const PrivacyPage = lazy(() => import('@/pages/account/Privacy'))
+const DevicesPage = lazy(() => import('@/pages/account/Devices'))
+const DocumentsPage = lazy(() => import('@/pages/account/Documents'))
+const DeleteAccountPage = lazy(() => import('@/pages/account/DeleteAccount'))
 
 /**
  * Wraps a lazy component in Suspense with a fallback loader.
@@ -132,6 +161,45 @@ function AppRoutes() {
         <Route path={ROUTES.PROFILE} element={withSuspense(ProfilePage)} />
         <Route path={ROUTES.NOTIFICATIONS} element={withSuspense(NotificationsPage)} />
         <Route path={ROUTES.SUPPORT} element={withSuspense(SupportPage)} />
+      </Route>
+
+      {/* ── Account / Dashboard (DashboardLayout) ──────────────────────── */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <AccountDashboardLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index path={ROUTES.DASHBOARD} element={withSuspense(DashboardPage)} />
+        <Route path={ROUTES.MY_PROFILE} element={withSuspense(MyProfilePage)} />
+        <Route path={ROUTES.EDIT_PROFILE} element={withSuspense(EditProfilePage)} />
+        <Route path={ROUTES.KYC} element={withSuspense(KycPage)} />
+        <Route path={ROUTES.DRIVING_LICENSE} element={withSuspense(DrivingLicensePage)} />
+        <Route path={ROUTES.WALLET} element={withSuspense(WalletPage)} />
+        <Route path={ROUTES.WALLET_HISTORY} element={withSuspense(WalletHistoryPage)} />
+        <Route path={ROUTES.MY_BOOKINGS} element={withSuspense(MyBookingsPage)} />
+        <Route path={ROUTES.BOOKING_DETAILS} element={withSuspense(BookingDetailsPage)} />
+        <Route path={ROUTES.TRIP_HISTORY} element={withSuspense(TripHistoryPage)} />
+        <Route path={ROUTES.TRIP_DETAILS} element={withSuspense(TripDetailsPage)} />
+        <Route path={ROUTES.SAVED_ADDRESSES} element={withSuspense(SavedAddressesPage)} />
+        <Route path={ROUTES.ACCOUNT_WISHLIST} element={withSuspense(AccountWishlistPage)} />
+        <Route
+          path={ROUTES.ACCOUNT_NOTIFICATIONS}
+          element={withSuspense(AccountNotificationsPage)}
+        />
+        <Route path={ROUTES.REVIEWS} element={withSuspense(ReviewsPage)} />
+        <Route path={ROUTES.ACCOUNT_SUPPORT} element={withSuspense(AccountSupportPage)} />
+        <Route path={ROUTES.CREATE_TICKET} element={withSuspense(CreateTicketPage)} />
+        <Route path={ROUTES.TICKET_DETAILS} element={withSuspense(TicketDetailsPage)} />
+        <Route path={ROUTES.REFERRAL} element={withSuspense(ReferralPage)} />
+        <Route path={ROUTES.REWARDS} element={withSuspense(RewardsPage)} />
+        <Route path={ROUTES.ACCOUNT_SETTINGS} element={withSuspense(AccountSettingsPage)} />
+        <Route path={ROUTES.SECURITY} element={withSuspense(SecurityPage)} />
+        <Route path={ROUTES.PRIVACY} element={withSuspense(PrivacyPage)} />
+        <Route path={ROUTES.DEVICES} element={withSuspense(DevicesPage)} />
+        <Route path={ROUTES.DOCUMENTS} element={withSuspense(DocumentsPage)} />
+        <Route path={ROUTES.DELETE_ACCOUNT} element={withSuspense(DeleteAccountPage)} />
       </Route>
 
       {/* ── Fallback ───────────────────────────────────────────────────── */}

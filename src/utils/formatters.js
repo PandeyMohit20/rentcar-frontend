@@ -1,6 +1,8 @@
 /**
  * General formatting helpers.
  */
+export { formatDate, formatDateTime, formatTime, fromNow } from './date'
+
 export const formatCurrency = (amount, currency = 'INR', locale = 'en-IN') => {
   if (amount === null || amount === undefined || Number.isNaN(Number(amount))) {
     return '—'

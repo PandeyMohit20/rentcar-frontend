@@ -2,53 +2,55 @@
 
 ## 1. Constants
 
-- [ ] Extend `src/constants/routes.js` with account route paths
-- [ ] Extend `src/constants/queryKeys.js` with new domain keys
+- [x] Extend `src/constants/routes.js` with account route paths
+- [x] Extend `src/constants/queryKeys.js` with new domain keys
 
 ## 2. Services (placeholder Promise APIs)
 
-- [ ] dashboardService.js
-- [ ] profileService.js
-- [ ] walletService.js
-- [ ] tripService.js (extend)
-- [ ] notificationService.js
-- [ ] supportService.js (extend)
-- [ ] settingsService.js
-- [ ] securityService.js
-- [ ] kycService.js
-- [ ] documentService.js
-- [ ] reviewService.js
-- [ ] referralService.js
-- [ ] rewardService.js
-- [ ] addressService.js
-- [ ] Register all in modules/index.js
+- [x] dashboardService.js
+- [x] profileService.js
+- [x] walletService.js
+- [x] tripService.js (extend)
+- [x] notificationService.js
+- [x] supportService.js (extend)
+- [x] settingsService.js
+- [x] securityService.js
+- [x] kycService.js
+- [x] documentService.js
+- [x] reviewService.js
+- [x] referralService.js
+- [x] rewardService.js
+- [x] addressService.js
+- [x] Register all in modules/index.js
 
 ## 3. Redux Slices
 
-- [ ] dashboardSlice.js
-- [ ] profileSlice.js
-- [ ] walletSlice.js
-- [ ] supportSlice.js
-- [ ] settingsSlice.js
-- [ ] Register in store/index.js and redux/index.js
+- [x] dashboardSlice.js
+- [x] profileSlice.js
+- [x] walletSlice.js
+- [x] supportSlice.js
+- [x] settingsSlice.js
+- [x] Register in store/index.js and redux/index.js
 
 ## 4. Reusable Account Components (src/components/account/)
 
-- [ ] All ~24 components + barrel
+- [x] All components + barrel (navigation.jsx, AccountPageShell, UserAvatar, ProfileCard, DashboardLayout, Sidebar, Topbar, WalletCard, TransactionTable, ProfileForm, KYCStatus, DocumentUploader, DrivingLicenseCard, TripCard, TripTimeline, WishlistCard, NotificationCard, SupportTicketCard, ReviewCard, RewardCard, ReferralCard, SecurityCard, DeviceCard, AddressCard, SettingsPanel, PrivacyPanel, DashboardWidget, BookingTable, DeleteAccountDialog)
 
 ## 5. Feature Modules (src/features/)
 
-- [ ] dashboard, profile, kyc, wallet, bookings, trips, wishlist, notifications, reviews, support, referral, rewards, settings, security, documents
+- [x] dashboard, profile, kyc, wallet, bookings, trips, wishlist, notifications, reviews, support, referral, rewards, settings, security, documents, addresses, account (constants)
 
 ## 6. Pages (src/pages/account/)
 
-- [ ] All 25 pages
+- [x] All 25 pages (Dashboard, Profile, EditProfile, KYC, DrivingLicense, Wallet, WalletHistory, Bookings, BookingDetails, Trips, TripDetails, SavedAddresses, AccountWishlist, Notifications, Reviews, Support, CreateTicket, TicketDetails, Referral, Rewards, Settings, Privacy, Security, Devices, Documents, DeleteAccount)
 
 ## 7. Routing & Layout
 
-- [ ] Update routes/index.jsx
-- [ ] DashboardLayout / Sidebar navigation
+- [x] Update routes/index.jsx
+- [x] DashboardLayout / Sidebar navigation
+- [x] `navigation.js` renamed to `navigation.jsx` (JSX in a `.js` file blocked Vite build)
+- [x] `formatDate` re-exported from `@/utils/formatters` via `@/utils/date`
 
 ## 8. Verification
 
-- [ ] npm run build
+- [x] npm run build — no errors

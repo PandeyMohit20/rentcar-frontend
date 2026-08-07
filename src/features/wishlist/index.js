@@ -1,2 +1,1 @@
-export { default as FavoriteButton } from './FavoriteButton'
-export { useWishlist } from './useWishlist'
+export { useAccountWishlist, useRemoveFromWishlist } from './useAccountWishlist'
