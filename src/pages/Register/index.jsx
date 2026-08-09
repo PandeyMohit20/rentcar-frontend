@@ -39,15 +39,33 @@ function RegisterPage() {
 
   const onSubmit = async (values) => {
     try {
-      const { confirmPassword, acceptTerms, ...payload } = values
+      const { firstName, lastName } = values
+
+      // Convert frontend firstName + lastName
+      // into the name field expected by the backend.
+      const payload = {
+        name: `${firstName} ${lastName}`.trim(),
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
+      }
+
       const response = await authService.register(payload)
+
       const data = response?.data ?? response
       const token = data?.token ?? data?.accessToken
       const user = data?.user ?? data?.profile
 
       if (token) {
         storage.set(STORAGE_KEYS.AUTH_TOKEN, token)
-        dispatch(loginSuccess({ user, token }))
+
+        dispatch(
+          loginSuccess({
+            user,
+            token,
+          })
+        )
+
         showSuccess('Account created successfully.')
         navigate(ROUTES.HOME)
       } else {
@@ -55,36 +73,62 @@ function RegisterPage() {
         navigate(ROUTES.LOGIN)
       }
     } catch (error) {
-      dispatch(loginFailure(error?.message || 'Registration failed'))
-      showError(error?.message || 'Registration failed. Please try again.')
+      const message = error?.message || 'Registration failed'
+
+      dispatch(loginFailure(message))
+      showError(`${message}. Please try again.`)
     }
   }
 
   return (
     <>
-      <Seo title="Create Account" description="Create your RentCar account." />
+      <Seo title="Create Account" />
+
       <Box sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom align="center">
+        <Typography variant="h4" sx={{ mb: 3 }}>
           Create Account
         </Typography>
+
         <FormProvider {...methods}>
           <Box
             component="form"
             onSubmit={methods.handleSubmit(onSubmit)}
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }}
           >
-            <InputField name="firstName" label="First Name" />
-            <InputField name="lastName" label="Last Name" />
-            <InputField name="email" label="Email" type="email" />
-            <InputField name="phone" label="Phone" />
-            <InputField name="password" label="Password" type="password" />
-            <InputField name="confirmPassword" label="Confirm Password" type="password" />
-            <CheckboxField name="acceptTerms" label="I accept the terms and conditions" />
-            <LoadingButton type="submit" size="large">
+            <InputField name="firstName" label="First Name" placeholder="Enter your first name" />
+
+            <InputField name="lastName" label="Last Name" placeholder="Enter your last name" />
+
+            <InputField name="email" label="Email" type="email" placeholder="Enter your email" />
+
+            <InputField name="phone" label="Phone" placeholder="Enter your phone number" />
+
+            <InputField
+              name="password"
+              label="Password"
+              type="password"
+              placeholder="Enter your password"
+            />
+
+            <InputField
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              placeholder="Confirm your password"
+            />
+
+            <CheckboxField name="acceptTerms" label="I agree to the Terms and Conditions" />
+
+            <LoadingButton type="submit" loading={methods.formState.isSubmitting} fullWidth>
               Register
             </LoadingButton>
           </Box>
         </FormProvider>
+
         <Box sx={{ mt: 2, textAlign: 'center' }}>
           <Typography variant="body2">
             Already have an account?{' '}

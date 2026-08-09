@@ -111,7 +111,7 @@ npm run preview
 |----------|-------------|---------|
 | `VITE_APP_NAME` | Application name | `RentCar` |
 | `VITE_APP_ENV` | Environment (`development`/`production`) | `development` |
-| `VITE_API_BASE_URL` | Backend API base URL | `http://localhost:8000/api/v1` |
+| `VITE_API_BASE_URL` | Backend API base URL | `http://localhost:5000/api/v1` |
 | `VITE_QUERY_STALE_TIME` | TanStack Query stale time (ms) | `60000` |
 | `VITE_QUERY_RETRY_COUNT` | Query retry count | `2` |
 | `VITE_ENABLE_MOCK_API` | Toggle mock API | `false` |
