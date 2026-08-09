@@ -55,7 +55,7 @@ function ContactPage() {
                 <strong>Email:</strong> support@rentcar.com
               </Typography>
               <Typography variant="body2" gutterBottom>
-                <strong>Phone:</strong> +91 00000 00000
+                <strong>Phone:</strong> +91 77649 91332
               </Typography>
               <Typography variant="body2">
                 <strong>Hours:</strong> Mon–Sun, 24/7
