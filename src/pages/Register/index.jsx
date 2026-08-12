@@ -2,19 +2,21 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Box, Typography, Link } from '@mui/material'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
+
 import Seo from '@/components/common/Seo'
 import FormProvider from '@/components/forms/FormProvider'
 import InputField from '@/components/forms/InputField'
 import CheckboxField from '@/components/forms/CheckboxField'
 import LoadingButton from '@/components/buttons/LoadingButton'
+
 import { registerSchema } from '@/validators/authValidator'
 import { ROUTES } from '@/constants/routes'
 import { authService } from '@/services/modules'
+
 import { useAppDispatch } from '@/hooks/useRedux'
-import { loginSuccess, loginFailure } from '@/redux/slices/authSlice'
+import { loginFailure } from '@/redux/slices/authSlice'
+
 import { useToast } from '@/contexts/ToastContext'
-import storage from '@/utils/storage'
-import { STORAGE_KEYS } from '@/constants/app'
 
 /**
  * Register page.
@@ -50,33 +52,29 @@ function RegisterPage() {
         password: values.password,
       }
 
+      // Register account
       const response = await authService.register(payload)
 
       const data = response?.data ?? response
-      const token = data?.token ?? data?.accessToken
-      const user = data?.user ?? data?.profile
+      const user = data?.user
 
-      if (token) {
-        storage.set(STORAGE_KEYS.AUTH_TOKEN, token)
+      console.log('Registration successful:', user)
 
-        dispatch(
-          loginSuccess({
-            user,
-            token,
-          })
-        )
+      // Account is pending until email verification.
+      showSuccess('Account created successfully! Please check your email for the verification OTP.')
 
-        showSuccess('Account created successfully.')
-        navigate(ROUTES.HOME)
-      } else {
-        showSuccess('Account created. Please sign in.')
-        navigate(ROUTES.LOGIN)
-      }
+      // Go to OTP verification page.
+      navigate(ROUTES.VERIFY_EMAIL, {
+        state: {
+          email: payload.email,
+        },
+      })
     } catch (error) {
-      const message = error?.message || 'Registration failed'
+      const message = error?.response?.data?.message || error?.message || 'Registration failed'
 
       dispatch(loginFailure(message))
-      showError(`${message}. Please try again.`)
+
+      showError(message)
     }
   }
 
