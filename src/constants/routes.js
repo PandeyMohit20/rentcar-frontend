@@ -25,8 +25,10 @@ export const ROUTES = {
   NOT_FOUND: '/404',
 
   // Auth routes (guest only)
+  // Auth routes (guest only)
   LOGIN: '/login',
   REGISTER: '/register',
+  VERIFY_EMAIL: '/verify-email',
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
 

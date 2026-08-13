@@ -38,6 +38,7 @@ const RefundPolicyPage = lazy(() => import('@/pages/RefundPolicy'))
 const CancellationPolicyPage = lazy(() => import('@/pages/CancellationPolicy'))
 const LoginPage = lazy(() => import('@/pages/Login'))
 const RegisterPage = lazy(() => import('@/pages/Register'))
+const VerifyEmailPage = lazy(() => import('@/pages/VerifyEmail'))
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPassword'))
 const ResetPasswordPage = lazy(() => import('@/pages/ResetPassword'))
 const NotFoundPage = lazy(() => import('@/pages/NotFound'))
@@ -125,6 +126,14 @@ function AppRoutes() {
                 <RegisterPage />
               </Suspense>
             </GuestRoute>
+          }
+        />
+        <Route
+          path={ROUTES.VERIFY_EMAIL}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <VerifyEmailPage />
+            </Suspense>
           }
         />
         <Route
