@@ -32,8 +32,7 @@ import { useApiQuery } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
 import { pageStyles } from './styles'
 
-const heroImage =
-  'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80'
+const heroImage = 'https://wallpaperaccess.com/full/11208.jpg'
 
 const locations = ['Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Pune', 'Chennai']
 const categories = [
