@@ -4,6 +4,11 @@ import { ERROR_MESSAGES } from '@/constants/errorMessages'
 
 const staleTime = Number(import.meta.env.VITE_QUERY_STALE_TIME) || 60000
 const retryCount = Number(import.meta.env.VITE_QUERY_RETRY_COUNT) || 2
+const retryQuery = (failureCount, error) => {
+  const status = error?.status
+  if ([400, 401, 403, 404, 409, 422, 429].includes(status)) return false
+  return failureCount < retryCount
+}
 
 /**
  * Global TanStack Query client with sensible defaults.
@@ -11,7 +16,7 @@ const retryCount = Number(import.meta.env.VITE_QUERY_RETRY_COUNT) || 2
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: retryCount,
+      retry: retryQuery,
       staleTime,
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,

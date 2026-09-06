@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
     REGISTER: '/auth/register',
     LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
+    ME: '/auth/me',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
 
@@ -30,25 +31,46 @@ export const API_ENDPOINTS = {
     AVAILABILITY: (id) => `/cars/${id}/availability`,
     BY_IDS: '/cars/by-ids',
   },
+  LOCATIONS: {
+    CITIES: '/locations/cities',
+    BRANCHES: '/locations/branches',
+    LIST: '/locations',
+    DETAILS: (id) => `/locations/${id}`,
+  },
+  AVAILABILITY: {
+    SEARCH: '/availability/search',
+    CHECK: '/availability/check',
+  },
+  PRICING: {
+    QUOTE: '/pricing/quote',
+  },
 
   // ── Bookings ───────────────────────────────────────────────────────────
   BOOKINGS: {
-    LIST: '/bookings',
+    MINE: '/bookings/me',
     DETAILS: (id) => `/bookings/${id}`,
     CREATE: '/bookings',
-    UPDATE: (id) => `/bookings/${id}`,
     CANCEL: (id) => `/bookings/${id}/cancel`,
-    RESCHEDULE: (id) => `/bookings/${id}/reschedule`,
-    HISTORY: '/bookings/history',
+    REFUNDS: (id) => `/bookings/${id}/refunds`,
     INVOICE: (id) => `/bookings/${id}/invoice`,
   },
 
   // ── Payments ───────────────────────────────────────────────────────────
   PAYMENTS: {
+    ORDERS: '/payments/orders',
+    DETAILS: (id) => `/payments/${id}`,
     CREATE: '/payments',
     VERIFY: '/payments/verify',
     METHODS: '/payments/methods',
     REFUND: (id) => `/payments/${id}/refund`,
+  },
+
+  REFUNDS: {
+    DETAILS: (id) => `/refunds/${id}`,
+  },
+
+  INVOICES: {
+    DETAILS: (id) => `/invoices/${id}`,
   },
 
   // ── Wishlist ───────────────────────────────────────────────────────────

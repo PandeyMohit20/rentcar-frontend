@@ -1,19 +1,25 @@
 import PropTypes from 'prop-types'
-import { Box, Typography, Chip, Rating, CardActions } from '@mui/material'
+import { Box, Typography, Chip, CardActions } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import MaterialCard from '@/components/ui/MaterialCard'
 import PrimaryButton from '@/components/buttons/PrimaryButton'
 import { formatCurrency } from '@/utils/formatters'
 import { ROUTES } from '@/constants/routes'
+import ImageLazy from '@/components/common/ImageLazy'
 
 /**
  * Card displaying a car summary in lists/search results.
  */
-function CarCard({ car }) {
+function CarCard({ car, to }) {
   return (
     <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
       <MaterialCard>
+        <ImageLazy
+          src={car.primaryImageUrl || '/placeholder-car.svg'}
+          alt={`${car.brand} ${car.model}`}
+          ratio="16/10"
+        />
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
             {car.brand} {car.model}
@@ -21,25 +27,30 @@ function CarCard({ car }) {
           <Typography variant="body2" color="text.secondary" gutterBottom>
             {car.fuelType} • {car.transmission} • Seats {car.seatingCapacity}
           </Typography>
-          <Rating value={car.rating} readOnly size="small" />
           <Box sx={{ mt: 1 }}>
-            {car.isAvailable ? (
-              <Chip label="Available" color="success" size="small" />
-            ) : (
-              <Chip label="Unavailable" color="error" size="small" />
+            {car.branch?.name && (
+              <Chip label={car.branch.name} color="primary" size="small" variant="outlined" />
             )}
           </Box>
         </Box>
         <CardActions sx={{ px: 2, pb: 2 }}>
           <Typography variant="h6" color="primary">
-            {formatCurrency(car.pricePerDay)}
-            <Typography component="span" variant="caption" color="text.secondary">
-              {' '}
-              / day
-            </Typography>
+            {car.dailyPrice == null ? (
+              <Typography component="span" variant="body2" color="text.secondary">
+                Get a trusted quote
+              </Typography>
+            ) : (
+              <>
+                {formatCurrency(car.dailyPrice, car.currencyCode)}
+                <Typography component="span" variant="caption" color="text.secondary">
+                  {' '}
+                  / day
+                </Typography>
+              </>
+            )}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <PrimaryButton component={Link} to={ROUTES.CAR_DETAILS_WITH_ID(car.id)}>
+          <PrimaryButton component={Link} to={to || ROUTES.CAR_DETAILS_WITH_ID(car.id)}>
             View
           </PrimaryButton>
         </CardActions>
@@ -49,6 +60,7 @@ function CarCard({ car }) {
 }
 
 CarCard.propTypes = {
+  to: PropTypes.string,
   car: PropTypes.shape({
     id: PropTypes.string.isRequired,
     brand: PropTypes.string,
@@ -56,9 +68,10 @@ CarCard.propTypes = {
     fuelType: PropTypes.string,
     transmission: PropTypes.string,
     seatingCapacity: PropTypes.number,
-    rating: PropTypes.number,
-    pricePerDay: PropTypes.number,
-    isAvailable: PropTypes.bool,
+    dailyPrice: PropTypes.number,
+    currencyCode: PropTypes.string,
+    primaryImageUrl: PropTypes.string,
+    branch: PropTypes.shape({ name: PropTypes.string }),
   }).isRequired,
 }
 

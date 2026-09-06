@@ -1,16 +1,13 @@
-/**
- * Invoice API service — placeholder abstraction.
- * Real backend integration to be added later.
- */
+import httpClient from '@/services/api/httpClient'
+import { API_ENDPOINTS } from '@/constants/apiEndpoints'
+
 export const invoiceService = {
-  async getInvoice(bookingId) {
-    // Placeholder: resolve with a reference to the booking.
-    return Promise.resolve({ data: { bookingId, reference: `INV-${Date.now()}` } })
+  async getForBooking(bookingId) {
+    return (await httpClient.get(API_ENDPOINTS.BOOKINGS.INVOICE(bookingId)))?.data
   },
 
-  async downloadInvoice(bookingId) {
-    // Placeholder: resolve with a placeholder download descriptor.
-    return Promise.resolve({ data: { bookingId, url: null, status: 'pending' } })
+  async getById(invoiceId) {
+    return (await httpClient.get(API_ENDPOINTS.INVOICES.DETAILS(invoiceId)))?.data
   },
 }
 

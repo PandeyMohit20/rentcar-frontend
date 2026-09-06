@@ -5,36 +5,38 @@ import { API_ENDPOINTS } from '@/constants/apiEndpoints'
  * Booking-related API service.
  */
 export const bookingService = {
-  async listBookings(params) {
-    return httpClient.get(API_ENDPOINTS.BOOKINGS.LIST, { params })
+  async listMyBookings(params) {
+    const response = await httpClient.get(API_ENDPOINTS.BOOKINGS.MINE, { params })
+    return {
+      bookings: Array.isArray(response?.data) ? response.data : [],
+      meta: response?.meta ?? { page: 1, limit: params?.limit ?? 10, total: 0, totalPages: 0 },
+    }
   },
 
   async getBookingDetails(id) {
-    return httpClient.get(API_ENDPOINTS.BOOKINGS.DETAILS(id))
+    return (await httpClient.get(API_ENDPOINTS.BOOKINGS.DETAILS(id)))?.data
   },
 
-  async createBooking(payload) {
-    return httpClient.post(API_ENDPOINTS.BOOKINGS.CREATE, payload)
+  async createBooking({ quoteToken, idempotencyKey }) {
+    const response = await httpClient.post(
+      API_ENDPOINTS.BOOKINGS.CREATE,
+      { quoteToken },
+      { headers: { 'Idempotency-Key': idempotencyKey } }
+    )
+    return response?.data
   },
 
-  async updateBooking(id, payload) {
-    return httpClient.put(API_ENDPOINTS.BOOKINGS.UPDATE(id), payload)
+  async getBookingById(id) {
+    return (await httpClient.get(API_ENDPOINTS.BOOKINGS.DETAILS(id)))?.data
   },
 
-  async cancelBooking(id) {
-    return httpClient.post(API_ENDPOINTS.BOOKINGS.CANCEL(id))
-  },
-
-  async rescheduleBooking(id, payload) {
-    return httpClient.post(API_ENDPOINTS.BOOKINGS.RESCHEDULE(id), payload)
-  },
-
-  async getBookingHistory(params) {
-    return httpClient.get(API_ENDPOINTS.BOOKINGS.HISTORY, { params })
-  },
-
-  async getInvoice(id) {
-    return httpClient.get(API_ENDPOINTS.BOOKINGS.INVOICE(id))
+  async cancelBooking({ bookingId, reason, idempotencyKey }) {
+    const response = await httpClient.post(
+      API_ENDPOINTS.BOOKINGS.CANCEL(bookingId),
+      reason ? { reason } : {},
+      { headers: { 'Idempotency-Key': idempotencyKey } }
+    )
+    return response?.data
   },
 }
 

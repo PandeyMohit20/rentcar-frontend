@@ -19,14 +19,35 @@ export const QUERY_KEYS = {
     AVAILABILITY: (id, params) => ['cars', 'availability', id, params],
     BY_IDS: (ids) => ['cars', 'by-ids', ids],
   },
+  LOCATIONS: {
+    CITIES: ['locations', 'cities'],
+    BRANCHES: ['locations', 'branches'],
+    ALL: ['locations'],
+  },
+  AVAILABILITY: {
+    SEARCH: (payload) => ['availability', 'search', payload],
+  },
   BOOKINGS: {
     ALL: ['bookings'],
+    MINE: ['bookings', 'mine'],
+    LIST: (params) => ['bookings', 'mine', params],
     DETAILS: (id) => ['bookings', 'details', id],
-    HISTORY: (params) => ['bookings', 'history', params],
   },
   PAYMENTS: {
+    ALL: ['payments'],
     METHODS: ['payments', 'methods'],
     STATUS: (id) => ['payments', 'status', id],
+    DETAILS: (id) => ['payments', 'details', id],
+  },
+  REFUNDS: {
+    ALL: ['refunds'],
+    FOR_BOOKING: (bookingId) => ['refunds', 'booking', bookingId],
+    DETAILS: (id) => ['refunds', 'details', id],
+  },
+  INVOICES: {
+    ALL: ['invoices'],
+    FOR_BOOKING: (bookingId) => ['invoices', 'booking', bookingId],
+    DETAILS: (id) => ['invoices', 'details', id],
   },
   WISHLIST: {
     ALL: ['wishlist'],

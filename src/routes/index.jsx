@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import MainLayout from '@/layouts/MainLayout'
 import AuthLayout from '@/layouts/AuthLayout'
 import DashboardLayout from '@/layouts/DashboardLayout'
@@ -15,10 +15,7 @@ import { ROUTES } from '@/constants/routes'
 const HomePage = lazy(() => import('@/pages/Home'))
 const SearchPage = lazy(() => import('@/pages/Search'))
 const CarDetailsPage = lazy(() => import('@/pages/CarDetails'))
-const BookingPage = lazy(() => import('@/pages/Booking'))
-const CheckoutPage = lazy(() => import('@/pages/Checkout'))
-const PaymentPage = lazy(() => import('@/pages/Payment'))
-const BookingHistoryPage = lazy(() => import('@/pages/BookingHistory'))
+const BookingStatusPage = lazy(() => import('@/pages/BookingStatus'))
 const WishlistPage = lazy(() => import('@/pages/Wishlist'))
 const OffersPage = lazy(() => import('@/pages/Offers'))
 const ProfilePage = lazy(() => import('@/pages/Profile'))
@@ -162,10 +159,11 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path={ROUTES.BOOKING} element={withSuspense(BookingPage)} />
-        <Route path={ROUTES.CHECKOUT} element={withSuspense(CheckoutPage)} />
-        <Route path={ROUTES.PAYMENT} element={withSuspense(PaymentPage)} />
-        <Route path={ROUTES.BOOKING_HISTORY} element={withSuspense(BookingHistoryPage)} />
+        <Route path={ROUTES.BOOKING_STATUS} element={withSuspense(BookingStatusPage)} />
+        <Route
+          path={ROUTES.BOOKING_HISTORY}
+          element={<Navigate to={ROUTES.MY_BOOKINGS} replace />}
+        />
         <Route path={ROUTES.WISHLIST} element={withSuspense(WishlistPage)} />
         <Route path={ROUTES.PROFILE} element={withSuspense(ProfilePage)} />
         <Route path={ROUTES.NOTIFICATIONS} element={withSuspense(NotificationsPage)} />

@@ -25,16 +25,18 @@ export const authService = {
    * Logout current session.
    */
   async logout() {
-    return httpClient.post(API_ENDPOINTS.AUTH.LOGOUT)
+    return httpClient.post(API_ENDPOINTS.AUTH.LOGOUT, {})
   },
 
   /**
    * Refresh access token.
    */
-  async refreshToken(refreshToken) {
-    return httpClient.post(API_ENDPOINTS.AUTH.REFRESH, {
-      refreshToken,
-    })
+  async refreshToken() {
+    return httpClient.post(API_ENDPOINTS.AUTH.REFRESH, {})
+  },
+
+  async getMe() {
+    return httpClient.get(API_ENDPOINTS.AUTH.ME)
   },
 
   /**

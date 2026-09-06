@@ -35,6 +35,8 @@ export const ROUTES = {
   // Protected routes (authenticated only)
   BOOKING: '/booking/:carId',
   BOOKING_WITH_CAR: (carId) => `/booking/${carId}`,
+  BOOKING_STATUS: '/booking/status/:bookingId',
+  BOOKING_STATUS_WITH_ID: (bookingId) => `/booking/status/${bookingId}`,
   CHECKOUT: '/checkout',
   PAYMENT: '/payment',
   BOOKING_HISTORY: '/booking-history',

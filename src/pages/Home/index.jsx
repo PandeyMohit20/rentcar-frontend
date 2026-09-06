@@ -4,7 +4,6 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import SpeedIcon from '@mui/icons-material/Speed'
 import ElectricCarIcon from '@mui/icons-material/ElectricCar'
 import GroupsIcon from '@mui/icons-material/Groups'
-import StarIcon from '@mui/icons-material/Star'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import ShieldIcon from '@mui/icons-material/Shield'
 import SupportAgentIcon from '@mui/icons-material/SupportAgent'
@@ -19,10 +18,8 @@ import SectionTitle from '@/components/sections/SectionTitle'
 import HeroBanner from '@/components/sections/HeroBanner'
 import HeroSearchForm from '@/components/sections/HeroSearchForm'
 import CategoryCard from '@/components/sections/CategoryCard'
-import StatsBand from '@/components/sections/StatsBand'
 import HowItWorks from '@/components/sections/HowItWorks'
 import WhyChoose from '@/components/sections/WhyChoose'
-import ReviewsGrid from '@/components/sections/ReviewsGrid'
 import DownloadApp from '@/components/sections/DownloadApp'
 import PartnersRow from '@/components/sections/PartnersRow'
 import Newsletter from '@/components/sections/Newsletter'
@@ -30,11 +27,13 @@ import { ROUTES } from '@/constants/routes'
 import { carService } from '@/services/modules'
 import { useApiQuery } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
-import { pageStyles } from './styles'
+import { locationService } from '@/services/modules'
+import { useNavigate } from 'react-router-dom'
+import { toApiDateTime, validateBusinessInterval } from '@/utils/dateTime'
+import { useToast } from '@/contexts/ToastContext'
 
 const heroImage = 'https://wallpaperaccess.com/full/11208.jpg'
 
-const locations = ['Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Pune', 'Chennai']
 const categories = [
   {
     icon: SpeedIcon,
@@ -60,13 +59,6 @@ const categories = [
     description: 'Affordable everyday drives',
     to: ROUTES.CAR_CATEGORIES,
   },
-]
-
-const stats = [
-  { value: '500+', label: 'Cars in fleet' },
-  { value: '120+', label: 'Cities covered' },
-  { value: '50K+', label: 'Happy customers' },
-  { value: '4.8/5', label: 'Average rating' },
 ]
 
 const steps = [
@@ -104,35 +96,6 @@ const whyFeatures = [
     icon: LocalOfferIcon,
     title: 'Best Offers',
     description: 'Seasonal deals and membership discounts on every trip.',
-  },
-  {
-    icon: StarIcon,
-    title: 'Top-rated Cars',
-    description: 'Clean, well-maintained vehicles rated by real customers.',
-  },
-]
-
-const reviews = [
-  {
-    id: 1,
-    name: 'Aarav Sharma',
-    rating: 5,
-    comment: 'Amazing experience! The car was spotless and pickup was seamless.',
-    meta: 'Mumbai',
-  },
-  {
-    id: 2,
-    name: 'Priya Patel',
-    rating: 5,
-    comment: 'Great pricing and super easy booking. Highly recommended!',
-    meta: 'Bengaluru',
-  },
-  {
-    id: 3,
-    name: 'Rohan Mehta',
-    rating: 4,
-    comment: 'Very convenient for weekend trips. Support was quick to help.',
-    meta: 'Delhi',
   },
 ]
 
@@ -201,12 +164,42 @@ const blogPosts = [
  * Home page — premium landing experience.
  */
 function HomePage() {
-  const { data, isLoading, error } = useApiQuery({
+  const navigate = useNavigate()
+  const { showError } = useToast()
+  const { data, isLoading, error, refetch } = useApiQuery({
     queryKey: QUERY_KEYS.CARS.FEATURED,
     queryFn: carService.getFeaturedCars,
   })
 
-  const featuredCars = data?.data ?? data?.cars ?? []
+  const {
+    data: branchData,
+    isLoading: branchesLoading,
+    error: branchesError,
+    refetch: refetchBranches,
+  } = useApiQuery({
+    queryKey: QUERY_KEYS.LOCATIONS.BRANCHES,
+    queryFn: locationService.getBranches,
+  })
+  const featuredCars = data?.cars ?? []
+  const branches = (branchData?.items ?? []).map((branch) => ({
+    id: branch.id,
+    label: [branch.name, branch.city].filter(Boolean).join(', '),
+  }))
+  const handleSearch = ({ branchId, pickupDate, pickupTime, returnDate, returnTime, brand }) => {
+    const params = new URLSearchParams()
+    if (branchId) params.set('branchId', branchId)
+    if (brand) params.set('brand', brand)
+    const hasAnyInterval = pickupDate || pickupTime || returnDate || returnTime
+    if (hasAnyInterval) {
+      const pickup = toApiDateTime(pickupDate, pickupTime)
+      const returnValue = toApiDateTime(returnDate, returnTime)
+      const intervalError = validateBusinessInterval(pickup, returnValue)
+      if (intervalError) return showError(intervalError)
+      params.set('pickup', pickup)
+      params.set('return', returnValue)
+    }
+    navigate(`${ROUTES.SEARCH}?${params}`)
+  }
 
   return (
     <>
@@ -223,7 +216,18 @@ function HomePage() {
         image={heroImage}
         height={620}
       >
-        <HeroSearchForm locations={locations} categories={categories.map((c) => c.title)} />
+        {branchesLoading ? (
+          <CircularProgress color="inherit" />
+        ) : branchesError ? (
+          <EmptyState
+            title="Unable to load pickup locations"
+            description="Please retry."
+            actionLabel="Retry"
+            onAction={refetchBranches}
+          />
+        ) : (
+          <HeroSearchForm locations={branches} categories={[]} onSearch={handleSearch} />
+        )}
       </HeroBanner>
 
       {/* ── Categories ───────────────────────────────────────────────── */}
@@ -262,6 +266,8 @@ function HomePage() {
           <EmptyState
             title="Unable to load cars"
             description="We couldn't load featured cars right now. Please try again later."
+            actionLabel="Retry"
+            onAction={refetch}
           />
         ) : featuredCars.length === 0 ? (
           <EmptyState title="No cars available" description="Check back soon for new cars." />
@@ -277,7 +283,6 @@ function HomePage() {
       </Section>
 
       {/* ── Stats ────────────────────────────────────────────────────── */}
-      <StatsBand stats={stats} />
 
       {/* ── How it works ─────────────────────────────────────────────── */}
       <Section>
@@ -311,15 +316,6 @@ function HomePage() {
       </Section>
 
       {/* ── Reviews ──────────────────────────────────────────────────── */}
-      <Section bgcolor="background.paper">
-        <ReviewsGrid
-          eyebrow="Testimonials"
-          title="Loved by thousands of drivers"
-          subtitle="Real feedback from real customers across the country."
-          reviews={reviews}
-        />
-      </Section>
-
       {/* ── Latest blogs ─────────────────────────────────────────────── */}
       <Section>
         <SectionTitle
@@ -349,7 +345,7 @@ function HomePage() {
       <Newsletter
         title="Stay in the loop"
         subtitle="Subscribe for exclusive offers, new cars and travel tips."
-        onSubmit={(email) => console.log('Newsletter signup:', email)}
+        onSubmit={() => {}}
       />
     </>
   )

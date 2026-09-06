@@ -27,6 +27,11 @@ import { useAuth } from '@/hooks/useAuth'
 import { useAppDispatch } from '@/hooks/useRedux'
 import { logout } from '@/redux/slices/authSlice'
 import { useTheme } from '@/contexts/ThemeContext'
+import { authService } from '@/services/modules'
+import authSession from '@/services/api/authSession'
+import { queryClient } from '@/services/queryClient'
+import bookingAttemptSession from '@/services/api/bookingAttemptSession'
+import cancellationAttemptSession from '@/services/api/cancellationAttemptSession'
 
 /**
  * Main navigation bar with theme toggle, search, wishlist and notifications.
@@ -38,14 +43,23 @@ function Navbar({ menus = [] }) {
   const { mode, toggleTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await authService.logout()
+    } catch {
+      /* Local logout must always complete. */
+    }
+    authSession.clear()
+    bookingAttemptSession.clearAll()
+    cancellationAttemptSession.clear()
     dispatch(logout())
-    navigate(ROUTES.HOME)
+    queryClient.clear()
+    navigate(ROUTES.HOME, { replace: true })
   }
 
   const authLinks = isAuthenticated
     ? [
-        { label: 'My Bookings', to: ROUTES.BOOKING_HISTORY },
+        { label: 'My Bookings', to: ROUTES.MY_BOOKINGS },
         { label: 'Wishlist', to: ROUTES.WISHLIST },
         { label: 'Profile', to: ROUTES.PROFILE },
       ]
@@ -168,7 +182,11 @@ function Navbar({ menus = [] }) {
               </ListItem>
             )}
             <ListItem disablePadding>
-              <ListItemButton component={Link} to={ROUTES.HOME} onClick={handleLogout}>
+              <ListItemButton
+                component={Link}
+                to={isAuthenticated ? ROUTES.HOME : ROUTES.LOGIN}
+                onClick={isAuthenticated ? handleLogout : undefined}
+              >
                 <ListItemText primary={isAuthenticated ? 'Logout' : 'Sign In'} />
               </ListItemButton>
             </ListItem>

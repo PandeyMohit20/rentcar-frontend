@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Box, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
-import { ACCOUNT_NAV } from './navigation'
+import ACCOUNT_NAV from './navigation'
 
 /**
  * Persistent account sidebar with grouped navigation.

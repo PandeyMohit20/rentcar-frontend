@@ -22,7 +22,7 @@ import { ROUTES } from '@/constants/routes'
  * Account area navigation menu.
  * Grouped sections for the sidebar.
  */
-export const ACCOUNT_NAV = [
+const ACCOUNT_NAV = [
   {
     section: 'Overview',
     items: [{ label: 'Dashboard', to: ROUTES.DASHBOARD, icon: <DashboardIcon /> }],

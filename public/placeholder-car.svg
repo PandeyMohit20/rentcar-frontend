@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Car image unavailable">
+  <rect width="800" height="500" fill="#eef2f6"/>
+  <path d="M180 320h440l-42-112c-12-31-42-52-75-52H300c-34 0-64 21-76 53l-44 111Z" fill="#aab7c4"/>
+  <rect x="130" y="285" width="540" height="105" rx="45" fill="#7b8b9b"/>
+  <circle cx="250" cy="390" r="55" fill="#344454"/><circle cx="550" cy="390" r="55" fill="#344454"/>
+  <text x="400" y="90" text-anchor="middle" font-family="sans-serif" font-size="30" fill="#526272">Image unavailable</text>
+</svg>

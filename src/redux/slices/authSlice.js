@@ -6,9 +6,9 @@ import { createSlice } from '@reduxjs/toolkit'
  */
 const initialState = {
   user: null,
-  token: null,
   isAuthenticated: false,
   isLoading: false,
+  isRestoring: true,
   error: null,
 }
 
@@ -22,9 +22,9 @@ const authSlice = createSlice({
     },
     loginSuccess: (state, action) => {
       state.isLoading = false
+      state.isRestoring = false
       state.isAuthenticated = true
       state.user = action.payload.user
-      state.token = action.payload.token
       state.error = null
     },
     loginFailure: (state, action) => {
@@ -34,21 +34,41 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.user = null
-      state.token = null
       state.isAuthenticated = false
       state.isLoading = false
       state.error = null
+      state.isRestoring = false
     },
     updateUser: (state, action) => {
       state.user = action.payload
     },
-    setToken: (state, action) => {
-      state.token = action.payload
+    restoreStart: (state) => {
+      state.isRestoring = true
+      state.isAuthenticated = false
+      state.user = null
+    },
+    restoreSuccess: (state, action) => {
+      state.user = action.payload
+      state.isAuthenticated = true
+      state.isRestoring = false
+    },
+    restoreFailure: (state) => {
+      state.user = null
+      state.isAuthenticated = false
+      state.isRestoring = false
     },
   },
 })
 
-export const { loginStart, loginSuccess, loginFailure, logout, updateUser, setToken } =
-  authSlice.actions
+export const {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  logout,
+  updateUser,
+  restoreStart,
+  restoreSuccess,
+  restoreFailure,
+} = authSlice.actions
 
 export default authSlice.reducer

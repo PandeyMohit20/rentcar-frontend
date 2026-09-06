@@ -8,15 +8,28 @@ import {
   TableRow,
   TablePagination,
   Paper,
+  CircularProgress,
 } from '@mui/material'
 
 /**
  * Generic data table with pagination support.
  */
-function DataTable({ columns = [], rows = [], loading = false, pagination = true, ...props }) {
+function DataTable({
+  columns = [],
+  rows = [],
+  loading = false,
+  pagination = true,
+  total,
+  page = 0,
+  onPageChange,
+  rowsPerPage = 10,
+  onRowsPerPageChange,
+  onRowClick,
+  sx,
+}) {
   return (
     <TableContainer component={Paper}>
-      <Table size="medium" {...props}>
+      <Table size="medium" sx={sx}>
         <TableHead>
           <TableRow>
             {columns.map((column) => (
@@ -27,7 +40,13 @@ function DataTable({ columns = [], rows = [], loading = false, pagination = true
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.length === 0 && !loading ? (
+          {loading ? (
+            <TableRow>
+              <TableCell colSpan={columns.length} align="center" sx={{ py: 6 }}>
+                <CircularProgress size={28} aria-label="Loading" />
+              </TableCell>
+            </TableRow>
+          ) : rows.length === 0 ? (
             <TableRow>
               <TableCell colSpan={columns.length} align="center">
                 No data available
@@ -35,7 +54,22 @@ function DataTable({ columns = [], rows = [], loading = false, pagination = true
             </TableRow>
           ) : (
             rows.map((row, rowIndex) => (
-              <TableRow key={row.id || rowIndex}>
+              <TableRow
+                key={row.id || rowIndex}
+                hover={Boolean(onRowClick)}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                tabIndex={onRowClick ? 0 : undefined}
+                onKeyDown={
+                  onRowClick
+                    ? (event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault()
+                          onRowClick(row)
+                        }
+                      }
+                    : undefined
+                }
+              >
                 {columns.map((column) => (
                   <TableCell key={column.field} align={column.align || 'left'}>
                     {column.render ? column.render(row) : row[column.field]}
@@ -49,11 +83,11 @@ function DataTable({ columns = [], rows = [], loading = false, pagination = true
       {pagination && (
         <TablePagination
           component="div"
-          count={props.total || rows.length}
-          page={props.page || 0}
-          onPageChange={props.onPageChange || (() => {})}
-          rowsPerPage={props.rowsPerPage || 10}
-          onRowsPerPageChange={props.onRowsPerPageChange || (() => {})}
+          count={total ?? rows.length}
+          page={page}
+          onPageChange={onPageChange || (() => {})}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={onRowsPerPageChange || (() => {})}
         />
       )}
     </TableContainer>
@@ -77,6 +111,8 @@ DataTable.propTypes = {
   onPageChange: PropTypes.func,
   rowsPerPage: PropTypes.number,
   onRowsPerPageChange: PropTypes.func,
+  onRowClick: PropTypes.func,
+  sx: PropTypes.object,
 }
 
 export default DataTable

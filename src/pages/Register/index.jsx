@@ -53,12 +53,7 @@ function RegisterPage() {
       }
 
       // Register account
-      const response = await authService.register(payload)
-
-      const data = response?.data ?? response
-      const user = data?.user
-
-      console.log('Registration successful:', user)
+      await authService.register(payload)
 
       // Account is pending until email verification.
       showSuccess('Account created successfully! Please check your email for the verification OTP.')

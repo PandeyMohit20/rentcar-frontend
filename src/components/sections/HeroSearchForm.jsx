@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
-import { Box, Paper, TextField, MenuItem, InputAdornment, Button } from '@mui/material'
+import { useState } from 'react'
+import { Paper, TextField, MenuItem, InputAdornment, Button } from '@mui/material'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import SearchIcon from '@mui/icons-material/Search'
 
@@ -8,6 +9,16 @@ import SearchIcon from '@mui/icons-material/Search'
  * Presentational only — calls onSearch with form values.
  */
 function HeroSearchForm({ locations = [], categories = [], onSearch }) {
+  const [values, setValues] = useState({
+    branchId: '',
+    pickupDate: '',
+    pickupTime: '',
+    returnDate: '',
+    returnTime: '',
+    brand: '',
+  })
+  const update = (key) => (event) =>
+    setValues((current) => ({ ...current, [key]: event.target.value }))
   return (
     <Paper
       elevation={6}
@@ -24,7 +35,8 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
       <TextField
         select
         label="Pickup Location"
-        defaultValue=""
+        value={values.branchId}
+        onChange={update('branchId')}
         fullWidth
         InputProps={{
           startAdornment: (
@@ -37,8 +49,8 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
       >
         <MenuItem value="">Select city</MenuItem>
         {locations.map((loc) => (
-          <MenuItem key={loc} value={loc}>
-            {loc}
+          <MenuItem key={loc.id} value={loc.id}>
+            {loc.label}
           </MenuItem>
         ))}
       </TextField>
@@ -46,19 +58,44 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
       <TextField
         type="date"
         label="Pickup"
-        defaultValue=""
+        value={values.pickupDate}
+        onChange={update('pickupDate')}
+        InputLabelProps={{ shrink: true }}
+        fullWidth
+      />
+      <TextField
+        type="time"
+        label="Pickup time"
+        value={values.pickupTime}
+        onChange={update('pickupTime')}
         InputLabelProps={{ shrink: true }}
         fullWidth
       />
       <TextField
         type="date"
-        label="Drop"
-        defaultValue=""
+        label="Return"
+        value={values.returnDate}
+        onChange={update('returnDate')}
+        InputLabelProps={{ shrink: true }}
+        fullWidth
+      />
+      <TextField
+        type="time"
+        label="Return time"
+        value={values.returnTime}
+        onChange={update('returnTime')}
         InputLabelProps={{ shrink: true }}
         fullWidth
       />
 
-      <TextField select label="Category" defaultValue="" fullWidth sx={{ flex: { md: 1 } }}>
+      <TextField
+        select
+        label="Brand"
+        value={values.brand}
+        onChange={update('brand')}
+        fullWidth
+        sx={{ flex: { md: 1 } }}
+      >
         <MenuItem value="">All</MenuItem>
         {categories.map((cat) => (
           <MenuItem key={cat} value={cat}>
@@ -72,7 +109,7 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
         color="primary"
         size="large"
         startIcon={<SearchIcon />}
-        onClick={() => onSearch && onSearch()}
+        onClick={() => onSearch && onSearch(values)}
         sx={{ px: 4, whiteSpace: 'nowrap' }}
       >
         Search
@@ -82,7 +119,9 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
 }
 
 HeroSearchForm.propTypes = {
-  locations: PropTypes.arrayOf(PropTypes.string),
+  locations: PropTypes.arrayOf(
+    PropTypes.shape({ id: PropTypes.string.isRequired, label: PropTypes.string.isRequired })
+  ),
   categories: PropTypes.arrayOf(PropTypes.string),
   onSearch: PropTypes.func,
 }

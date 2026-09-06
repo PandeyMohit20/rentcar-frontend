@@ -1,51 +1,76 @@
 import PropTypes from 'prop-types'
-import { Box, Chip } from '@mui/material'
+import { Box, Chip, Stack, Typography } from '@mui/material'
 import DataTable from '@/components/tables/DataTable'
-import { formatCurrency, formatDate } from '@/utils/formatters'
-
-const statusColor = (status) => {
-  switch (status) {
-    case 'confirmed':
-      return 'success'
-    case 'completed':
-      return 'info'
-    case 'cancelled':
-      return 'error'
-    case 'refunded':
-      return 'warning'
-    case 'upcoming':
-      return 'primary'
-    default:
-      return 'default'
-  }
-}
+import { formatCurrency } from '@/utils/formatters'
+import { formatBusinessDateTime } from '@/utils/dateTime'
+import { BOOKING_STATUS_META, PAYMENT_STATUS_META } from '@/features/account'
 
 const columns = [
-  { field: 'id', headerName: 'Booking ID' },
   {
-    field: 'car',
-    headerName: 'Car',
-    render: (row) => (row.car ? `${row.car.brand} ${row.car.model}` : '—'),
+    field: 'bookingNumber',
+    headerName: 'Booking',
+    render: (row) => (
+      <Stack>
+        <Typography variant="body2" fontWeight={700}>
+          {row.bookingNumber || row.id || '—'}
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          {row.car ? `${row.car.brand} ${row.car.model}` : `Car ${row.carId || '—'}`}
+        </Typography>
+      </Stack>
+    ),
   },
-  { field: 'startDate', headerName: 'Start', render: (row) => formatDate(row.startDate) },
-  { field: 'endDate', headerName: 'End', render: (row) => formatDate(row.endDate) },
+  {
+    field: 'startAt',
+    headerName: 'Trip',
+    render: (row) => (
+      <Stack>
+        <Typography variant="body2">
+          {formatBusinessDateTime(row.startAt || row.startDate)}
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          to {formatBusinessDateTime(row.endAt || row.endDate)}
+        </Typography>
+      </Stack>
+    ),
+  },
   {
     field: 'totalAmount',
     headerName: 'Amount',
     align: 'right',
-    render: (row) => formatCurrency(row.totalAmount),
+    render: (row) => formatCurrency(row.totalAmount, row.currencyCode),
   },
   {
     field: 'status',
     headerName: 'Status',
-    render: (row) => <Chip label={row.status} color={statusColor(row.status)} size="small" />,
+    render: (row) => {
+      const meta = BOOKING_STATUS_META[row.status] ?? { label: row.status, color: 'default' }
+      return <Chip label={meta.label} color={meta.color} size="small" />
+    },
+  },
+  {
+    field: 'paymentStatus',
+    headerName: 'Payment',
+    render: (row) => {
+      const meta = PAYMENT_STATUS_META[row.paymentStatus] ?? {
+        label: row.paymentStatus || '—',
+        color: 'default',
+      }
+      return <Chip label={meta.label} color={meta.color} size="small" variant="outlined" />
+    },
   },
 ]
 
-/**
- * Bookings listing table.
- */
-function BookingTable({ bookings = [], loading = false, onRowClick }) {
+function BookingTable({
+  bookings = [],
+  loading = false,
+  onRowClick,
+  total,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+}) {
   return (
     <Box sx={{ overflowX: 'auto' }}>
       <DataTable
@@ -53,7 +78,12 @@ function BookingTable({ bookings = [], loading = false, onRowClick }) {
         rows={bookings}
         loading={loading}
         onRowClick={onRowClick}
-        sx={{ cursor: 'pointer' }}
+        total={total}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={onPageChange}
+        onRowsPerPageChange={onRowsPerPageChange}
+        sx={{ cursor: onRowClick ? 'pointer' : 'default' }}
       />
     </Box>
   )
@@ -62,6 +92,12 @@ function BookingTable({ bookings = [], loading = false, onRowClick }) {
 BookingTable.propTypes = {
   bookings: PropTypes.array,
   loading: PropTypes.bool,
+  onRowClick: PropTypes.func,
+  total: PropTypes.number,
+  page: PropTypes.number,
+  rowsPerPage: PropTypes.number,
+  onPageChange: PropTypes.func,
+  onRowsPerPageChange: PropTypes.func,
 }
 
 export default BookingTable

@@ -16,8 +16,6 @@ export const DATE_TIME_FORMAT = 'DD MMM YYYY, hh:mm A'
 export const TIME_FORMAT = 'hh:mm A'
 
 export const STORAGE_KEYS = {
-  AUTH_TOKEN: 'rentcar_access_token',
-  REFRESH_TOKEN: 'rentcar_refresh_token',
   USER: 'rentcar_user',
   THEME: 'rentcar_theme',
 }

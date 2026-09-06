@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Box, Typography, Link } from '@mui/material'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'
 import Seo from '@/components/common/Seo'
 import FormProvider from '@/components/forms/FormProvider'
 import InputField from '@/components/forms/InputField'
@@ -12,8 +12,10 @@ import { authService } from '@/services/modules'
 import { useAppDispatch } from '@/hooks/useRedux'
 import { loginSuccess, loginFailure } from '@/redux/slices/authSlice'
 import { useToast } from '@/contexts/ToastContext'
-import storage from '@/utils/storage'
-import { STORAGE_KEYS } from '@/constants/app'
+import authSession from '@/services/api/authSession'
+import bookingAttemptSession from '@/services/api/bookingAttemptSession'
+import cancellationAttemptSession from '@/services/api/cancellationAttemptSession'
+import { queryClient } from '@/services/queryClient'
 
 /**
  * Login page.
@@ -21,6 +23,7 @@ import { STORAGE_KEYS } from '@/constants/app'
 function LoginPage() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
   const { showSuccess, showError } = useToast()
 
   const methods = useForm({
@@ -36,10 +39,20 @@ function LoginPage() {
       const user = data?.user ?? data?.profile
 
       if (token) {
-        storage.set(STORAGE_KEYS.AUTH_TOKEN, token)
-        dispatch(loginSuccess({ user, token }))
+        queryClient.clear()
+        bookingAttemptSession.clearAll()
+        cancellationAttemptSession.clear()
+        authSession.setAccessToken(token)
+        dispatch(loginSuccess({ user }))
         showSuccess('Signed in successfully.')
-        navigate(ROUTES.HOME)
+        const requestedPath = location.state?.from?.pathname
+        const safePath =
+          typeof requestedPath === 'string' &&
+          requestedPath.startsWith('/') &&
+          !requestedPath.startsWith('//')
+            ? `${requestedPath}${location.state?.from?.search || ''}`
+            : ROUTES.HOME
+        navigate(safePath, { replace: true })
       } else {
         dispatch(loginFailure('Login failed. Please try again.'))
         showError('Invalid credentials.')
@@ -65,7 +78,7 @@ function LoginPage() {
           >
             <InputField name="email" label="Email" type="email" />
             <InputField name="password" label="Password" type="password" />
-            <LoadingButton type="submit" size="large">
+            <LoadingButton type="submit" size="large" loading={methods.formState.isSubmitting}>
               Sign In
             </LoadingButton>
           </Box>

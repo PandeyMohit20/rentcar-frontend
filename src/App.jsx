@@ -5,6 +5,7 @@ import AppRoutes from '@/routes'
 import ScrollToTop from '@/components/common/ScrollToTop'
 import ErrorBoundary from '@/components/common/ErrorBoundary'
 import AppProviders from '@/app/AppProviders'
+import SessionBootstrap from '@/components/authentication/SessionBootstrap'
 
 /**
  * Root application component.
@@ -15,12 +16,14 @@ function App() {
     <ErrorBoundary>
       <AppProviders>
         <BrowserRouter>
-          <ToastProvider>
-            <ThemeProvider>
-              <ScrollToTop />
-              <AppRoutes />
-            </ThemeProvider>
-          </ToastProvider>
+          <SessionBootstrap>
+            <ToastProvider>
+              <ThemeProvider>
+                <ScrollToTop />
+                <AppRoutes />
+              </ThemeProvider>
+            </ToastProvider>
+          </SessionBootstrap>
         </BrowserRouter>
       </AppProviders>
     </ErrorBoundary>

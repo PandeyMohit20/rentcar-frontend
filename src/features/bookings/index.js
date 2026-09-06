@@ -1,6 +1,7 @@
 export {
-  useBookingsHistory,
+  useMyBookings,
   useBookingDetails,
+  useBookingRefunds,
   useBookingInvoice,
   useCancelBooking,
 } from './useBookings'

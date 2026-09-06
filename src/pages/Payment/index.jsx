@@ -43,7 +43,7 @@ function PaymentPage() {
     mutationFn: paymentService.createPayment,
     onSuccess: () => {
       showSuccess('Payment successful! Your booking is confirmed.')
-      navigate(ROUTES.BOOKING_HISTORY)
+      navigate(ROUTES.MY_BOOKINGS)
     },
     onError: (error) => {
       showError(error?.message || 'Payment failed. Please try again.')

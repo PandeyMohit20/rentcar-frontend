@@ -18,10 +18,27 @@ export const KYC_STATUS_META = {
 }
 
 export const BOOKING_STATUS_META = {
-  upcoming: { label: 'Upcoming', color: 'info' },
-  completed: { label: 'Completed', color: 'success' },
-  cancelled: { label: 'Cancelled', color: 'default' },
-  refunded: { label: 'Refunded', color: 'warning' },
+  PENDING: { label: 'Pending', color: 'warning' },
+  PAYMENT_PENDING: { label: 'Payment Pending', color: 'warning' },
+  CONFIRMED: { label: 'Confirmed', color: 'success' },
+  ACTIVE: { label: 'Active', color: 'primary' },
+  COMPLETED: { label: 'Completed', color: 'info' },
+  CANCELLED: { label: 'Cancelled', color: 'default' },
+  EXPIRED: { label: 'Expired', color: 'default' },
+  REJECTED: { label: 'Rejected', color: 'error' },
+}
+
+export const PAYMENT_STATUS_META = {
+  pending: { label: 'Pending', color: 'warning' },
+  succeeded: { label: 'Paid', color: 'success' },
+  failed: { label: 'Failed', color: 'error' },
+  refunded: { label: 'Refunded', color: 'info' },
+}
+
+export const REFUND_STATUS_META = {
+  pending: { label: 'Processing', color: 'warning' },
+  succeeded: { label: 'Refunded', color: 'success' },
+  failed: { label: 'Failed', color: 'error' },
 }
 
 export const NOTIFICATION_TYPE_META = {
@@ -73,6 +90,8 @@ export default {
   KYC_DOCUMENT_META,
   KYC_STATUS_META,
   BOOKING_STATUS_META,
+  PAYMENT_STATUS_META,
+  REFUND_STATUS_META,
   NOTIFICATION_TYPE_META,
   TICKET_STATUS_META,
   SECURITY_LEVEL_META,

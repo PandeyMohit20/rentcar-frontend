@@ -9,9 +9,9 @@ import FullPageLoader from '@/components/loaders/FullPageLoader'
  * Redirects authenticated users to the home page.
  */
 function GuestRoute({ children }) {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, isRestoring } = useAuth()
 
-  if (isLoading) {
+  if (isLoading || isRestoring) {
     return <FullPageLoader />
   }
 

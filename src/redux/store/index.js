@@ -30,8 +30,8 @@ import settingsReducer from '@/redux/slices/settingsSlice'
 const persistConfig = {
   key: import.meta.env.VITE_PERSIST_KEY || 'rentcar-root',
   storage: import.meta.env.VITE_PERSIST_STORAGE === 'sessionStorage' ? sessionStorage : storage,
-  whitelist: ['auth', 'ui', 'wishlist', 'comparison'],
-  version: 1,
+  whitelist: ['ui', 'wishlist', 'comparison'],
+  version: 2,
 }
 
 const rootReducer = combineReducers({

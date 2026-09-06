@@ -9,10 +9,10 @@ import FullPageLoader from '@/components/loaders/FullPageLoader'
  * Redirects unauthenticated users to the login page.
  */
 function ProtectedRoute({ children }) {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, isRestoring } = useAuth()
   const location = useLocation()
 
-  if (isLoading) {
+  if (isLoading || isRestoring) {
     return <FullPageLoader />
   }
 
