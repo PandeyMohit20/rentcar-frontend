@@ -1,27 +1,29 @@
-import { useApiQuery, useApiMutation } from '@/hooks/useApi'
+﻿import { useQuery } from '@tanstack/react-query'
 import { QUERY_KEYS } from '@/constants/queryKeys'
-import { kycService } from '@/services/modules'
+import { kycService } from '@/services/modules/kycService'
+import { useAccountMutation } from '@/features/account/useAccountMutation'
 
-/**
- * KYC feature hooks.
- */
+const keys = [QUERY_KEYS.KYC.STATUS, QUERY_KEYS.KYC.DOCUMENTS, QUERY_KEYS.PROFILE.DETAILS]
 export function useKycStatus() {
-  return useApiQuery({
+  return useQuery({
     queryKey: QUERY_KEYS.KYC.STATUS,
     queryFn: kycService.getStatus,
+    refetchOnWindowFocus: true,
   })
 }
-
-export function useSubmitKycDocument() {
-  return useApiMutation({
-    mutationFn: ({ type, ...payload }) => kycService.submitDocument(type, payload),
-    invalidateKeys: [QUERY_KEYS.KYC.STATUS],
+export function useKycDocuments() {
+  return useQuery({
+    queryKey: QUERY_KEYS.KYC.DOCUMENTS,
+    queryFn: kycService.listDocuments,
+    refetchOnWindowFocus: true,
   })
 }
-
-export function useResubmitKycDocument() {
-  return useApiMutation({
-    mutationFn: ({ type, ...payload }) => kycService.resubmitDocument(type, payload),
-    invalidateKeys: [QUERY_KEYS.KYC.STATUS],
-  })
+export function useDeleteKycDocument() {
+  return useAccountMutation(kycService.deleteDocument, keys)
+}
+export function useSubmitKyc() {
+  return useAccountMutation(kycService.submitKyc, keys)
+}
+export function useUploadKycDocument() {
+  return useAccountMutation(kycService.uploadDocument, keys)
 }

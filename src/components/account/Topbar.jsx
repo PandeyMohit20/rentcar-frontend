@@ -1,59 +1,46 @@
-import PropTypes from 'prop-types'
-import { AppBar, Toolbar, IconButton, Box, Badge } from '@mui/material'
+﻿import { AppBar, Toolbar, IconButton, Button, Box } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
-import NotificationsIcon from '@mui/icons-material/Notifications'
-import SettingsIcon from '@mui/icons-material/Settings'
-import { useNavigate } from 'react-router-dom'
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
+import { Link } from 'react-router-dom'
 import { ROUTES } from '@/constants/routes'
-import UserAvatar from './UserAvatar'
+import { useTheme } from '@/contexts/ThemeContext'
 
-/**
- * Topbar for the account dashboard with quick actions and navigation.
- */
-function Topbar({ onMenuClick, user = {}, unreadCount = 0 }) {
-  const navigate = useNavigate()
-
+function Topbar({ onMenuClick, menuOpen }) {
+  const { mode, toggleTheme } = useTheme()
   return (
-    <AppBar position="static" color="inherit" elevation={1}>
-      <Toolbar>
+    <AppBar position="static" color="inherit" elevation={0}>
+      <Toolbar sx={{ gap: 1 }}>
         <IconButton
-          edge="start"
           color="inherit"
-          aria-label="Toggle sidebar"
+          aria-label="Open account navigation"
+          aria-expanded={menuOpen}
+          aria-controls={menuOpen ? 'account-mobile-navigation' : undefined}
           onClick={onMenuClick}
-          sx={{ mr: 1, display: { md: 'none' } }}
+          sx={{ display: { md: 'none' } }}
         >
           <MenuIcon />
         </IconButton>
+        <Button
+          component={Link}
+          to={ROUTES.HOME}
+          color="inherit"
+          sx={{ fontWeight: 800, fontSize: '1.15rem', px: 1 }}
+        >
+          RentCar
+        </Button>
         <Box sx={{ flexGrow: 1 }} />
         <IconButton
-          aria-label="Notifications"
-          onClick={() => navigate(ROUTES.ACCOUNT_NOTIFICATIONS)}
+          onClick={toggleTheme}
+          aria-label={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
         >
-          <Badge badgeContent={unreadCount} color="error">
-            <NotificationsIcon />
-          </Badge>
+          {mode === 'light' ? <DarkModeOutlinedIcon /> : <LightModeOutlinedIcon />}
         </IconButton>
-        <IconButton aria-label="Settings" onClick={() => navigate(ROUTES.ACCOUNT_SETTINGS)}>
-          <SettingsIcon />
-        </IconButton>
-        <IconButton aria-label="Profile" onClick={() => navigate(ROUTES.MY_PROFILE)}>
-          <UserAvatar
-            firstName={user?.firstName}
-            lastName={user?.lastName}
-            src={user?.avatar}
-            size={32}
-          />
-        </IconButton>
+        <Button component={Link} to={ROUTES.SEARCH} variant="outlined" size="small">
+          Find a car
+        </Button>
       </Toolbar>
     </AppBar>
   )
 }
-
-Topbar.propTypes = {
-  onMenuClick: PropTypes.func,
-  user: PropTypes.object,
-  unreadCount: PropTypes.number,
-}
-
 export default Topbar

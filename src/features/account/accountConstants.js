@@ -3,15 +3,12 @@
  * Keeps presentational labels out of business logic.
  */
 
-export const KYC_DOCUMENT_META = [
-  { key: 'pan', label: 'PAN Card', description: 'Permanent Account Number' },
-  { key: 'aadhaar', label: 'Aadhaar Card', description: '12-digit unique identity' },
-  { key: 'passport', label: 'Passport', description: 'Valid international passport' },
-  { key: 'drivingLicense', label: 'Driving License', description: 'Valid driving license' },
-]
+export { KYC_TYPES as KYC_DOCUMENT_META } from '@/features/kyc/kycRules'
+import { KYC_TYPES as KYC_DOCUMENT_META } from '@/features/kyc/kycRules'
 
 export const KYC_STATUS_META = {
-  not_submitted: { label: 'Not Submitted', color: 'default' },
+  unverified: { label: 'Not started', color: 'default' },
+  expired: { label: 'Expired', color: 'error' },
   pending: { label: 'Pending Review', color: 'warning' },
   verified: { label: 'Verified', color: 'success' },
   rejected: { label: 'Rejected', color: 'error' },
@@ -29,6 +26,7 @@ export const BOOKING_STATUS_META = {
 }
 
 export const PAYMENT_STATUS_META = {
+  processing: { label: 'Processing', color: 'info' },
   pending: { label: 'Pending', color: 'warning' },
   succeeded: { label: 'Paid', color: 'success' },
   failed: { label: 'Failed', color: 'error' },
@@ -36,7 +34,8 @@ export const PAYMENT_STATUS_META = {
 }
 
 export const REFUND_STATUS_META = {
-  pending: { label: 'Processing', color: 'warning' },
+  processing: { label: 'Processing', color: 'warning' },
+  pending: { label: 'Pending', color: 'warning' },
   succeeded: { label: 'Refunded', color: 'success' },
   failed: { label: 'Failed', color: 'error' },
 }

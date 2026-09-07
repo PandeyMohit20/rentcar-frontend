@@ -11,15 +11,14 @@ function Footer({ links = [], secondaryLinks = [] }) {
   const year = new Date().getFullYear()
 
   const defaultLinks = [
-    { label: 'About Us', to: ROUTES.ABOUT },
-    { label: 'Contact', to: ROUTES.CONTACT },
-    { label: 'FAQ', to: ROUTES.FAQ },
-    { label: 'Blog', to: ROUTES.BLOG },
-    { label: 'Offers', to: ROUTES.OFFERS },
+    { label: 'Find a car', to: ROUTES.SEARCH },
+    { label: 'Locations', to: ROUTES.LOCATIONS },
+    { label: 'My Bookings', to: ROUTES.MY_BOOKINGS },
+    { label: 'My Profile', to: ROUTES.MY_PROFILE },
   ]
 
   const defaultSecondary = [
-    { label: 'Terms & Conditions', to: ROUTES.LEGAL },
+    { label: 'Terms & Conditions', to: ROUTES.TERMS_CONDITIONS },
     { label: 'Privacy Policy', to: ROUTES.PRIVACY_POLICY },
     { label: 'Refund Policy', to: ROUTES.REFUND_POLICY },
     { label: 'Cancellation Policy', to: ROUTES.CANCELLATION_POLICY },
@@ -35,15 +34,15 @@ function Footer({ links = [], secondaryLinks = [] }) {
     >
       <Container maxWidth="lg">
         <Grid container spacing={4}>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 800 }}>
               {APP_NAME}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Premium self-drive car rental platform. Book your drive in minutes.
+              Find a car, review your trip quote, and manage your bookings.
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 700 }}>
               Quick Links
             </Typography>
@@ -61,7 +60,7 @@ function Footer({ links = [], secondaryLinks = [] }) {
               ))}
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 700 }}>
               Policies
             </Typography>

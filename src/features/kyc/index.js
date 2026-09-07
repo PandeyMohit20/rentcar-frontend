@@ -1,1 +1,7 @@
-export { useKycStatus, useSubmitKycDocument, useResubmitKycDocument } from './useKyc'
+﻿export {
+  useKycStatus,
+  useKycDocuments,
+  useDeleteKycDocument,
+  useSubmitKyc,
+  useUploadKycDocument,
+} from './useKyc'

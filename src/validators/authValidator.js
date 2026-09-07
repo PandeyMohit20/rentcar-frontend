@@ -10,7 +10,7 @@ export const loginSchema = z.object({
     .email('Please enter a valid email address'),
   password: z
     .string({ required_error: 'Password is required' })
-    .min(8, 'Password must be at least 8 characters'),
+    .min(1, 'Enter your password').max(128),
 })
 
 export const registerSchema = z
@@ -27,13 +27,10 @@ export const registerSchema = z
       .string({ required_error: 'Email is required' })
       .trim()
       .email('Please enter a valid email address'),
-    phone: z
-      .string({ required_error: 'Phone number is required' })
-      .trim()
-      .regex(/^[+]?[\d\s-]{10,15}$/, 'Please enter a valid phone number'),
+    phone: z.string().trim().max(50).regex(/^\+?[0-9\s\-()]*$/, 'Enter a valid phone number'),
     password: z
       .string({ required_error: 'Password is required' })
-      .min(8, 'Password must be at least 8 characters')
+      .min(8, 'Password must be at least 8 characters').max(128)
       .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
       .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
       .regex(/\d/, 'Password must contain at least one number')

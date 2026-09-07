@@ -21,20 +21,22 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
     setValues((current) => ({ ...current, [key]: event.target.value }))
   return (
     <Paper
-      elevation={6}
+      component="form"
+      onSubmit={(event) => { event.preventDefault(); onSearch?.(values) }}
+      elevation={3}
       sx={{
         p: 2,
-        display: 'flex',
-        flexDirection: { xs: 'column', md: 'row' },
+        display: 'grid',
+        gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' },
         gap: 2,
         alignItems: 'stretch',
         borderRadius: 3,
-        maxWidth: 860,
+        maxWidth: 1100,
       }}
     >
       <TextField
         select
-        label="Pickup Location"
+        label="Operating branch"
         value={values.branchId}
         onChange={update('branchId')}
         fullWidth
@@ -47,7 +49,7 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
         }}
         sx={{ flex: { md: 1 } }}
       >
-        <MenuItem value="">Select city</MenuItem>
+        <MenuItem value="">All branches</MenuItem>
         {locations.map((loc) => (
           <MenuItem key={loc.id} value={loc.id}>
             {loc.label}
@@ -109,10 +111,10 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
         color="primary"
         size="large"
         startIcon={<SearchIcon />}
-        onClick={() => onSearch && onSearch(values)}
+        type="submit"
         sx={{ px: 4, whiteSpace: 'nowrap' }}
       >
-        Search
+        Search Cars
       </Button>
     </Paper>
   )

@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Box, Typography, Link } from '@mui/material'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom'
 
 import Seo from '@/components/common/Seo'
 import FormProvider from '@/components/forms/FormProvider'
@@ -24,6 +24,7 @@ import { useToast } from '@/contexts/ToastContext'
 function RegisterPage() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
   const { showSuccess, showError } = useToast()
 
   const methods = useForm({
@@ -48,7 +49,7 @@ function RegisterPage() {
       const payload = {
         name: `${firstName} ${lastName}`.trim(),
         email: values.email,
-        phone: values.phone,
+        ...(values.phone.trim() ? { phone: values.phone.trim() } : {}),
         password: values.password,
       }
 
@@ -62,6 +63,7 @@ function RegisterPage() {
       navigate(ROUTES.VERIFY_EMAIL, {
         state: {
           email: payload.email,
+          from: location.state?.from,
         },
       })
     } catch (error) {
@@ -78,7 +80,7 @@ function RegisterPage() {
       <Seo title="Create Account" />
 
       <Box sx={{ p: 3 }}>
-        <Typography variant="h4" sx={{ mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 3 }}>
           Create Account
         </Typography>
 
@@ -96,21 +98,21 @@ function RegisterPage() {
 
             <InputField name="lastName" label="Last Name" placeholder="Enter your last name" />
 
-            <InputField name="email" label="Email" type="email" placeholder="Enter your email" />
+            <InputField name="email" label="Email" type="email" autoComplete="email" placeholder="Enter your email" />
 
-            <InputField name="phone" label="Phone" placeholder="Enter your phone number" />
+            <InputField name="phone" label="Phone (optional)" type="tel" autoComplete="tel" placeholder="Enter your phone number" />
 
             <InputField
               name="password"
               label="Password"
-              type="password"
+              type="password" autoComplete="new-password"
               placeholder="Enter your password"
             />
 
             <InputField
               name="confirmPassword"
               label="Confirm Password"
-              type="password"
+              type="password" autoComplete="new-password"
               placeholder="Confirm your password"
             />
 
@@ -125,7 +127,7 @@ function RegisterPage() {
         <Box sx={{ mt: 2, textAlign: 'center' }}>
           <Typography variant="body2">
             Already have an account?{' '}
-            <Link component={RouterLink} to={ROUTES.LOGIN}>
+            <Link component={RouterLink} to={ROUTES.LOGIN} state={location.state}>
               Sign In
             </Link>
           </Typography>

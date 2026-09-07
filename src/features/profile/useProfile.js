@@ -1,41 +1,24 @@
-import { useApiQuery, useApiMutation } from '@/hooks/useApi'
+﻿import { useQuery } from '@tanstack/react-query'
 import { QUERY_KEYS } from '@/constants/queryKeys'
-import { profileService } from '@/services/modules'
+import { profileService } from '@/services/modules/profileService'
+import { useAccountMutation } from '@/features/account/useAccountMutation'
+import { useAppDispatch } from '@/hooks/useRedux'
+import { updateUser } from '@/redux/slices/authSlice'
 
-/**
- * Profile feature hooks.
- */
 export function useProfile() {
-  return useApiQuery({
-    queryKey: QUERY_KEYS.PROFILE.DETAILS,
-    queryFn: profileService.getProfile,
-  })
+  return useQuery({ queryKey: QUERY_KEYS.PROFILE.DETAILS, queryFn: profileService.getProfile })
 }
-
-export function useEmergencyContact() {
-  return useApiQuery({
-    queryKey: QUERY_KEYS.PROFILE.EMERGENCY_CONTACT,
-    queryFn: profileService.getEmergencyContact,
-  })
+export function useAccountIdentity() {
+  return useQuery({ queryKey: QUERY_KEYS.PROFILE.ACCOUNT, queryFn: profileService.getAccount })
 }
-
-export function useProfileCompletion() {
-  return useApiQuery({
-    queryKey: QUERY_KEYS.PROFILE.COMPLETION,
-    queryFn: profileService.getProfileCompletion,
-  })
-}
-
 export function useUpdateProfile() {
-  return useApiMutation({
-    mutationFn: profileService.updateProfile,
-    invalidateKeys: [QUERY_KEYS.PROFILE.DETAILS, QUERY_KEYS.PROFILE.COMPLETION],
-  })
+  return useAccountMutation(profileService.updateProfile, [QUERY_KEYS.PROFILE.DETAILS])
 }
-
-export function useUpdateEmergencyContact() {
-  return useApiMutation({
-    mutationFn: profileService.updateEmergencyContact,
-    invalidateKeys: [QUERY_KEYS.PROFILE.EMERGENCY_CONTACT],
-  })
+export function useUpdateAccount() {
+  const dispatch = useAppDispatch()
+  return useAccountMutation(
+    profileService.updateAccount,
+    [QUERY_KEYS.PROFILE.ACCOUNT, QUERY_KEYS.AUTH.ME],
+    (user) => dispatch(updateUser(user))
+  )
 }

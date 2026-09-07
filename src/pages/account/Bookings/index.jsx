@@ -64,7 +64,7 @@ function BookingsPage() {
           <Box>
             <Typography variant="h6">Booking history</Typography>
             <Typography variant="body2" color="text.secondary">
-              Select a row to open its full details.
+              Open a booking to see its full details.
             </Typography>
           </Box>
           <FormControl size="small" sx={{ minWidth: 210 }}>

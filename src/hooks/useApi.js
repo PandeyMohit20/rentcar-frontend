@@ -18,11 +18,13 @@ export function useApiMutation({ mutationFn, onSuccess, onError, onSettled, inva
 
   return useMutation({
     mutationFn,
+    retry: false,
+    gcTime: 0,
     onSuccess: (data, variables, context) => {
       if (invalidateKeys.length) {
         invalidateKeys.forEach((key) => queryClient.invalidateQueries({ queryKey: key }))
       }
-      if (onSuccess) onSuccess(data, variables, context)
+      if (onSuccess) return onSuccess(data, variables, context)
     },
     onError,
     onSettled,

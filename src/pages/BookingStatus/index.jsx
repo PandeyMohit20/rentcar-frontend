@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   Alert,
@@ -10,6 +10,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import authSession from '@/services/api/authSession'
+import { BOOKING_STATUS_META, PAYMENT_STATUS_META } from '@/features/account/accountConstants'
 import Seo from '@/components/common/Seo'
 import MaterialCard from '@/components/ui/MaterialCard'
 import LoadingButton from '@/components/buttons/LoadingButton'
@@ -40,13 +42,19 @@ function BookingStatusPage() {
   const { user } = useAuth()
   const recovery = bookingAttemptSession.getRecovery()
   const validRecovery =
-    recovery?.bookingId === bookingId && (!recovery.userId || recovery.userId === user?.id)
+    recovery?.bookingId === bookingId && recovery.userId === user?.id
   const [paymentId, setPaymentId] = useState(validRecovery ? recovery.paymentId || null : null)
   const [flowMessage, setFlowMessage] = useState('')
   const [flowError, setFlowError] = useState('')
   const [pendingVerification, setPendingVerification] = useState(null)
   const [pollingTimedOut, setPollingTimedOut] = useState(false)
-  const [now, setNow] = useState(0)
+  const [now, setNow] = useState(() => Date.now())
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const checkout = useRef(null)
+  const mounted = useRef(true)
+  const sessionVersion = useRef(authSession.getVersion())
+  const isCurrentSession = () => mounted.current && sessionVersion.current === authSession.getVersion()
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; checkout.current?.close?.() } }, [])
 
   const bookingQuery = useApiQuery({
     queryKey: QUERY_KEYS.BOOKINGS.DETAILS(bookingId),
@@ -54,7 +62,7 @@ function BookingStatusPage() {
     enabled: Boolean(bookingId),
     refetchInterval: (query) => {
       const booking = query.state.data
-      return !pollingTimedOut && booking && !TERMINAL_BOOKINGS.has(booking.status) ? 4000 : false
+      return !query.state.error && !pollingTimedOut && booking && !TERMINAL_BOOKINGS.has(booking.status) ? 4000 : false
     },
   })
   const paymentQuery = useApiQuery({
@@ -66,7 +74,7 @@ function BookingStatusPage() {
       const stopped =
         ['review_required', 'late_payment_conflict'].includes(payment?.operationalStatus) ||
         ['failed', 'refunded'].includes(payment?.status)
-      return !pollingTimedOut && payment && !stopped && bookingQuery.data?.status !== 'CONFIRMED'
+      return !query.state.error && !pollingTimedOut && payment && !stopped && !TERMINAL_BOOKINGS.has(bookingQuery.data?.status)
         ? 4000
         : false
     },
@@ -82,7 +90,7 @@ function BookingStatusPage() {
     onSuccess: () => {
       setPendingVerification(null)
       setFlowError('')
-      setFlowMessage('Payment received. Confirming booking with the payment provider…')
+      setFlowMessage('Payment received. Confirming your booking…')
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BOOKINGS.DETAILS(bookingId) })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BOOKINGS.MINE })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INVOICES.FOR_BOOKING(bookingId) })
@@ -90,7 +98,7 @@ function BookingStatusPage() {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PAYMENTS.DETAILS(paymentId) })
     },
     onError: (error) => {
-      setFlowMessage('Payment status is being checked against backend records.')
+      setFlowMessage('Checking the latest payment status. Please do not pay again.')
       setFlowError(
         error?.isNetworkError
           ? 'Verification response was lost. Do not make another payment.'
@@ -102,7 +110,9 @@ function BookingStatusPage() {
 
   const openCheckout = async (order) => {
     try {
+      setCheckoutOpen(true)
       const Razorpay = await loadRazorpay()
+      if (!isCurrentSession()) return
       const provider = new Razorpay({
         key: order.keyId,
         order_id: order.payment.providerOrderId,
@@ -111,6 +121,8 @@ function BookingStatusPage() {
         description: `Payment for booking ${bookingQuery.data?.bookingNumber || ''}`,
         prefill: { name: user?.name || '', email: user?.email || '', contact: user?.phone || '' },
         handler: (response) => {
+          if (!isCurrentSession()) return
+          setCheckoutOpen(false)
           const verification = {
             bookingId,
             razorpay_order_id: response.razorpay_order_id,
@@ -118,17 +130,21 @@ function BookingStatusPage() {
             razorpay_signature: response.razorpay_signature,
           }
           setPendingVerification(verification)
-          setFlowMessage('Payment received. Verifying checkout signature…')
+          setFlowMessage('Payment received. Checking payment…')
           verifyMutation.mutate(verification)
         },
         modal: {
           ondismiss: () => {
-            setFlowMessage('Payment was not completed. Backend status has been refreshed.')
+            if (!isCurrentSession()) return
+            setCheckoutOpen(false)
+            setFlowMessage('Checkout closed. Checking payment status before you continue.')
             refreshTruth()
           },
         },
       })
+      checkout.current = provider
       provider.on('payment.failed', () => {
+        if (!isCurrentSession()) return
         setFlowError(
           'Razorpay reported that the payment attempt failed. No card details were stored.'
         )
@@ -136,6 +152,8 @@ function BookingStatusPage() {
       })
       provider.open()
     } catch (error) {
+      if (!isCurrentSession()) return
+      setCheckoutOpen(false)
       setFlowError(error?.message || 'Unable to open Razorpay Checkout.')
     }
   }
@@ -148,11 +166,12 @@ function BookingStatusPage() {
         setFlowError('The payment provider order response was incomplete.')
         return
       }
+      bookingAttemptSession.saveBooking(bookingQuery.data, user.id, ROUTES.SEARCH)
       bookingAttemptSession.savePayment(nextPaymentId)
       setPaymentId(nextPaymentId)
       queryClient.setQueryData(QUERY_KEYS.PAYMENTS.DETAILS(nextPaymentId), order.payment)
       setFlowError('')
-      openCheckout(order)
+      return openCheckout(order)
     },
     onError: (error) =>
       setFlowError(error?.message || 'Unable to create or recover the payment order.'),
@@ -164,7 +183,7 @@ function BookingStatusPage() {
   useEffect(() => {
     const updateClock = () => setNow(Date.now())
     const first = window.setTimeout(updateClock, 0)
-    const clock = window.setInterval(updateClock, 30000)
+    const clock = window.setInterval(updateClock, 1000)
     const timeout = window.setTimeout(() => setPollingTimedOut(true), 120000)
     return () => {
       window.clearTimeout(first)
@@ -197,17 +216,20 @@ function BookingStatusPage() {
   const isLateConflict = payment?.operationalStatus === 'late_payment_conflict'
   const isExpired = booking?.status === 'EXPIRED' || holdExpired
   const paymentFailed = payment?.status === 'failed'
-  const amountMismatch = Boolean(payment && Number(payment.amount) !== Number(booking.totalAmount))
+  const amountMismatch = Boolean(booking && payment && Number(payment.amount) !== Number(booking.totalAmount))
   const canPay =
     booking?.status === 'PAYMENT_PENDING' &&
     booking?.paymentStatus === 'pending' &&
     !isExpired &&
     !isReview &&
-    !isLateConflict
-  const busy = orderMutation.isPending || verifyMutation.isPending
+    !isLateConflict &&
+    !pendingVerification &&
+    !['processing', 'succeeded', 'refunded'].includes(payment?.status) &&
+    !bookingQuery.error && !paymentQuery.error
+  const busy = checkoutOpen || orderMutation.isPending || verifyMutation.isPending
   const restart = () => {
     const target =
-      validRecovery && recovery.returnUrl?.startsWith('/') ? recovery.returnUrl : ROUTES.SEARCH
+      validRecovery && recovery.returnUrl?.startsWith('/') && !recovery.returnUrl.startsWith('//') && !recovery.returnUrl.includes('\\') ? recovery.returnUrl : ROUTES.SEARCH
     bookingAttemptSession.clearAll()
     navigate(target, { replace: true })
   }
@@ -238,11 +260,11 @@ function BookingStatusPage() {
       />
       <Container maxWidth="md" sx={{ py: 6 }}>
         <MaterialCard sx={{ p: { xs: 2, md: 4 } }}>
-          <Typography variant="h4">Booking status</Typography>
+          <Typography component="h1" variant="h4">Booking status</Typography>
           <Typography color="text.secondary">{booking.bookingNumber}</Typography>
           {isConfirmed ? (
             <Alert severity="success" sx={{ my: 3 }}>
-              Booking confirmed. Backend payment capture and booking reconciliation are complete.
+              Your booking is confirmed. View the booking details for your trip.
             </Alert>
           ) : isReview ? (
             <Alert severity="warning" sx={{ my: 3 }}>
@@ -264,7 +286,7 @@ function BookingStatusPage() {
           ) : (
             <Alert severity="info" sx={{ my: 3 }}>
               {flowMessage ||
-                'Booking is awaiting payment or provider reconciliation. It is not confirmed yet.'}
+                'This booking is awaiting payment or confirmation. Refresh its status if you have already paid.'}
             </Alert>
           )}
           {flowError && (
@@ -274,22 +296,18 @@ function BookingStatusPage() {
           )}
           {pollingTimedOut && !isConfirmed && !isReview && !isLateConflict && (
             <Alert severity="info" sx={{ mb: 2 }}>
-              Payment is still being processed. Automatic polling paused; refresh the status when
+              Automatic status checks have paused. Refresh the status when
               ready.
             </Alert>
           )}
           <Stack spacing={1}>
             <Typography>
-              Booking state: <strong>{booking.status}</strong>
+              Booking state: <strong>{BOOKING_STATUS_META[booking.status]?.label || 'Status unavailable'}</strong>
             </Typography>
             <Typography>
-              Payment state: <strong>{payment?.status || booking.paymentStatus}</strong>
+              Payment state: <strong>{PAYMENT_STATUS_META[payment?.status || booking.paymentStatus]?.label || 'Status unavailable'}</strong>
             </Typography>
-            {payment?.operationalStatus && (
-              <Typography>
-                Operational state: <strong>{payment.operationalStatus}</strong>
-              </Typography>
-            )}
+
             <Typography>Pickup: {formatBusinessDateTime(booking.startAt)}</Typography>
             <Typography>Return: {formatBusinessDateTime(booking.endAt)}</Typography>
             <Typography>
@@ -309,8 +327,7 @@ function BookingStatusPage() {
           </Stack>
           {amountMismatch && (
             <Alert severity="warning" sx={{ mt: 2 }}>
-              The backend payment order differs from the booking snapshot. The payment-order amount
-              remains authoritative; status will be reconciled by the backend.
+              The payment amount differs from the booking total. Check the amount shown in Razorpay before continuing.
             </Alert>
           )}
           <Divider sx={{ my: 3 }} />
@@ -362,4 +379,5 @@ function BookingStatusPage() {
     </>
   )
 }
-export default BookingStatusPage
+function BookingStatusRoute() { const { bookingId } = useParams(); const { user } = useAuth(); return <BookingStatusPage key={`${user?.id}|${bookingId}`} /> }
+export default BookingStatusRoute

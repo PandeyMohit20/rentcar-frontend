@@ -12,9 +12,7 @@ function MainLayout({ menus = [] }) {
   const defaultMenus = [
     { label: 'Home', to: ROUTES.HOME },
     { label: 'Search', to: ROUTES.SEARCH },
-    { label: 'Offers', to: ROUTES.OFFERS },
-    { label: 'About', to: ROUTES.ABOUT },
-    { label: 'Contact', to: ROUTES.CONTACT },
+    { label: 'Locations', to: ROUTES.LOCATIONS },
   ]
 
   const navMenus = menus.length ? menus : defaultMenus

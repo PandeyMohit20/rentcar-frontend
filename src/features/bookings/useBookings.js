@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useApiMutation, useApiQuery, useQueryClient } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
 import { bookingService, invoiceService, refundService } from '@/services/modules'
@@ -20,13 +21,15 @@ export function useBookingDetails(id) {
 }
 
 export function useBookingRefunds(id) {
+  const [stopped, setStopped] = useState(false)
+  useEffect(() => { const timer = window.setTimeout(() => setStopped(true), 120000); return () => window.clearTimeout(timer) }, [id])
   return useApiQuery({
     queryKey: QUERY_KEYS.REFUNDS.FOR_BOOKING(id),
     queryFn: () => refundService.listForBooking(id),
     enabled: Boolean(id),
     retry: false,
     refetchInterval: (query) =>
-      query.state.data?.some((refund) => refund.status === 'pending') ? 5000 : false,
+      !stopped && !query.state.error && query.state.data?.some((refund) => ['pending', 'processing'].includes(refund.status)) ? 5000 : false,
   })
 }
 

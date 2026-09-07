@@ -12,7 +12,7 @@ import { QUERY_KEYS } from '@/constants/queryKeys'
 export default function LocationsPage() {
   const { data, isLoading, error, refetch } = useApiQuery({
     queryKey: QUERY_KEYS.LOCATIONS.CITIES,
-    queryFn: locationService.getCities,
+    queryFn: () => locationService.getCities(),
   })
   return (
     <>
@@ -43,7 +43,7 @@ export default function LocationsPage() {
           ) : (
             <Grid container spacing={3}>
               {data.items.map((city) => (
-                <Grid item key={city.id} xs={12} sm={6} md={3}>
+                <Grid key={city.id} size={{ xs: 12, sm: 6, md: 3 }}>
                   <MaterialCard sx={{ p: 3, height: '100%' }}>
                     <LocationOnIcon color="primary" sx={{ mb: 1, fontSize: 36 }} />
                     <Typography variant="h6">{city.name}</Typography>

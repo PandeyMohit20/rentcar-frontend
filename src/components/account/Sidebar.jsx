@@ -1,67 +1,45 @@
-import PropTypes from 'prop-types'
-import { useLocation, useNavigate } from 'react-router-dom'
+﻿import { Link, useLocation } from 'react-router-dom'
 import { Box, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
 import ACCOUNT_NAV from './navigation'
 
-/**
- * Persistent account sidebar with grouped navigation.
- * Uses router Link for navigation and highlights active section.
- */
-function Sidebar({ width = 260 }) {
-  const location = useLocation()
-  const navigate = useNavigate()
-
-  const isActive = (to) => location.pathname.startsWith(to)
-
+function Sidebar({ onNavigate, width = 240 }) {
+  const { pathname } = useLocation()
   return (
     <Box
       component="nav"
       aria-label="Account navigation"
-      sx={{
-        width,
-        flexShrink: 0,
-        borderRight: 1,
-        borderColor: 'divider',
-        height: '100%',
-        overflowY: 'auto',
-        display: { xs: 'none', md: 'block' },
-      }}
+      sx={{ width, maxWidth: '100%', flexShrink: 0, p: 2 }}
     >
-      <Box sx={{ px: 2, pt: 2 }}>
-        <Typography variant="overline" color="text.secondary">
-          My Account
-        </Typography>
-      </Box>
-      {ACCOUNT_NAV.map((group) => (
-        <Box key={group.section} sx={{ mt: 1 }}>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ px: 2, display: 'block', mb: 0.5 }}
-          >
-            {group.section}
-          </Typography>
-          <List dense disablePadding>
-            {group.items.map((item) => (
-              <ListItemButton
-                key={item.to}
-                selected={isActive(item.to)}
-                onClick={() => navigate(item.to)}
-                sx={{ pl: 2 }}
+      <Typography variant="overline" color="text.secondary" sx={{ px: 1.5 }}>
+        Your account
+      </Typography>
+      <List sx={{ mt: 1 }}>
+        {ACCOUNT_NAV.flatMap((group) => group.items).map((item) => {
+          const active = pathname === item.to || pathname.startsWith(item.to + '/')
+          return (
+            <ListItemButton
+              key={item.to}
+              component={Link}
+              to={item.to}
+              selected={active}
+              aria-current={active ? 'page' : undefined}
+              onClick={onNavigate}
+              sx={{ borderRadius: 2, minHeight: 48, mb: 0.75 }}
+            >
+              <ListItemIcon
+                sx={{ minWidth: 36, color: active ? 'primary.main' : 'text.secondary' }}
               >
-                <ListItemIcon sx={{ minWidth: 36 }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} />
-              </ListItemButton>
-            ))}
-          </List>
-        </Box>
-      ))}
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.label}
+                slotProps={{ primary: { fontWeight: active ? 700 : 500 } }}
+              />
+            </ListItemButton>
+          )
+        })}
+      </List>
     </Box>
   )
 }
-
-Sidebar.propTypes = {
-  width: PropTypes.number,
-}
-
 export default Sidebar

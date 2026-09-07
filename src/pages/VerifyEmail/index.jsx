@@ -113,6 +113,7 @@ function VerifyEmailPage() {
         state: {
           email,
           verified: true,
+          from: location.state?.from,
         },
       })
     } catch (error) {

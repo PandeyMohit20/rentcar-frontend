@@ -1,174 +1,23 @@
-import { Box, Grid, CircularProgress } from '@mui/material'
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar'
-import LocalOfferIcon from '@mui/icons-material/LocalOffer'
-import SpeedIcon from '@mui/icons-material/Speed'
-import ElectricCarIcon from '@mui/icons-material/ElectricCar'
-import GroupsIcon from '@mui/icons-material/Groups'
-import ScheduleIcon from '@mui/icons-material/Schedule'
-import ShieldIcon from '@mui/icons-material/Shield'
-import SupportAgentIcon from '@mui/icons-material/SupportAgent'
-import PaymentsIcon from '@mui/icons-material/Payments'
+import { Alert, Box, Button, Container, Grid, Skeleton, Typography } from '@mui/material'
+import { Link, useNavigate } from 'react-router-dom'
 import Seo from '@/components/common/Seo'
 import CarCard from '@/components/cards/CarCard'
-import MembershipCard from '@/components/cards/MembershipCard'
-import BlogCard from '@/components/cards/BlogCard'
 import EmptyState from '@/components/common/EmptyState'
-import Section from '@/components/sections/Section'
-import SectionTitle from '@/components/sections/SectionTitle'
 import HeroBanner from '@/components/sections/HeroBanner'
 import HeroSearchForm from '@/components/sections/HeroSearchForm'
-import CategoryCard from '@/components/sections/CategoryCard'
-import HowItWorks from '@/components/sections/HowItWorks'
-import WhyChoose from '@/components/sections/WhyChoose'
-import DownloadApp from '@/components/sections/DownloadApp'
-import PartnersRow from '@/components/sections/PartnersRow'
-import Newsletter from '@/components/sections/Newsletter'
 import { ROUTES } from '@/constants/routes'
-import { carService } from '@/services/modules'
+import { carService, locationService } from '@/services/modules'
 import { useApiQuery } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
-import { locationService } from '@/services/modules'
-import { useNavigate } from 'react-router-dom'
 import { toApiDateTime, validateBusinessInterval } from '@/utils/dateTime'
 import { useToast } from '@/contexts/ToastContext'
-
 const heroImage = 'https://wallpaperaccess.com/full/11208.jpg'
-
-const categories = [
-  {
-    icon: SpeedIcon,
-    title: 'Luxury',
-    description: 'Premium sedans and sports cars',
-    to: ROUTES.CAR_CATEGORIES,
-  },
-  {
-    icon: DirectionsCarIcon,
-    title: 'SUV',
-    description: 'Spacious family and off-road',
-    to: ROUTES.CAR_CATEGORIES,
-  },
-  {
-    icon: ElectricCarIcon,
-    title: 'Electric',
-    description: 'Eco-friendly zero-emission',
-    to: ROUTES.CAR_CATEGORIES,
-  },
-  {
-    icon: GroupsIcon,
-    title: 'Budget',
-    description: 'Affordable everyday drives',
-    to: ROUTES.CAR_CATEGORIES,
-  },
-]
-
-const steps = [
-  {
-    title: 'Choose your car',
-    description: 'Browse our fleet and pick the car that fits your trip.',
-  },
-  { title: 'Select dates', description: 'Pick pickup and drop times that work for you.' },
-  { title: 'Book instantly', description: 'Confirm your booking in seconds with secure payment.' },
-  { title: 'Drive away', description: 'Unlock and drive with insurance and 24/7 support.' },
-]
-
-const whyFeatures = [
-  {
-    icon: ScheduleIcon,
-    title: 'Flexible Plans',
-    description: 'Hourly, daily, weekly and monthly options to fit any schedule.',
-  },
-  {
-    icon: ShieldIcon,
-    title: 'Fully Insured',
-    description: 'Every booking includes comprehensive insurance for peace of mind.',
-  },
-  {
-    icon: PaymentsIcon,
-    title: 'Transparent Pricing',
-    description: 'No hidden charges. Pay only for what you use.',
-  },
-  {
-    icon: SupportAgentIcon,
-    title: '24/7 Support',
-    description: 'Roadside assistance and human support whenever you need it.',
-  },
-  {
-    icon: LocalOfferIcon,
-    title: 'Best Offers',
-    description: 'Seasonal deals and membership discounts on every trip.',
-  },
-]
-
-const membershipPlans = [
-  {
-    name: 'Starter',
-    price: '₹0',
-    period: 'month',
-    description: 'Pay as you go',
-    features: ['Access to budget cars', 'Standard insurance', 'Email support'],
-  },
-  {
-    name: 'Pro',
-    price: '₹999',
-    period: 'month',
-    description: 'For frequent travellers',
-    features: ['All car categories', 'Priority booking', '10% off every trip', '24/7 support'],
-    featured: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    description: 'For businesses',
-    features: ['Dedicated fleet', 'Corporate billing', 'Account manager'],
-  },
-]
-
-const blogPosts = [
-  {
-    id: 1,
-    title: 'Top 10 Road Trip Destinations in India',
-    excerpt: 'Discover the best scenic routes for your next self-drive adventure.',
-    category: 'Travel',
-    author: 'RentCar Team',
-    publishedAt: '2025-01-10',
-    slug: '#',
-    image:
-      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: 2,
-    title: 'How to Choose the Right Car for Your Trip',
-    excerpt: 'A practical guide to picking the perfect vehicle for any journey.',
-    category: 'Guides',
-    author: 'RentCar Team',
-    publishedAt: '2025-01-05',
-    slug: '#',
-    image:
-      'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: 3,
-    title: 'Electric Cars: The Future of Self-Drive',
-    excerpt: 'Why going electric with RentCar is easier than you think.',
-    category: 'Eco',
-    author: 'RentCar Team',
-    publishedAt: '2024-12-28',
-    slug: '#',
-    image:
-      'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=600&q=60',
-  },
-]
-
-/**
- * Home page — premium landing experience.
- */
 function HomePage() {
   const navigate = useNavigate()
   const { showError } = useToast()
   const { data, isLoading, error, refetch } = useApiQuery({
     queryKey: QUERY_KEYS.CARS.FEATURED,
-    queryFn: carService.getFeaturedCars,
+    queryFn: () => carService.getFeaturedCars(),
   })
 
   const {
@@ -178,7 +27,7 @@ function HomePage() {
     refetch: refetchBranches,
   } = useApiQuery({
     queryKey: QUERY_KEYS.LOCATIONS.BRANCHES,
-    queryFn: locationService.getBranches,
+    queryFn: () => locationService.getBranches(),
   })
   const featuredCars = data?.cars ?? []
   const branches = (branchData?.items ?? []).map((branch) => ({
@@ -201,154 +50,23 @@ function HomePage() {
     navigate(`${ROUTES.SEARCH}?${params}`)
   }
 
-  return (
-    <>
-      <Seo
-        title="Home"
-        description="Book self-drive cars on demand with flexible plans. Enterprise car rental platform."
-        image={heroImage}
-      />
-
-      {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <HeroBanner
-        title="Rent a Car, Anywhere"
-        subtitle="Book self-drive cars on demand with flexible plans and transparent pricing."
-        image={heroImage}
-        height={620}
-      >
-        {branchesLoading ? (
-          <CircularProgress color="inherit" />
-        ) : branchesError ? (
-          <EmptyState
-            title="Unable to load pickup locations"
-            description="Please retry."
-            actionLabel="Retry"
-            onAction={refetchBranches}
-          />
-        ) : (
-          <HeroSearchForm locations={branches} categories={[]} onSearch={handleSearch} />
-        )}
-      </HeroBanner>
-
-      {/* ── Categories ───────────────────────────────────────────────── */}
-      <Section>
-        <SectionTitle
-          eyebrow="Browse by category"
-          title="Choose the right car for you"
-          subtitle="From luxury sedans to budget hatchbacks, find the perfect vehicle for every journey."
-        />
-        <Grid container spacing={3}>
-          {categories.map((cat) => (
-            <Grid item key={cat.title} xs={12} sm={6} md={3}>
-              <CategoryCard
-                icon={cat.icon}
-                title={cat.title}
-                description={cat.description}
-                to={cat.to}
-              />
-            </Grid>
-          ))}
-        </Grid>
-      </Section>
-
-      {/* ── Featured cars ────────────────────────────────────────────── */}
-      <Section bgcolor="background.paper">
-        <SectionTitle
-          eyebrow="Featured fleet"
-          title="Featured Cars"
-          subtitle="Our most popular and highly-rated vehicles, ready for your next trip."
-        />
-        {isLoading ? (
-          <Box sx={{ py: 8, textAlign: 'center' }}>
-            <CircularProgress />
-          </Box>
-        ) : error ? (
-          <EmptyState
-            title="Unable to load cars"
-            description="We couldn't load featured cars right now. Please try again later."
-            actionLabel="Retry"
-            onAction={refetch}
-          />
-        ) : featuredCars.length === 0 ? (
-          <EmptyState title="No cars available" description="Check back soon for new cars." />
-        ) : (
-          <Grid container spacing={3}>
-            {featuredCars.map((car) => (
-              <Grid item key={car.id} xs={12} sm={6} md={4}>
-                <CarCard car={car} />
-              </Grid>
-            ))}
-          </Grid>
-        )}
-      </Section>
-
-      {/* ── Stats ────────────────────────────────────────────────────── */}
-
-      {/* ── How it works ─────────────────────────────────────────────── */}
-      <Section>
-        <HowItWorks eyebrow="Simple process" title="How it works" steps={steps} />
-      </Section>
-
-      {/* ── Why choose ───────────────────────────────────────────────── */}
-      <Section bgcolor="background.paper">
-        <WhyChoose
-          eyebrow="Why RentCar"
-          title="Drive with confidence"
-          subtitle="We've built the platform around flexibility, transparency and support."
-          features={whyFeatures}
-        />
-      </Section>
-
-      {/* ── Membership ───────────────────────────────────────────────── */}
-      <Section>
-        <SectionTitle
-          eyebrow="Membership"
-          title="Plans that fit your lifestyle"
-          subtitle="Unlock exclusive perks with our membership plans."
-        />
-        <Grid container spacing={3} alignItems="stretch">
-          {membershipPlans.map((plan) => (
-            <Grid item key={plan.name} xs={12} md={4}>
-              <MembershipCard plan={plan} featured={plan.featured} />
-            </Grid>
-          ))}
-        </Grid>
-      </Section>
-
-      {/* ── Reviews ──────────────────────────────────────────────────── */}
-      {/* ── Latest blogs ─────────────────────────────────────────────── */}
-      <Section>
-        <SectionTitle
-          eyebrow="From the blog"
-          title="Latest articles & guides"
-          subtitle="Tips, destination guides and car rental insights."
-        />
-        <Grid container spacing={3} alignItems="stretch">
-          {blogPosts.map((post) => (
-            <Grid item key={post.id} xs={12} sm={6} md={4}>
-              <BlogCard post={post} />
-            </Grid>
-          ))}
-        </Grid>
-      </Section>
-
-      {/* ── Partners ─────────────────────────────────────────────────── */}
-      <PartnersRow partners={['Maruti', 'Hyundai', 'Tata', 'Mahindra', 'Toyota', 'Honda']} />
-
-      {/* ── Download app ─────────────────────────────────────────────── */}
-      <DownloadApp
-        title="Get the RentCar app"
-        subtitle="Book cars, manage trips and unlock exclusive app-only deals — all from your pocket."
-      />
-
-      {/* ── Newsletter ───────────────────────────────────────────────── */}
-      <Newsletter
-        title="Stay in the loop"
-        subtitle="Subscribe for exclusive offers, new cars and travel tips."
-        onSubmit={() => {}}
-      />
-    </>
-  )
+  return <>
+    <Seo title="Find a car" description="Search cars by branch and trip dates, then review your rental quote." />
+    <HeroBanner title="Find your next drive" subtitle="Choose an operating branch and your trip dates. Review the full quote before reserving." image={heroImage}>
+      {branchesLoading ? <Skeleton variant="rounded" height={240} /> : branchesError ? <Alert severity="warning" action={<Button onClick={refetchBranches}>Retry</Button>}>Locations could not be loaded. Please retry.</Alert> : <HeroSearchForm locations={branches} categories={[...new Set(featuredCars.map(car => car.brand).filter(Boolean))]} onSearch={handleSearch} />}
+      <Typography sx={{ mt: 2, color: 'common.white' }}>Trip times are in Asia/Kolkata. Leave dates empty to browse the fleet.</Typography>
+    </HeroBanner>
+    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 7 } }}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 3 }}>
+        <Typography component="h2" variant="h4">Explore the fleet</Typography>
+        <Button component={Link} to={ROUTES.SEARCH}>Browse all cars</Button>
+      </Box>
+      {isLoading ? <Grid container spacing={3}>{[0,1,2].map(i => <Grid key={i} size={{ xs:12, sm:6, md:4 }}><Skeleton variant="rounded" height={300} /></Grid>)}</Grid> : error ? <EmptyState title="Unable to load cars" description={error.message} actionLabel="Retry" onAction={refetch} /> : !featuredCars.length ? <EmptyState title="No featured cars yet" description="Browse the fleet to see cars listed by our operating branches." actionLabel="Find a car" onAction={() => navigate(ROUTES.SEARCH)} /> : <Grid container spacing={3}>{featuredCars.map(car => <Grid key={car.id} size={{ xs:12, sm:6, md:4 }}><CarCard car={car} /></Grid>)}</Grid>}
+      <Box sx={{ mt: 6, p: { xs: 2, md: 4 }, border: 1, borderColor: 'divider', borderRadius: 3 }}>
+        <Typography component="h2" variant="h5" gutterBottom>Your trip, step by step</Typography>
+        <Grid container spacing={3}>{[['Find a car','Check availability for your selected branch and dates.'],['Review your quote','See the rental breakdown, deposit and total before reserving.'],['Track your booking','Complete payment with Razorpay and follow confirmation in My Bookings.']].map(([title,copy],i) => <Grid key={title} size={{xs:12,md:4}}><Typography component="h3" variant="h6">{i+1}. {title}</Typography><Typography color="text.secondary">{copy}</Typography></Grid>)}</Grid>
+      </Box>
+    </Container>
+  </>
 }
-
 export default HomePage

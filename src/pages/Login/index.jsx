@@ -13,9 +13,7 @@ import { useAppDispatch } from '@/hooks/useRedux'
 import { loginSuccess, loginFailure } from '@/redux/slices/authSlice'
 import { useToast } from '@/contexts/ToastContext'
 import authSession from '@/services/api/authSession'
-import bookingAttemptSession from '@/services/api/bookingAttemptSession'
-import cancellationAttemptSession from '@/services/api/cancellationAttemptSession'
-import { queryClient } from '@/services/queryClient'
+import { clearCustomerSession } from '@/services/api/customerSession'
 
 /**
  * Login page.
@@ -39,9 +37,7 @@ function LoginPage() {
       const user = data?.user ?? data?.profile
 
       if (token) {
-        queryClient.clear()
-        bookingAttemptSession.clearAll()
-        cancellationAttemptSession.clear()
+        clearCustomerSession()
         authSession.setAccessToken(token)
         dispatch(loginSuccess({ user }))
         showSuccess('Signed in successfully.')
@@ -67,7 +63,7 @@ function LoginPage() {
     <>
       <Seo title="Sign In" description="Sign in to your RentCar account." />
       <Box sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom align="center">
+        <Typography component="h1" variant="h4" gutterBottom align="center">
           Sign In
         </Typography>
         <FormProvider {...methods}>
@@ -76,8 +72,8 @@ function LoginPage() {
             onSubmit={methods.handleSubmit(onSubmit)}
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
-            <InputField name="email" label="Email" type="email" />
-            <InputField name="password" label="Password" type="password" />
+            <InputField name="email" label="Email" type="email" autoComplete="email" />
+            <InputField name="password" label="Password" type="password" autoComplete="current-password" />
             <LoadingButton type="submit" size="large" loading={methods.formState.isSubmitting}>
               Sign In
             </LoadingButton>
@@ -89,7 +85,7 @@ function LoginPage() {
           </Link>
           <Typography variant="body2" sx={{ mt: 1 }}>
             Don&apos;t have an account?{' '}
-            <Link component={RouterLink} to={ROUTES.REGISTER}>
+            <Link component={RouterLink} to={ROUTES.REGISTER} state={location.state}>
               Register
             </Link>
           </Typography>

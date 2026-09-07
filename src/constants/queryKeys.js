@@ -76,6 +76,7 @@ export const QUERY_KEYS = {
     WIDGETS: ['dashboard', 'widgets'],
   },
   PROFILE: {
+    ACCOUNT: ['profile', 'account'],
     DETAILS: ['profile', 'details'],
     EMERGENCY_CONTACT: ['profile', 'emergency-contact'],
     COMPLETION: ['profile', 'completion'],

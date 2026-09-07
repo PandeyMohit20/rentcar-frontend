@@ -1,5 +1,8 @@
 const RECOVERY_KEY = 'rentcar_booking_recovery'
+const ATTEMPT_KEY = 'rentcar_booking_attempt'
 let preCreateAttempt = null
+let memoryRecovery = null
+const readAttempt = () => { try { return JSON.parse(window.sessionStorage.getItem(ATTEMPT_KEY)) } catch { return null } }
 
 const createUuid = () => {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID()
@@ -14,26 +17,30 @@ const createUuid = () => {
 
 const readRecovery = () => {
   try {
-    return JSON.parse(window.sessionStorage.getItem(RECOVERY_KEY))
+    return JSON.parse(window.sessionStorage.getItem(RECOVERY_KEY)) || memoryRecovery
   } catch {
-    return null
+    return memoryRecovery
   }
 }
 
 const writeRecovery = (value) => {
-  window.sessionStorage.setItem(RECOVERY_KEY, JSON.stringify(value))
+  memoryRecovery = value
+  try { window.sessionStorage.setItem(RECOVERY_KEY, JSON.stringify(value)) } catch { /* Memory recovery still works for this tab. */ }
   return value
 }
 
 export const bookingAttemptSession = {
   getOrCreateKey(contextKey) {
+    preCreateAttempt ||= readAttempt()
     if (!preCreateAttempt || preCreateAttempt.contextKey !== contextKey) {
       preCreateAttempt = { contextKey, idempotencyKey: createUuid() }
+      try { window.sessionStorage.setItem(ATTEMPT_KEY, JSON.stringify(preCreateAttempt)) } catch { /* Keep the key stable in memory. */ }
     }
     return preCreateAttempt.idempotencyKey
   },
   clearPreCreate() {
     preCreateAttempt = null
+    try { window.sessionStorage.removeItem(ATTEMPT_KEY) } catch { /* Storage unavailable. */ }
   },
   getRecovery: readRecovery,
   saveBooking(booking, userId, returnUrl) {
@@ -51,11 +58,14 @@ export const bookingAttemptSession = {
     return current ? writeRecovery({ ...current, paymentId }) : null
   },
   clearRecovery() {
-    window.sessionStorage.removeItem(RECOVERY_KEY)
+    memoryRecovery = null
+    try { window.sessionStorage.removeItem(RECOVERY_KEY) } catch { /* Storage unavailable. */ }
   },
   clearAll() {
     preCreateAttempt = null
-    window.sessionStorage.removeItem(RECOVERY_KEY)
+    try { window.sessionStorage.removeItem(ATTEMPT_KEY) } catch { /* Storage unavailable. */ }
+    memoryRecovery = null
+    try { window.sessionStorage.removeItem(RECOVERY_KEY) } catch { /* Storage unavailable. */ }
   },
 }
 export default bookingAttemptSession

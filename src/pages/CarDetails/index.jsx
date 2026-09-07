@@ -32,7 +32,7 @@ function CarDetailsPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isRestoring } = useAuth()
   const params = useMemo(() => new URLSearchParams(location.search), [location.search])
   const pickup = params.get('pickup')
   const returnValue = params.get('return')
@@ -49,7 +49,7 @@ function CarDetailsPage() {
   })
   const [quoteError, setQuoteError] = useState('')
   const [bookingError, setBookingError] = useState('')
-  const [now, setNow] = useState(0)
+  const [now, setNow] = useState(() => Date.now())
   const {
     data: car,
     isLoading,
@@ -90,7 +90,7 @@ function CarDetailsPage() {
     onError: (requestError) => {
       setBookingError(
         requestError?.isNetworkError
-          ? 'The booking result is unknown because the network response was lost. Retry this same attempt to safely replay it.'
+          ? 'The booking result is unknown because the network response was lost. Check My Bookings before trying again. Retrying this same trip reuses your booking attempt.'
           : requestError?.message || 'Unable to create the booking.'
       )
     },
@@ -105,7 +105,7 @@ function CarDetailsPage() {
     if (!activeQuote?.expiresAt) return undefined
     const updateClock = () => setNow(Date.now())
     const initialTimer = window.setTimeout(updateClock, 0)
-    const timer = window.setInterval(updateClock, 30000)
+    const timer = window.setInterval(updateClock, 1000)
     return () => {
       window.clearTimeout(initialTimer)
       window.clearInterval(timer)
@@ -117,13 +117,13 @@ function CarDetailsPage() {
   const remainingMinutes =
     activeQuote && !quoteExpired ? Math.max(1, Math.ceil((expiresAtMs - now) / 60000)) : 0
   const createQuote = () => {
-    if (!hasValidInterval || quoteMutation.isPending) return
+    if (!hasValidInterval || quoteMutation.isPending || bookingMutation.isPending) return
     quoteSession.clear()
     setQuote(null)
     quoteMutation.mutate({ carId: id, pickupDateTime: pickup, returnDateTime: returnValue })
   }
   const createBooking = () => {
-    if (!activeQuote || bookingMutation.isPending) return
+    if (isRestoring || !activeQuote || bookingMutation.isPending) return
     if (new Date(activeQuote.expiresAt).getTime() <= Date.now()) {
       quoteSession.clear()
       setNow(Date.now())
@@ -137,7 +137,7 @@ function CarDetailsPage() {
     bookingMutation.mutate({
       quoteToken: activeQuote.quoteToken,
       idempotencyKey: bookingAttemptSession.getOrCreateKey(
-        `${activeQuote.contextKey}|${activeQuote.quoteId}`
+        `${user.id}|${activeQuote.contextKey}`
       ),
     })
   }
@@ -173,14 +173,14 @@ function CarDetailsPage() {
         description={`View ${car.brand} ${car.model} rental details.`}
       />
       <Container maxWidth="lg" sx={pageStyles.container}>
-        <Typography variant="h4" sx={pageStyles.title}>
+        <Typography component="h1" variant="h4" sx={pageStyles.title}>
           {car.brand} {car.model}
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={pageStyles.subtitle}>
           {[car.variant, car.year, car.fuelType, car.transmission].filter(Boolean).join(' • ')}
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <MaterialCard sx={{ p: 3 }}>
               <ImageLazy
                 src={car.primaryImageUrl || '/placeholder-car.svg'}
@@ -215,7 +215,7 @@ function CarDetailsPage() {
               )}
             </MaterialCard>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <MaterialCard sx={{ p: 3, position: 'sticky', top: 90 }}>
               <Typography variant="h5" color="primary">
                 {formatCurrency(car.dailyPrice, car.currencyCode)}
@@ -352,4 +352,5 @@ function CarDetailsPage() {
     </>
   )
 }
-export default CarDetailsPage
+function CarDetailsRoute() { const location = useLocation(); return <CarDetailsPage key={`${location.pathname}${location.search}`} /> }
+export default CarDetailsRoute

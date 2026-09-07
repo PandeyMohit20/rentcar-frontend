@@ -1,7 +1,1 @@
-export {
-  useProfile,
-  useEmergencyContact,
-  useProfileCompletion,
-  useUpdateProfile,
-  useUpdateEmergencyContact,
-} from './useProfile'
+﻿export { useProfile, useAccountIdentity, useUpdateProfile, useUpdateAccount } from './useProfile'

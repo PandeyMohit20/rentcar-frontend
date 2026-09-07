@@ -1,27 +1,28 @@
-/**
- * Address API service — placeholder abstraction.
- * Real backend integration to be added later.
- */
-export const addressService = {
-  async listAddresses() {
-    return Promise.resolve({ data: { addresses: [] } })
-  },
+﻿import httpClient from '@/services/api/httpClient'
 
-  async createAddress(payload) {
-    return Promise.resolve({ data: { id: `ADDR-${Date.now()}`, ...payload } })
-  },
-
-  async updateAddress(id, payload) {
-    return Promise.resolve({ data: { id, ...payload } })
-  },
-
-  async deleteAddress(id) {
-    return Promise.resolve({ data: { id, deleted: true } })
-  },
-
-  async setDefault(id) {
-    return Promise.resolve({ data: { id, isDefault: true } })
-  },
+function addressDto(values) {
+  const dto = {}
+  for (const field of [
+    'addressLine1',
+    'addressLine2',
+    'city',
+    'state',
+    'country',
+    'postalCode',
+    'addressType',
+  ]) {
+    if (values[field] !== undefined) dto[field] = values[field].trim()
+  }
+  if (values.isDefault !== undefined) dto.isDefault = values.isDefault === true
+  return dto
 }
-
+export const addressService = {
+  listAddresses: async () => (await httpClient.get('/addresses')).data.addresses,
+  createAddress: async (values) =>
+    (await httpClient.post('/addresses', addressDto(values))).data.address,
+  updateAddress: async (id, values) =>
+    (await httpClient.patch('/addresses/' + encodeURIComponent(id), addressDto(values))).data
+      .address,
+  deleteAddress: (id) => httpClient.delete('/addresses/' + encodeURIComponent(id)),
+}
 export default addressService

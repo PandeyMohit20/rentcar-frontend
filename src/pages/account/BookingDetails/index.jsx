@@ -21,6 +21,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { AccountPageShell } from '@/components/account'
 import EmptyState from '@/components/common/EmptyState'
+import { AccountSkeleton } from '@/components/account/AccountUI'
 import MaterialCard from '@/components/ui/MaterialCard'
 import LoadingButton from '@/components/buttons/LoadingButton'
 import { InvoicePreview } from '@/features/invoice'
@@ -124,7 +125,7 @@ function BookingDetailsPage() {
     } catch (error) {
       showError(
         error?.isNetworkError
-          ? 'The result is uncertain. Server status is being refreshed; retry uses the same cancellation key.'
+          ? 'We could not confirm the cancellation. Your booking status is being refreshed. You can retry safely.'
           : error?.message || 'Cancellation could not be completed.'
       )
     }
@@ -133,9 +134,7 @@ function BookingDetailsPage() {
   if (bookingQuery.isLoading) {
     return (
       <AccountPageShell title="Booking Details" description="Loading your booking…">
-        <Box sx={{ py: 10, textAlign: 'center' }}>
-          <CircularProgress />
-        </Box>
+        <AccountSkeleton />
       </AccountPageShell>
     )
   }
@@ -177,7 +176,7 @@ function BookingDetailsPage() {
       onAction={() => navigate(ROUTES.MY_BOOKINGS)}
     >
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Stack spacing={3}>
             <MaterialCard sx={{ p: { xs: 2, md: 3 } }}>
               <Stack
@@ -205,7 +204,6 @@ function BookingDetailsPage() {
               </Stack>
               <Divider />
               <DetailRow label="Booking number">{booking.bookingNumber}</DetailRow>
-              <DetailRow label="Car reference">{booking.carId}</DetailRow>
               <DetailRow label="Pickup">{formatBusinessDateTime(booking.startAt)}</DetailRow>
               <DetailRow label="Return">{formatBusinessDateTime(booking.endAt)}</DetailRow>
               {booking.holdExpiresAt && (
@@ -339,11 +337,11 @@ function BookingDetailsPage() {
           </Stack>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <MaterialCard sx={{ p: { xs: 2, md: 3 }, position: { md: 'sticky' }, top: 88 }}>
             <Typography variant="h6">Booking actions</Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
-              The backend validates the booking state again before accepting any cancellation.
+              Review the cancellation options available for your booking.
             </Typography>
             {booking.status === 'PAYMENT_PENDING' && booking.paymentStatus === 'pending' && (
               <Button
@@ -375,12 +373,19 @@ function BookingDetailsPage() {
         </Grid>
       </Grid>
 
-      <Dialog open={cancelOpen} onClose={closeCancelDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>Cancel booking?</DialogTitle>
+      <Dialog
+        open={cancelOpen}
+        onClose={closeCancelDialog}
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="cancel-booking-title"
+        aria-describedby="cancel-booking-description"
+      >
+        <DialogTitle id="cancel-booking-title">Cancel booking?</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ mb: 2 }}>
-            This action cannot be undone. If an eligible payment was captured, the backend will
-            create the refund automatically.
+          <DialogContentText id="cancel-booking-description" sx={{ mb: 2 }}>
+            This action cannot be undone. If an eligible payment was captured, your refund will be
+            created automatically.
           </DialogContentText>
           <TextField
             autoFocus
@@ -396,7 +401,7 @@ function BookingDetailsPage() {
           {cancelMutation.error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {cancelMutation.error.isNetworkError
-                ? 'The server result is uncertain. Retry safely with the same cancellation key.'
+                ? 'We could not confirm the cancellation. You can retry safely.'
                 : cancelMutation.error.message || 'Cancellation failed.'}
             </Alert>
           )}

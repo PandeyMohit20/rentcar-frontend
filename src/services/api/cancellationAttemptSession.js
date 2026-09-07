@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'rentcar_cancellation_attempt'
+let memoryAttempt = null
 
 const createUuid = () => {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID()
@@ -13,9 +14,9 @@ const createUuid = () => {
 
 const read = () => {
   try {
-    return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY))
+    return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY)) || memoryAttempt
   } catch {
-    return null
+    return memoryAttempt
   }
 }
 
@@ -26,13 +27,15 @@ export const cancellationAttemptSession = {
       return current.idempotencyKey
     }
     const next = { bookingId, idempotencyKey: createUuid() }
-    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+    memoryAttempt = next
+    try { window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next)) } catch { /* Keep a stable key in memory. */ }
     return next.idempotencyKey
   },
   clear(bookingId) {
     const current = read()
     if (!bookingId || current?.bookingId === bookingId) {
-      window.sessionStorage.removeItem(STORAGE_KEY)
+      memoryAttempt = null
+      try { window.sessionStorage.removeItem(STORAGE_KEY) } catch { /* Storage unavailable. */ }
     }
   },
 }

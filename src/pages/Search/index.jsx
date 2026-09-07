@@ -53,7 +53,7 @@ function SearchPage() {
         .map((key) => [key, urlParams.get(key)])
         .filter(([, value]) => value)
     )
-    const page = Number(urlParams.get('page')) || 1
+    const page = Math.max(1, Math.trunc(Number(urlParams.get('page'))) || 1)
     if (isAvailabilityMode)
       return {
         pickupDateTime: pickup,
@@ -79,11 +79,12 @@ function SearchPage() {
       isAvailabilityMode
         ? availabilityService.searchAvailability(request)
         : carService.searchCars(request),
+    enabled: !intervalError,
     staleTime: isAvailabilityMode ? 15000 : undefined,
   })
   const { data: branchData } = useApiQuery({
     queryKey: QUERY_KEYS.LOCATIONS.BRANCHES,
-    queryFn: locationService.getBranches,
+    queryFn: () => locationService.getBranches(),
   })
   const update = (key) => (event) =>
     setDraft((current) => ({ ...current, [key]: event.target.value }))
@@ -120,13 +121,13 @@ function SearchPage() {
     <>
       <Seo title="Search Cars" description="Browse cars or check real interval availability." />
       <Container maxWidth="lg" sx={pageStyles.container}>
-        <Typography variant="h4" gutterBottom sx={pageStyles.header}>
+        <Typography component="h1" variant="h4" gutterBottom sx={pageStyles.header}>
           Search Cars
         </Typography>
         <MaterialCard sx={pageStyles.formCard}>
           <Box component="form" onSubmit={submit}>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={3}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <TextField
                   select
                   fullWidth
@@ -142,7 +143,7 @@ function SearchPage() {
                   ))}
                 </TextField>
               </Grid>
-              <Grid item xs={6} md={2}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <TextField
                   fullWidth
                   type="date"
@@ -152,7 +153,7 @@ function SearchPage() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={6} md={2}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <TextField
                   fullWidth
                   type="time"
@@ -162,7 +163,7 @@ function SearchPage() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={6} md={2}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <TextField
                   fullWidth
                   type="date"
@@ -172,7 +173,7 @@ function SearchPage() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={6} md={2}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <TextField
                   fullWidth
                   type="time"
@@ -182,10 +183,10 @@ function SearchPage() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <TextField fullWidth label="Brand" value={draft.brand} onChange={update('brand')} />
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <TextField
                   select
                   fullWidth
@@ -201,7 +202,7 @@ function SearchPage() {
                   ))}
                 </TextField>
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <TextField
                   select
                   fullWidth
@@ -217,7 +218,7 @@ function SearchPage() {
                   ))}
                 </TextField>
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <TextField
                   fullWidth
                   type="number"
@@ -226,7 +227,7 @@ function SearchPage() {
                   onChange={update('seats')}
                 />
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <Button type="submit" variant="contained" size="large">
                   Search
                 </Button>
@@ -252,7 +253,7 @@ function SearchPage() {
             Availability checked now; no car is reserved or held.
           </Typography>
         )}
-        {isLoading ? (
+        {intervalError ? <Alert severity="warning">Correct your trip dates before searching for available cars.</Alert> : isLoading ? (
           <Box sx={{ py: 8, textAlign: 'center' }}>
             <CircularProgress />
           </Box>
@@ -273,13 +274,13 @@ function SearchPage() {
         ) : (
           <Grid container spacing={3}>
             {data.cars.map((car) => (
-              <Grid item key={car.id} xs={12} sm={6} md={4}>
+              <Grid key={car.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <CarCard car={car} to={detailUrl(car.id)} />
               </Grid>
             ))}
           </Grid>
         )}
-        {meta?.totalPages > 1 && (
+        {!intervalError && meta?.totalPages > 1 && (
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', mt: 4 }}>
             <Button
               disabled={Number(meta.page) <= 1}
@@ -302,4 +303,5 @@ function SearchPage() {
     </>
   )
 }
-export default SearchPage
+function SearchRoute() { const [params] = useSearchParams(); return <SearchPage key={params.toString()} /> }
+export default SearchRoute

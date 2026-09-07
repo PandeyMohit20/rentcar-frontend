@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import { Box, Container, Typography } from '@mui/material'
-import { motion } from 'framer-motion'
 
 /**
  * Full-width hero banner with optional background image and gradient overlay.
@@ -31,16 +30,12 @@ function HeroBanner({
         },
       }}
     >
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, py: { xs: 8, md: 12 } }}>
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-        >
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, py: { xs: 4, md: 8 } }}>
+        <div>
           <Typography
             variant="h2"
             component="h1"
-            sx={{ color: 'common.white', fontWeight: 800, mb: 2 }}
+            sx={{ color: 'common.white', fontWeight: 800, mb: 2, fontSize: { xs: '2.25rem', md: '3.5rem' } }}
           >
             {title}
           </Typography>
@@ -50,7 +45,7 @@ function HeroBanner({
             </Typography>
           )}
           {children}
-        </motion.div>
+        </div>
       </Container>
     </Box>
   )

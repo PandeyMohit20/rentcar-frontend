@@ -17,8 +17,6 @@ import {
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import { Link, useNavigate } from 'react-router-dom'
@@ -29,9 +27,7 @@ import { logout } from '@/redux/slices/authSlice'
 import { useTheme } from '@/contexts/ThemeContext'
 import { authService } from '@/services/modules'
 import authSession from '@/services/api/authSession'
-import { queryClient } from '@/services/queryClient'
-import bookingAttemptSession from '@/services/api/bookingAttemptSession'
-import cancellationAttemptSession from '@/services/api/cancellationAttemptSession'
+import { clearCustomerSession } from '@/services/api/customerSession'
 
 /**
  * Main navigation bar with theme toggle, search, wishlist and notifications.
@@ -39,7 +35,7 @@ import cancellationAttemptSession from '@/services/api/cancellationAttemptSessio
 function Navbar({ menus = [] }) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isRestoring } = useAuth()
   const { mode, toggleTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -49,18 +45,15 @@ function Navbar({ menus = [] }) {
     } catch {
       /* Local logout must always complete. */
     }
-    authSession.clear()
-    bookingAttemptSession.clearAll()
-    cancellationAttemptSession.clear()
+    clearCustomerSession()
+    authSession.markSignedOut()
     dispatch(logout())
-    queryClient.clear()
     navigate(ROUTES.HOME, { replace: true })
   }
 
   const authLinks = isAuthenticated
     ? [
         { label: 'My Bookings', to: ROUTES.MY_BOOKINGS },
-        { label: 'Wishlist', to: ROUTES.WISHLIST },
         { label: 'Profile', to: ROUTES.PROFILE },
       ]
     : []
@@ -80,7 +73,7 @@ function Navbar({ menus = [] }) {
             color="inherit"
             aria-label="open drawer"
             onClick={() => setMobileOpen(true)}
-            sx={{ mr: 1, display: { sm: 'none' } }}
+            sx={{ mr: 1, display: { xs: 'inline-flex', md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -103,30 +96,7 @@ function Navbar({ menus = [] }) {
               </IconButton>
             </Tooltip>
 
-            {isAuthenticated && (
-              <>
-                <Tooltip title="Wishlist">
-                  <IconButton
-                    color="inherit"
-                    component={Link}
-                    to={ROUTES.WISHLIST}
-                    aria-label="wishlist"
-                  >
-                    <FavoriteBorderIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Notifications">
-                  <IconButton
-                    color="inherit"
-                    component={Link}
-                    to={ROUTES.NOTIFICATIONS}
-                    aria-label="notifications"
-                  >
-                    <NotificationsNoneIcon />
-                  </IconButton>
-                </Tooltip>
-              </>
-            )}
+
 
             <Tooltip title={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}>
               <IconButton color="inherit" onClick={toggleTheme} aria-label="toggle theme">
@@ -138,7 +108,7 @@ function Navbar({ menus = [] }) {
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, ml: 1 }}>
             {menus.map(renderLink)}
             {authLinks.map(renderLink)}
-            {isAuthenticated ? (
+            {isRestoring ? null : isAuthenticated ? (
               <Button color="inherit" onClick={handleLogout}>
                 Logout
               </Button>
@@ -156,7 +126,6 @@ function Navbar({ menus = [] }) {
           sx={{ width: 280 }}
           role="presentation"
           onClick={() => setMobileOpen(false)}
-          onKeyDown={() => setMobileOpen(false)}
         >
           <List>
             {[...menus, ...authLinks].map((menu) => (
@@ -174,14 +143,8 @@ function Navbar({ menus = [] }) {
                 <ListItemText primary="Search Cars" />
               </ListItemButton>
             </ListItem>
-            {isAuthenticated && (
-              <ListItem disablePadding>
-                <ListItemButton component={Link} to={ROUTES.NOTIFICATIONS}>
-                  <ListItemText primary="Notifications" />
-                </ListItemButton>
-              </ListItem>
-            )}
-            <ListItem disablePadding>
+
+            {!isRestoring && <ListItem disablePadding>
               <ListItemButton
                 component={Link}
                 to={isAuthenticated ? ROUTES.HOME : ROUTES.LOGIN}
@@ -189,7 +152,7 @@ function Navbar({ menus = [] }) {
               >
                 <ListItemText primary={isAuthenticated ? 'Logout' : 'Sign In'} />
               </ListItemButton>
-            </ListItem>
+            </ListItem>}
           </List>
         </Box>
       </Drawer>
