@@ -1,0 +1,29 @@
+{
+  "scope": "READ ONLY MySQL verification of exact UAT customer IDs",
+  "users": [
+    {
+      "id": "6df4a60b-a093-4abf-aa09-be53411af4e1",
+      "name": "UAT Customer B uat-1788798058450",
+      "status": "active",
+      "emailVerifiedAt": "2026-09-07T16:21:21.124Z",
+      "profile": {
+        "bio": null,
+        "verificationStatus": "unverified"
+      },
+      "addresses": [],
+      "userDocuments": []
+    },
+    {
+      "id": "d6399717-01d5-49bb-b35a-3b1725c8cfd6",
+      "name": "UAT Customer A uat-1788798058450",
+      "status": "active",
+      "emailVerifiedAt": "2026-09-07T16:21:20.688Z",
+      "profile": {
+        "bio": null,
+        "verificationStatus": "unverified"
+      },
+      "addresses": [],
+      "userDocuments": []
+    }
+  ]
+}

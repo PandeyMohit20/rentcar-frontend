@@ -1,0 +1,59 @@
+{
+  "scope": "LIVE public APIs; no fabricated pricing",
+  "checks": [],
+  "health": {
+    "status": 200,
+    "body": {
+      "success": true,
+      "message": "RentCar API is healthy",
+      "data": {
+        "status": "UP",
+        "service": "rentcar-backend",
+        "timestamp": "2026-09-07T16:28:43.771Z"
+      }
+    }
+  },
+  "branches": {
+    "status": 200,
+    "ids": [
+      "d5f9c996-6a74-47d0-b2e3-2a75688486a9"
+    ]
+  },
+  "cars": {
+    "status": 200,
+    "ids": [
+      "dc96154a-7035-481b-b335-8fccb6f4d310"
+    ]
+  },
+  "interval": {
+    "pickupDateTime": "2026-09-10T16:28:43.841Z",
+    "returnDateTime": "2026-09-11T16:28:43.843Z"
+  },
+  "availability": {
+    "status": 200,
+    "ids": [
+      "dc96154a-7035-481b-b335-8fccb6f4d310"
+    ]
+  },
+  "quotes": [
+    {
+      "carId": "dc96154a-7035-481b-b335-8fccb6f4d310",
+      "detailStatus": 200,
+      "quoteStatus": 404,
+      "message": "No active pricing record is available for this car.",
+      "hasQuoteToken": false
+    }
+  ],
+  "cors": [
+    {
+      "origin": "http://localhost:5173",
+      "status": 200,
+      "allowedOrigin": "http://localhost:5173"
+    },
+    {
+      "origin": "http://localhost:5174",
+      "status": 200,
+      "allowedOrigin": "http://localhost:5174"
+    }
+  ]
+}

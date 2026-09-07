@@ -1,0 +1,18 @@
+{
+  "scope": "LIVE ADMIN GUEST ONLY; authenticated admin UAT unavailable",
+  "samples": [
+    {
+      "path": "/login",
+      "width": 375,
+      "scrollWidth": 375,
+      "passwordControl": true
+    },
+    {
+      "path": "/login",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "passwordControl": true
+    }
+  ],
+  "exceptions": []
+}

@@ -24,10 +24,10 @@ const types = ['home', 'work', 'billing', 'shipping', 'other']
 const fields = [
   ['addressLine1', 'Address line 1', 'address-line1', true, 255],
   ['addressLine2', 'Address line 2', 'address-line2', false, 255],
-  ['city', 'City', 'address-level2', true, 255],
-  ['state', 'State / province', 'address-level1', false, 255],
-  ['postalCode', 'Postal code', 'postal-code', false, 50],
-  ['country', 'Country', 'country-name', true, 255],
+  ['city', 'City', 'address-level2', true, 100],
+  ['state', 'State / province', 'address-level1', false, 100],
+  ['postalCode', 'Postal code', 'postal-code', false, 20],
+  ['country', 'Country code (e.g. IN)', 'country', true, 2],
 ]
 const schema = z.object({
   ...Object.fromEntries(
@@ -40,6 +40,11 @@ const schema = z.object({
         .max(max, 'Use ' + max + ' characters or fewer.'),
     ])
   ),
+  country: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-Z]{2}$/, 'Use a two-letter country code, such as IN.'),
   addressType: z.enum(types),
   isDefault: z.boolean(),
 })

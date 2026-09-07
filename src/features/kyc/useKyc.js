@@ -8,6 +8,9 @@ export function useKycStatus() {
   return useQuery({
     queryKey: QUERY_KEYS.KYC.STATUS,
     queryFn: kycService.getStatus,
+    // Admin review happens outside this client; revisit/focus must read current truth.
+    staleTime: 0,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
   })
 }
@@ -15,6 +18,8 @@ export function useKycDocuments() {
   return useQuery({
     queryKey: QUERY_KEYS.KYC.DOCUMENTS,
     queryFn: kycService.listDocuments,
+    staleTime: 0,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
   })
 }

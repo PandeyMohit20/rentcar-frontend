@@ -1,0 +1,554 @@
+{
+  "run": "uat-1788798058450",
+  "scope": "LIVE customer APIs and UI; no provider execution",
+  "customers": [
+    {
+      "id": "d6399717-01d5-49bb-b35a-3b1725c8cfd6",
+      "name": "UAT Customer A uat-1788798058450",
+      "email": "uat-1788798058450-a@example.test",
+      "retention": "Retain labelled customer/audit history; no customer delete API used"
+    },
+    {
+      "id": "6df4a60b-a093-4abf-aa09-be53411af4e1",
+      "name": "UAT Customer B uat-1788798058450",
+      "email": "uat-1788798058450-b@example.test",
+      "retention": "Retain labelled customer/audit history; no customer delete API used"
+    }
+  ],
+  "addresses": [
+    {
+      "id": "9f216c23-0f93-4c06-9fb3-5770b7320feb",
+      "owner": "d6399717-01d5-49bb-b35a-3b1725c8cfd6",
+      "status": "deleted"
+    }
+  ],
+  "documents": [
+    {
+      "id": "4a01a85f-d9f9-437c-b4ce-7e0425b60a9f",
+      "owner": "d6399717-01d5-49bb-b35a-3b1725c8cfd6",
+      "status": "deleted",
+      "synthetic": true
+    }
+  ],
+  "checks": [
+    "two real UAT customers authenticated; original registration/OTP evidence retained",
+    "three immediate real refresh rotations have distinct cookies and no unique-hash collision",
+    "profile PATCH persists across independent GET",
+    "address create/read/update persists",
+    "customer B cannot read customer A address",
+    "synthetic driving licence upload/expiry/download; owner-only and unauthenticated protection",
+    "customer rejected from admin booking and KYC APIs",
+    "real customer booking lists are empty and owner scoped",
+    "real browser login returns to Profile and displays persisted backend value",
+    "real browser hard refresh restores authenticated Profile",
+    "real browser displays persisted address update",
+    "address UI rejects full country name and saves normalized IN through live API",
+    "real browser displays uploaded KYC document",
+    "real authenticated account routes at 375/768/1440 without horizontal overflow",
+    "KYC pending document deletion confirmed",
+    "address deletion confirmed; zero leftovers",
+    "real browser logout clears refresh cookie",
+    "real A logout -> B login without A profile",
+    "browser storage has no tested passwords/tokens/quote/signature/provider/KYC payloads",
+    "API logout invalidates previous server refresh lifecycle",
+    "zero runtime exceptions in executed live customer browser flows"
+  ],
+  "runtime": [],
+  "network": [
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/profiles/me",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/profiles/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/profiles/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/addresses",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/addresses",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/addresses/9f216c23-0f93-4c06-9fb3-5770b7320feb",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/addresses/9f216c23-0f93-4c06-9fb3-5770b7320feb",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/addresses",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/documents",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/kyc/documents",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/profiles/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/addresses",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/documents",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/bookings/me",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/bookings/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/profiles/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/addresses",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/documents",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/bookings/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/profiles/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/addresses",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/documents",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/bookings/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/profiles/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 204
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/profiles/me",
+      "status": 200
+    }
+  ],
+  "cleanup": [
+    "Original profile bio restored",
+    "All sessions revoked for d6399717-01d5-49bb-b35a-3b1725c8cfd6",
+    "All sessions revoked for 6df4a60b-a093-4abf-aa09-be53411af4e1"
+  ],
+  "priorChecks": [
+    "two real customer registrations, local OTP verification, login and /auth/me",
+    "real refresh-cookie rotation; HttpOnly login cookie",
+    "profile PATCH persists across independent GET",
+    "two real UAT customers authenticated; original registration/OTP evidence retained"
+  ],
+  "priorFailures": [
+    "POST /addresses: 422 The provided value is too long for the column.",
+    "POST /auth/refresh: 409 A record with the same unique value already exists."
+  ]
+}
