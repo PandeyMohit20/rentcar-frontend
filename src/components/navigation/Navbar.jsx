@@ -19,37 +19,19 @@ import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { ROUTES } from '@/constants/routes'
 import { useAuth } from '@/hooks/useAuth'
-import { useAppDispatch } from '@/hooks/useRedux'
-import { logout } from '@/redux/slices/authSlice'
 import { useTheme } from '@/contexts/ThemeContext'
-import { authService } from '@/services/modules'
-import authSession from '@/services/api/authSession'
-import { clearCustomerSession } from '@/services/api/customerSession'
+import LogoutButton from '@/components/authentication/LogoutButton'
 
 /**
  * Main navigation bar with theme toggle, search, wishlist and notifications.
  */
 function Navbar({ menus = [] }) {
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
   const { isAuthenticated, isRestoring } = useAuth()
   const { mode, toggleTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
-
-  const handleLogout = async () => {
-    try {
-      await authService.logout()
-    } catch {
-      /* Local logout must always complete. */
-    }
-    clearCustomerSession()
-    authSession.markSignedOut()
-    dispatch(logout())
-    navigate(ROUTES.HOME, { replace: true })
-  }
 
   const authLinks = isAuthenticated
     ? [
@@ -96,8 +78,6 @@ function Navbar({ menus = [] }) {
               </IconButton>
             </Tooltip>
 
-
-
             <Tooltip title={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}>
               <IconButton color="inherit" onClick={toggleTheme} aria-label="toggle theme">
                 {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
@@ -109,9 +89,7 @@ function Navbar({ menus = [] }) {
             {menus.map(renderLink)}
             {authLinks.map(renderLink)}
             {isRestoring ? null : isAuthenticated ? (
-              <Button color="inherit" onClick={handleLogout}>
-                Logout
-              </Button>
+              <LogoutButton />
             ) : (
               <Button color="primary" variant="contained" component={Link} to={ROUTES.LOGIN}>
                 Sign In
@@ -122,11 +100,7 @@ function Navbar({ menus = [] }) {
       </AppBar>
 
       <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
-        <Box
-          sx={{ width: 280 }}
-          role="presentation"
-          onClick={() => setMobileOpen(false)}
-        >
+        <Box sx={{ width: 280 }} role="presentation" onClick={() => setMobileOpen(false)}>
           <List>
             {[...menus, ...authLinks].map((menu) => (
               <ListItem key={menu.to} disablePadding>
@@ -144,15 +118,17 @@ function Navbar({ menus = [] }) {
               </ListItemButton>
             </ListItem>
 
-            {!isRestoring && <ListItem disablePadding>
-              <ListItemButton
-                component={Link}
-                to={isAuthenticated ? ROUTES.HOME : ROUTES.LOGIN}
-                onClick={isAuthenticated ? handleLogout : undefined}
-              >
-                <ListItemText primary={isAuthenticated ? 'Logout' : 'Sign In'} />
-              </ListItemButton>
-            </ListItem>}
+            {!isRestoring && (
+              <ListItem disablePadding>
+                {isAuthenticated ? (
+                  <LogoutButton fullWidth onComplete={() => setMobileOpen(false)} />
+                ) : (
+                  <ListItemButton component={Link} to={ROUTES.LOGIN}>
+                    <ListItemText primary="Sign In" />
+                  </ListItemButton>
+                )}
+              </ListItem>
+            )}
           </List>
         </Box>
       </Drawer>

@@ -107,6 +107,7 @@ function BookingDetailsPage() {
   }
 
   const submitCancellation = async () => {
+    if (cancelMutation.isPending) return
     const trimmedReason = reason.trim()
     try {
       const result = await cancelMutation.mutateAsync({
@@ -157,15 +158,17 @@ function BookingDetailsPage() {
   }
 
   const bookingMeta = BOOKING_STATUS_META[booking.status] ?? {
-    label: booking.status,
+    label: 'Status unavailable',
     color: 'default',
   }
   const paymentMeta = PAYMENT_STATUS_META[booking.paymentStatus] ?? {
-    label: booking.paymentStatus,
+    label: 'Status unavailable',
     color: 'default',
   }
   const cancellationAllowed = canCancel(booking)
-  const hasPendingRefund = refunds.some((refund) => refund.status === 'pending')
+  const hasPendingRefund = refunds.some((refund) =>
+    ['pending', 'processing'].includes(refund.status)
+  )
 
   return (
     <AccountPageShell
@@ -232,13 +235,17 @@ function BookingDetailsPage() {
             {(booking.status === 'CANCELLED' || refunds.length > 0 || refundsQuery.error) && (
               <MaterialCard sx={{ p: { xs: 2, md: 3 } }}>
                 <Typography variant="h6">Refund status</Typography>
+                <Button onClick={() => refundsQuery.refetch()} disabled={refundsQuery.isFetching}>
+                  Refresh refund status
+                </Button>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   Refunds are created by eligible paid cancellations and updated from the payment
                   provider. This view does not initiate refunds.
                 </Typography>
                 {hasPendingRefund && (
                   <Alert severity="info" sx={{ mb: 2 }}>
-                    A refund is processing. Its status refreshes automatically.
+                    A refund is processing. Automatic checks run briefly; use Refresh refund status
+                    for the latest update.
                   </Alert>
                 )}
                 {refundsQuery.error ? (
@@ -255,12 +262,12 @@ function BookingDetailsPage() {
                 ) : refundsQuery.isLoading ? (
                   <CircularProgress size={24} />
                 ) : refunds.length === 0 ? (
-                  <Alert severity="info">No refund is due for this cancellation.</Alert>
+                  <Alert severity="info">No refund has been recorded for this booking.</Alert>
                 ) : (
                   <Stack spacing={2}>
                     {refunds.map((refund) => {
                       const meta = REFUND_STATUS_META[refund.status] ?? {
-                        label: refund.status,
+                        label: 'Status unavailable',
                         color: 'default',
                       }
                       return (
@@ -423,4 +430,9 @@ function BookingDetailsPage() {
   )
 }
 
-export default BookingDetailsPage
+function BookingDetailsRoute() {
+  const { id } = useParams()
+  return <BookingDetailsPage key={id} />
+}
+
+export default BookingDetailsRoute

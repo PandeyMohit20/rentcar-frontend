@@ -15,7 +15,21 @@ function ImageLazy({ src, alt = '', ratio = '16/9', sx, ...props }) {
       sx={{ position: 'relative', width: '100%', aspectRatio: ratio, overflow: 'hidden', ...sx }}
     >
       {loaded !== src && !error && <Skeleton variant="rectangular" width="100%" height="100%" />}
-      {error && <Box role="img" aria-label={alt ? `${alt}: image unavailable` : "Image unavailable"} sx={{ height: "100%", display: "grid", placeItems: "center", bgcolor: "action.hover", p: 2 }}><Typography color="text.secondary">Image unavailable</Typography></Box>}
+      {error && (
+        <Box
+          role="img"
+          aria-label={alt ? `${alt}: image unavailable` : 'Image unavailable'}
+          sx={{
+            height: '100%',
+            display: 'grid',
+            placeItems: 'center',
+            bgcolor: 'action.hover',
+            p: 2,
+          }}
+        >
+          <Typography color="text.secondary">Image unavailable</Typography>
+        </Box>
+      )}
       {!error && (
         <Box
           component="img"

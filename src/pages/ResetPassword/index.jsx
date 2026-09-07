@@ -39,7 +39,7 @@ function ResetPasswordPage() {
     <>
       <Seo title="Reset Password" description="Set a new password." />
       <Box sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom align="center">
+        <Typography component="h1" variant="h5" gutterBottom align="center">
           Reset Password
         </Typography>
         <FormProvider {...methods}>
@@ -48,8 +48,18 @@ function ResetPasswordPage() {
             onSubmit={methods.handleSubmit(onSubmit)}
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
-            <InputField name="password" label="New Password" type="password" />
-            <InputField name="confirmPassword" label="Confirm Password" type="password" />
+            <InputField
+              name="password"
+              label="New Password"
+              type="password"
+              autoComplete="new-password"
+            />
+            <InputField
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              autoComplete="new-password"
+            />
             <LoadingButton type="submit" size="large" loading={methods.formState.isSubmitting}>
               Reset Password
             </LoadingButton>

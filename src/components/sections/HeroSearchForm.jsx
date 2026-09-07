@@ -22,12 +22,19 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
   return (
     <Paper
       component="form"
-      onSubmit={(event) => { event.preventDefault(); onSearch?.(values) }}
+      onSubmit={(event) => {
+        event.preventDefault()
+        onSearch?.(values)
+      }}
       elevation={3}
       sx={{
         p: 2,
         display: 'grid',
-        gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' },
+        gridTemplateColumns: {
+          xs: 'minmax(0, 1fr)',
+          sm: 'repeat(2, minmax(0, 1fr))',
+          lg: 'repeat(4, minmax(0, 1fr))',
+        },
         gap: 2,
         alignItems: 'stretch',
         borderRadius: 3,

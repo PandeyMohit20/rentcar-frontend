@@ -98,21 +98,35 @@ function RegisterPage() {
 
             <InputField name="lastName" label="Last Name" placeholder="Enter your last name" />
 
-            <InputField name="email" label="Email" type="email" autoComplete="email" placeholder="Enter your email" />
+            <InputField
+              name="email"
+              label="Email"
+              type="email"
+              autoComplete="email"
+              placeholder="Enter your email"
+            />
 
-            <InputField name="phone" label="Phone (optional)" type="tel" autoComplete="tel" placeholder="Enter your phone number" />
+            <InputField
+              name="phone"
+              label="Phone (optional)"
+              type="tel"
+              autoComplete="tel"
+              placeholder="Enter your phone number"
+            />
 
             <InputField
               name="password"
               label="Password"
-              type="password" autoComplete="new-password"
+              type="password"
+              autoComplete="new-password"
               placeholder="Enter your password"
             />
 
             <InputField
               name="confirmPassword"
               label="Confirm Password"
-              type="password" autoComplete="new-password"
+              type="password"
+              autoComplete="new-password"
               placeholder="Confirm your password"
             />
 

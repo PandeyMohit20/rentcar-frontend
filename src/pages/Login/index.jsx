@@ -45,7 +45,8 @@ function LoginPage() {
         const safePath =
           typeof requestedPath === 'string' &&
           requestedPath.startsWith('/') &&
-          !requestedPath.startsWith('//')
+          !requestedPath.startsWith('//') &&
+          !requestedPath.includes('\\')
             ? `${requestedPath}${location.state?.from?.search || ''}`
             : ROUTES.HOME
         navigate(safePath, { replace: true })
@@ -73,7 +74,12 @@ function LoginPage() {
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
             <InputField name="email" label="Email" type="email" autoComplete="email" />
-            <InputField name="password" label="Password" type="password" autoComplete="current-password" />
+            <InputField
+              name="password"
+              label="Password"
+              type="password"
+              autoComplete="current-password"
+            />
             <LoadingButton type="submit" size="large" loading={methods.formState.isSubmitting}>
               Sign In
             </LoadingButton>

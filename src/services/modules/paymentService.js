@@ -13,12 +13,9 @@ export const paymentService = {
     return (await httpClient.get(API_ENDPOINTS.PAYMENTS.DETAILS(paymentId)))?.data
   },
 
-
   async verifyPayment(payload) {
     return (await httpClient.post(API_ENDPOINTS.PAYMENTS.VERIFY, payload))?.data
   },
-
-
 }
 
 export default paymentService

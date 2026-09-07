@@ -1,24 +1,21 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Button,
-  CircularProgress,
-  MenuItem,
-  TextField,
-  Alert,
-} from '@mui/material'
+import { Box, Container, Typography, Grid, Button, MenuItem, TextField, Alert } from '@mui/material'
 import Seo from '@/components/common/Seo'
 import MaterialCard from '@/components/ui/MaterialCard'
 import CarCard from '@/components/cards/CarCard'
 import EmptyState from '@/components/common/EmptyState'
+import ContentSkeleton from '@/components/common/ContentSkeleton'
+import ResponsiveSearchFilters from '@/features/search/ResponsiveSearchFilters'
 import { availabilityService, carService, locationService } from '@/services/modules'
 import { useApiQuery } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
-import { parseApiDateTime, toApiDateTime, validateBusinessInterval } from '@/utils/dateTime'
+import {
+  formatBusinessDateTime,
+  parseApiDateTime,
+  toApiDateTime,
+  validateBusinessInterval,
+} from '@/utils/dateTime'
 import { ROUTES } from '@/constants/routes'
 import { pageStyles } from './styles'
 
@@ -42,6 +39,13 @@ function SearchPage() {
   const [urlParams, setUrlParams] = useSearchParams()
   const [draft, setDraft] = useState(() => fromUrl(urlParams))
   const [formError, setFormError] = useState('')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const filterTrigger = useRef(null)
+  const closeFilters = () => {
+    setDraft(fromUrl(urlParams))
+    setFormError('')
+    setFiltersOpen(false)
+  }
   const pickup = urlParams.get('pickup')
   const returnValue = urlParams.get('return')
   const intervalError = pickup || returnValue ? validateBusinessInterval(pickup, returnValue) : null
@@ -82,7 +86,11 @@ function SearchPage() {
     enabled: !intervalError,
     staleTime: isAvailabilityMode ? 15000 : undefined,
   })
-  const { data: branchData } = useApiQuery({
+  const {
+    data: branchData,
+    error: branchError,
+    refetch: retryBranches,
+  } = useApiQuery({
     queryKey: QUERY_KEYS.LOCATIONS.BRANCHES,
     queryFn: () => locationService.getBranches(),
   })
@@ -91,13 +99,29 @@ function SearchPage() {
   const submit = (event) => {
     event.preventDefault()
     setFormError('')
+    if (
+      draft.seats &&
+      (!Number.isInteger(Number(draft.seats)) ||
+        Number(draft.seats) < 1 ||
+        Number(draft.seats) > 100)
+    ) {
+      return setFormError('Choose a whole number of seats between 1 and 100.')
+    }
     const hasAnyInterval =
       draft.pickupDate || draft.pickupTime || draft.returnDate || draft.returnTime
     let nextPickup = null
     let nextReturn = null
     if (hasAnyInterval) {
-      nextPickup = toApiDateTime(draft.pickupDate, draft.pickupTime)
-      nextReturn = toApiDateTime(draft.returnDate, draft.returnTime)
+      const original = fromUrl(urlParams)
+      // Filtering must not round a URL-supplied interval to the input's minute precision.
+      nextPickup =
+        draft.pickupDate === original.pickupDate && draft.pickupTime === original.pickupTime
+          ? pickup
+          : toApiDateTime(draft.pickupDate, draft.pickupTime)
+      nextReturn =
+        draft.returnDate === original.returnDate && draft.returnTime === original.returnTime
+          ? returnValue
+          : toApiDateTime(draft.returnDate, draft.returnTime)
       const validationError = validateBusinessInterval(nextPickup, nextReturn)
       if (validationError) return setFormError(validationError)
     }
@@ -108,6 +132,7 @@ function SearchPage() {
     if (nextPickup) next.set('pickup', nextPickup)
     if (nextReturn) next.set('return', nextReturn)
     setUrlParams(next)
+    setFiltersOpen(false)
   }
   const setPage = (page) => {
     const next = new URLSearchParams(urlParams)
@@ -124,128 +149,178 @@ function SearchPage() {
         <Typography component="h1" variant="h4" gutterBottom sx={pageStyles.header}>
           Search Cars
         </Typography>
-        <MaterialCard sx={pageStyles.formCard}>
-          <Box component="form" onSubmit={submit}>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12, md: 3 }}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Operating branch"
-                  value={draft.branchId}
-                  onChange={update('branchId')}
-                >
-                  <MenuItem value="">All branches</MenuItem>
-                  {(branchData?.items || []).map((branch) => (
-                    <MenuItem key={branch.id} value={branch.id}>
-                      {[branch.name, branch.city].filter(Boolean).join(', ')}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <TextField
-                  fullWidth
-                  type="date"
-                  label="Pickup date"
-                  value={draft.pickupDate}
-                  onChange={update('pickupDate')}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <TextField
-                  fullWidth
-                  type="time"
-                  label="Pickup time"
-                  value={draft.pickupTime}
-                  onChange={update('pickupTime')}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <TextField
-                  fullWidth
-                  type="date"
-                  label="Return date"
-                  value={draft.returnDate}
-                  onChange={update('returnDate')}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <TextField
-                  fullWidth
-                  type="time"
-                  label="Return time"
-                  value={draft.returnTime}
-                  onChange={update('returnTime')}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 2 }}>
-                <TextField fullWidth label="Brand" value={draft.brand} onChange={update('brand')} />
-              </Grid>
-              <Grid size={{ xs: 12, md: 2 }}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Fuel"
-                  value={draft.fuelType}
-                  onChange={update('fuelType')}
-                >
-                  <MenuItem value="">Any</MenuItem>
-                  {['petrol', 'diesel', 'cng', 'electric', 'hybrid', 'lpg'].map((value) => (
-                    <MenuItem key={value} value={value}>
-                      {value}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid size={{ xs: 12, md: 2 }}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Transmission"
-                  value={draft.transmission}
-                  onChange={update('transmission')}
-                >
-                  <MenuItem value="">Any</MenuItem>
-                  {['automatic', 'manual'].map((value) => (
-                    <MenuItem key={value} value={value}>
-                      {value}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid size={{ xs: 12, md: 2 }}>
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Minimum seats"
-                  value={draft.seats}
-                  onChange={update('seats')}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 2 }}>
-                <Button type="submit" variant="contained" size="large">
-                  Search
-                </Button>
-              </Grid>
-            </Grid>
-            {formError && (
-              <Alert severity="error" sx={{ mt: 2 }}>
-                {formError}
-              </Alert>
-            )}
-            {intervalError && (
-              <Alert severity="warning" sx={{ mt: 2 }}>
-                {intervalError} Update the interval to run availability search.
-              </Alert>
-            )}
+        {isAvailabilityMode && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="subtitle2">Your selected trip · Asia/Kolkata</Typography>
+            <Typography variant="body2">Pickup: {formatBusinessDateTime(pickup)}</Typography>
+            <Typography variant="body2">Return: {formatBusinessDateTime(returnValue)}</Typography>
           </Box>
-        </MaterialCard>
-        <Typography variant="h5" gutterBottom sx={pageStyles.resultsTitle}>
+        )}
+        <Button
+          ref={filterTrigger}
+          variant="outlined"
+          onClick={() => setFiltersOpen(true)}
+          sx={{ display: { xs: 'inline-flex', md: 'none' }, mb: 3 }}
+        >
+          Trip and filters
+        </Button>
+        <ResponsiveSearchFilters
+          open={filtersOpen}
+          onClose={closeFilters}
+          onExited={() => filterTrigger.current?.focus()}
+        >
+          <MaterialCard sx={pageStyles.formCard}>
+            <Box component="form" onSubmit={submit}>
+              {branchError && (
+                <Alert
+                  severity="warning"
+                  sx={{ mb: 2 }}
+                  action={<Button onClick={retryBranches}>Retry</Button>}
+                >
+                  Branches could not be loaded. Your selected trip is preserved.
+                </Alert>
+              )}
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, md: 3 }}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Operating branch"
+                    value={draft.branchId}
+                    onChange={update('branchId')}
+                  >
+                    <MenuItem value="">All branches</MenuItem>
+                    {(branchData?.items || []).map((branch) => (
+                      <MenuItem key={branch.id} value={branch.id}>
+                        {[branch.name, branch.city].filter(Boolean).join(', ')}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <TextField
+                    fullWidth
+                    type="date"
+                    label="Pickup date"
+                    value={draft.pickupDate}
+                    onChange={update('pickupDate')}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <TextField
+                    fullWidth
+                    type="time"
+                    label="Pickup time"
+                    value={draft.pickupTime}
+                    onChange={update('pickupTime')}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <TextField
+                    fullWidth
+                    type="date"
+                    label="Return date"
+                    value={draft.returnDate}
+                    onChange={update('returnDate')}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <TextField
+                    fullWidth
+                    type="time"
+                    label="Return time"
+                    value={draft.returnTime}
+                    onChange={update('returnTime')}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="Brand"
+                    value={draft.brand}
+                    onChange={update('brand')}
+                    inputProps={{ maxLength: 100 }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 2 }}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Fuel"
+                    value={draft.fuelType}
+                    onChange={update('fuelType')}
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {['petrol', 'diesel', 'cng', 'electric', 'hybrid', 'lpg'].map((value) => (
+                      <MenuItem key={value} value={value}>
+                        {value}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid size={{ xs: 12, md: 2 }}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Transmission"
+                    value={draft.transmission}
+                    onChange={update('transmission')}
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {['automatic', 'manual'].map((value) => (
+                      <MenuItem key={value} value={value}>
+                        {value}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid size={{ xs: 12, md: 2 }}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    label="Minimum seats"
+                    inputProps={{ min: 1, max: 100, step: 1, inputMode: 'numeric' }}
+                    value={draft.seats}
+                    onChange={update('seats')}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 2 }}>
+                  <Button type="submit" variant="contained" size="large">
+                    Apply
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      setDraft((current) => ({
+                        ...current,
+                        brand: '',
+                        fuelType: '',
+                        transmission: '',
+                        seats: '',
+                      }))
+                    }
+                  >
+                    Clear filters
+                  </Button>
+                </Grid>
+              </Grid>
+              {formError && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  {formError}
+                </Alert>
+              )}
+              {intervalError && (
+                <Alert severity="warning" sx={{ mt: 2 }}>
+                  {intervalError} Update the interval to run availability search.
+                </Alert>
+              )}
+            </Box>
+          </MaterialCard>
+        </ResponsiveSearchFilters>
+        <Typography component="h2" variant="h5" gutterBottom sx={pageStyles.resultsTitle}>
           {isAvailabilityMode ? 'Available for your selected trip' : 'Browse cars'}
         </Typography>
         {isAvailabilityMode && (
@@ -253,10 +328,12 @@ function SearchPage() {
             Availability checked now; no car is reserved or held.
           </Typography>
         )}
-        {intervalError ? <Alert severity="warning">Correct your trip dates before searching for available cars.</Alert> : isLoading ? (
-          <Box sx={{ py: 8, textAlign: 'center' }}>
-            <CircularProgress />
-          </Box>
+        {intervalError ? (
+          <Alert severity="warning">
+            Correct your trip dates before searching for available cars.
+          </Alert>
+        ) : isLoading ? (
+          <ContentSkeleton label="Loading cars" />
         ) : error ? (
           <EmptyState
             title={isAvailabilityMode ? 'Availability search failed' : 'Unable to load cars'}
@@ -303,5 +380,8 @@ function SearchPage() {
     </>
   )
 }
-function SearchRoute() { const [params] = useSearchParams(); return <SearchPage key={params.toString()} /> }
+function SearchRoute() {
+  const [params] = useSearchParams()
+  return <SearchPage key={params.toString()} />
+}
 export default SearchRoute

@@ -20,16 +20,9 @@ export const API_ENDPOINTS = {
   },
   // ── Cars ───────────────────────────────────────────────────────────────
   CARS: {
-    LIST: '/cars',
     SEARCH: '/cars/search',
     DETAILS: (id) => `/cars/${id}`,
     FEATURED: '/cars/featured',
-    POPULAR: '/cars/popular',
-    REVIEWS: (id) => `/cars/${id}/reviews`,
-    PRICE: '/cars/price-estimate',
-    SIMILAR: (id) => `/cars/${id}/similar`,
-    AVAILABILITY: (id) => `/cars/${id}/availability`,
-    BY_IDS: '/cars/by-ids',
   },
   LOCATIONS: {
     CITIES: '/locations/cities',
@@ -59,10 +52,7 @@ export const API_ENDPOINTS = {
   PAYMENTS: {
     ORDERS: '/payments/orders',
     DETAILS: (id) => `/payments/${id}`,
-    CREATE: '/payments',
     VERIFY: '/payments/verify',
-    METHODS: '/payments/methods',
-    REFUND: (id) => `/payments/${id}/refund`,
   },
 
   REFUNDS: {

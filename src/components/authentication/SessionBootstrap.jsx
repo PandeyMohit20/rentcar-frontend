@@ -8,7 +8,10 @@ import authSession from '@/services/api/authSession'
 
 let restorePromise = null
 function readSession() {
-  if (!restorePromise) restorePromise = authService.getMe().finally(() => { restorePromise = null })
+  if (!restorePromise)
+    restorePromise = authService.getMe().finally(() => {
+      restorePromise = null
+    })
   return restorePromise
 }
 function SessionBootstrap({ children }) {
@@ -18,31 +21,68 @@ function SessionBootstrap({ children }) {
   useEffect(() => {
     let active = true
     const version = authSession.getVersion()
-    if (authSession.isSignedOut()) { dispatch(restoreFailure()); return undefined }
+    if (authSession.isSignedOut()) {
+      dispatch(restoreFailure())
+      return undefined
+    }
     dispatch(restoreStart())
-    readSession().then(me => {
-      if (active && version === authSession.getVersion()) dispatch(restoreSuccess(me.data.user))
-    }).catch(error => {
-      if (!active || error.sessionChanged) return
-      if ([401,403].includes(error.status)) dispatch(restoreFailure())
-      else setProblem(true)
-    })
-    return () => { active = false }
+    readSession()
+      .then((me) => {
+        if (active && version === authSession.getVersion()) dispatch(restoreSuccess(me.data.user))
+      })
+      .catch((error) => {
+        if (!active || error.sessionChanged) return
+        if ([401, 403].includes(error.status)) dispatch(restoreFailure())
+        else setProblem(true)
+      })
+    return () => {
+      active = false
+    }
   }, [attempt, dispatch])
   useEffect(() => {
-    const expire = () => { clearCustomerSession(); dispatch(restoreFailure()); setProblem(false) }
-    const retry = () => { setProblem(false); setAttempt(value => value + 1) }
+    const expire = () => {
+      clearCustomerSession()
+      dispatch(restoreFailure())
+      setProblem(false)
+    }
+    const retry = () => {
+      setProblem(false)
+      setAttempt((value) => value + 1)
+    }
     window.addEventListener('rentcar:session-expired', expire)
-    const online = () => { if (problem) retry() }
+    const online = () => {
+      if (problem) retry()
+    }
     window.addEventListener('online', online)
-    return () => { window.removeEventListener('rentcar:session-expired', expire); window.removeEventListener('online', online) }
+    return () => {
+      window.removeEventListener('rentcar:session-expired', expire)
+      window.removeEventListener('online', online)
+    }
   }, [dispatch, problem])
-  return <>
-    {problem && <Box sx={{ p: 2 }}><Alert severity="warning" action={<Button color="inherit" onClick={() => { setProblem(false); setAttempt(value => value + 1) }}>Retry</Button>}>
-      We could not restore your session. Check your connection and retry.
-    </Alert></Box>}
-    {children}
-  </>
+  return (
+    <>
+      {problem && (
+        <Box sx={{ p: 2 }}>
+          <Alert
+            severity="warning"
+            action={
+              <Button
+                color="inherit"
+                onClick={() => {
+                  setProblem(false)
+                  setAttempt((value) => value + 1)
+                }}
+              >
+                Retry
+              </Button>
+            }
+          >
+            We could not restore your session. Check your connection and retry.
+          </Alert>
+        </Box>
+      )}
+      {children}
+    </>
+  )
 }
 export default SessionBootstrap
-

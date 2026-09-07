@@ -21,11 +21,18 @@ function CarCard({ car, to }) {
           ratio="16/10"
         />
         <Box sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>
+          <Typography component="h3" variant="h6" gutterBottom sx={{ overflowWrap: 'anywhere' }}>
             {car.brand} {car.model}
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            {car.fuelType} • {car.transmission} • Seats {car.seatingCapacity}
+            {[
+              car.year,
+              car.fuelType,
+              car.transmission,
+              car.seatingCapacity ? `${car.seatingCapacity} seats` : null,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </Typography>
           <Box sx={{ mt: 1 }}>
             {car.branch?.name && (
@@ -33,7 +40,7 @@ function CarCard({ car, to }) {
             )}
           </Box>
         </Box>
-        <CardActions sx={{ px: 2, pb: 2 }}>
+        <CardActions sx={{ px: 2, pb: 2, flexWrap: 'wrap', gap: 1 }}>
           <Typography variant="h6" color="primary">
             {car.dailyPrice == null ? (
               <Typography component="span" variant="body2" color="text.secondary">
@@ -51,7 +58,7 @@ function CarCard({ car, to }) {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <PrimaryButton component={Link} to={to || ROUTES.CAR_DETAILS_WITH_ID(car.id)}>
-            View
+            View Car
           </PrimaryButton>
         </CardActions>
       </MaterialCard>
@@ -65,6 +72,7 @@ CarCard.propTypes = {
     id: PropTypes.string.isRequired,
     brand: PropTypes.string,
     model: PropTypes.string,
+    year: PropTypes.number,
     fuelType: PropTypes.string,
     transmission: PropTypes.string,
     seatingCapacity: PropTypes.number,

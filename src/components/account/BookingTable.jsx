@@ -7,7 +7,7 @@ import { BOOKING_STATUS_META, PAYMENT_STATUS_META } from '@/features/account'
 
 function Status({ value, payment = false }) {
   const meta = (payment ? PAYMENT_STATUS_META : BOOKING_STATUS_META)[value] || {
-    label: value || 'Unavailable',
+    label: 'Status unavailable',
     color: 'default',
   }
   return (

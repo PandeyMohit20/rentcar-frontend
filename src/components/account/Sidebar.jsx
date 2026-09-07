@@ -1,6 +1,7 @@
 ﻿import { Link, useLocation } from 'react-router-dom'
 import { Box, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
 import ACCOUNT_NAV from './navigation'
+import LogoutButton from '@/components/authentication/LogoutButton'
 
 function Sidebar({ onNavigate, width = 240 }) {
   const { pathname } = useLocation()
@@ -39,6 +40,7 @@ function Sidebar({ onNavigate, width = 240 }) {
           )
         })}
       </List>
+      <LogoutButton fullWidth onComplete={onNavigate} />
     </Box>
   )
 }

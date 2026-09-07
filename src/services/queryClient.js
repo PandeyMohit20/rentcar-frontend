@@ -7,7 +7,9 @@ const retryCount = Number(import.meta.env.VITE_QUERY_RETRY_COUNT) || 2
 const retryQuery = (failureCount, error) => {
   const status = error?.status
   if ([400, 401, 403, 404, 409, 413, 422, 429].includes(status)) return false
-  return (error?.isNetworkError || [500, 502, 503, 504].includes(status)) && failureCount < retryCount
+  return (
+    (error?.isNetworkError || [500, 502, 503, 504].includes(status)) && failureCount < retryCount
+  )
 }
 
 /**

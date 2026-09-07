@@ -11,4 +11,3 @@ export function clearCustomerSession() {
   cancellationAttemptSession.clear()
   queryClient.clear()
 }
-

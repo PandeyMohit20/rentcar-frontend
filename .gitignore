@@ -46,3 +46,7 @@ pnpm-debug.log*
 Thumbs.db
 *.oso
 *.tsbuildinfo
+
+# Local browser audit artifacts and isolated profiles
+.f5-check/
+.f6-check/

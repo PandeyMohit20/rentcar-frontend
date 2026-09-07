@@ -16,11 +16,11 @@
  * @param {Storage} storage - e.g. window.localStorage or window.sessionStorage
  * @returns {{ getItem: Function, setItem: Function, removeItem: Function }}
  */
-function createReduxPersistStorage(storage) {
+function createReduxPersistStorage(storageName) {
   return {
     getItem: (key) => {
       try {
-        return Promise.resolve(storage.getItem(key))
+        return Promise.resolve(window[storageName].getItem(key))
       } catch (error) {
         console.warn(`[reduxPersistStorage.getItem] Failed to read "${key}"`, error)
         return Promise.resolve(null)
@@ -28,7 +28,7 @@ function createReduxPersistStorage(storage) {
     },
     setItem: (key, item) => {
       try {
-        storage.setItem(key, item)
+        window[storageName].setItem(key, item)
         return Promise.resolve()
       } catch (error) {
         console.warn(`[reduxPersistStorage.setItem] Failed to write "${key}"`, error)
@@ -37,7 +37,7 @@ function createReduxPersistStorage(storage) {
     },
     removeItem: (key) => {
       try {
-        storage.removeItem(key)
+        window[storageName].removeItem(key)
         return Promise.resolve()
       } catch (error) {
         console.warn(`[reduxPersistStorage.removeItem] Failed to remove "${key}"`, error)
@@ -50,15 +50,11 @@ function createReduxPersistStorage(storage) {
 /**
  * localStorage-backed storage adapter for redux-persist.
  */
-export const storage = createReduxPersistStorage(
-  typeof window !== 'undefined' ? window.localStorage : null
-)
+export const storage = createReduxPersistStorage('localStorage')
 
 /**
  * sessionStorage-backed storage adapter for redux-persist.
  */
-export const sessionStorage = createReduxPersistStorage(
-  typeof window !== 'undefined' ? window.sessionStorage : null
-)
+export const sessionStorage = createReduxPersistStorage('sessionStorage')
 
 export default storage

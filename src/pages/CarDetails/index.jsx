@@ -1,20 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom'
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Chip,
-  CircularProgress,
-  Stack,
-  Alert,
-  Divider,
-} from '@mui/material'
+import { Box, Container, Typography, Grid, Chip, Stack, Alert, Divider } from '@mui/material'
 import Seo from '@/components/common/Seo'
 import MaterialCard from '@/components/ui/MaterialCard'
 import PrimaryButton from '@/components/buttons/PrimaryButton'
 import EmptyState from '@/components/common/EmptyState'
+import ContentSkeleton from '@/components/common/ContentSkeleton'
 import ImageLazy from '@/components/common/ImageLazy'
 import { bookingService, carService, pricingService } from '@/services/modules'
 import { useApiMutation, useApiQuery, useQueryClient } from '@/hooks/useApi'
@@ -136,9 +127,7 @@ function CarDetailsPage() {
     setBookingError('')
     bookingMutation.mutate({
       quoteToken: activeQuote.quoteToken,
-      idempotencyKey: bookingAttemptSession.getOrCreateKey(
-        `${user.id}|${activeQuote.contextKey}`
-      ),
+      idempotencyKey: bookingAttemptSession.getOrCreateKey(`${user.id}|${activeQuote.contextKey}`),
     })
   }
 
@@ -148,9 +137,9 @@ function CarDetailsPage() {
 
   if (isLoading)
     return (
-      <Box sx={{ py: 12, textAlign: 'center' }}>
-        <CircularProgress />
-      </Box>
+      <Container maxWidth="lg">
+        <ContentSkeleton label="Loading car details" cards={1} />
+      </Container>
     )
   if (error || !car?.id)
     return (
@@ -277,9 +266,11 @@ function CarDetailsPage() {
               {activeQuote && (
                 <Box sx={{ mt: 3 }}>
                   <Divider sx={{ mb: 2 }} />
-                  <Typography variant="h6">Trusted quote</Typography>
+                  <Typography component="h2" variant="h6">
+                    Trusted quote
+                  </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Backend-calculated; this is not a reservation.
+                    Your rental price for the selected trip. Reserve to place a payment hold.
                   </Typography>
                   {activeQuote.duration?.breakdown?.map((unit, index) => (
                     <Box
@@ -328,7 +319,7 @@ function CarDetailsPage() {
                     <PrimaryButton
                       fullWidth
                       onClick={createBooking}
-                      disabled={bookingMutation.isPending}
+                      disabled={bookingMutation.isPending || isRestoring}
                       sx={{ mt: 2 }}
                     >
                       {bookingMutation.isPending
@@ -352,5 +343,8 @@ function CarDetailsPage() {
     </>
   )
 }
-function CarDetailsRoute() { const location = useLocation(); return <CarDetailsPage key={`${location.pathname}${location.search}`} /> }
+function CarDetailsRoute() {
+  const location = useLocation()
+  return <CarDetailsPage key={`${location.pathname}${location.search}`} />
+}
 export default CarDetailsRoute

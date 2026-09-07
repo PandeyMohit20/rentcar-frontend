@@ -21,8 +21,24 @@ function InputField({ name, label, type = 'text', ...props }) {
           {...field}
           id={name}
           inputRef={ref}
-          type={type === "password" && visible ? "text" : type}
-          InputProps={type === "password" ? { endAdornment: <InputAdornment position="end"><IconButton edge="end" aria-label={visible ? "Hide password" : "Show password"} onClick={() => setVisible(value => !value)}>{visible ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment> } : undefined}
+          type={type === 'password' && visible ? 'text' : type}
+          InputProps={
+            type === 'password'
+              ? {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        edge="end"
+                        aria-label={visible ? 'Hide password' : 'Show password'}
+                        onClick={() => setVisible((value) => !value)}
+                      >
+                        {visible ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }
+              : undefined
+          }
           label={label}
           fullWidth
           error={Boolean(fieldState.error)}

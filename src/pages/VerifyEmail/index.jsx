@@ -44,20 +44,12 @@ function VerifyEmailPage() {
    */
   useEffect(() => {
     inputRef.current?.focus()
-
-    const timer = setInterval(() => {
-      setCountdown((previous) => {
-        if (previous <= 1) {
-          clearInterval(timer)
-          return 0
-        }
-
-        return previous - 1
-      })
-    }, 1000)
-
-    return () => clearInterval(timer)
   }, [])
+  useEffect(() => {
+    if (countdown <= 0) return undefined
+    const timer = window.setTimeout(() => setCountdown((value) => value - 1), 1000)
+    return () => window.clearTimeout(timer)
+  }, [countdown])
 
   /**
    * If user directly opens /verify-email without coming
@@ -86,6 +78,7 @@ function VerifyEmailPage() {
    */
   const handleVerify = async (event) => {
     event.preventDefault()
+    if (loading || resending) return
 
     if (!email) {
       showError('Email address is missing.')
@@ -168,7 +161,7 @@ function VerifyEmailPage() {
    * Go back to registration.
    */
   const handleChangeEmail = () => {
-    navigate(ROUTES.REGISTER)
+    navigate(ROUTES.REGISTER, { state: { from: location.state?.from } })
   }
 
   if (!email) {

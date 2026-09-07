@@ -35,7 +35,12 @@ function HeroBanner({
           <Typography
             variant="h2"
             component="h1"
-            sx={{ color: 'common.white', fontWeight: 800, mb: 2, fontSize: { xs: '2.25rem', md: '3.5rem' } }}
+            sx={{
+              color: 'common.white',
+              fontWeight: 800,
+              mb: 2,
+              fontSize: { xs: '2.25rem', md: '3.5rem' },
+            }}
           >
             {title}
           </Typography>

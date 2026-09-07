@@ -6,6 +6,7 @@ export function useAccountMutation(mutationFn, keys, onSuccess) {
   return useMutation({
     mutationFn,
     retry: false,
+    gcTime: 0,
     onError: () => {}, // Forms own safe, inline error feedback.
     onSuccess,
     onSettled: () => Promise.all(keys.map((queryKey) => client.invalidateQueries({ queryKey }))),

@@ -4,13 +4,17 @@
 export { formatDate, formatDateTime, formatTime, fromNow } from './date'
 
 export const formatCurrency = (amount, currency = 'INR', locale = 'en-IN') => {
-  if (amount === null || amount === undefined || Number.isNaN(Number(amount))) {
+  if (
+    amount === null ||
+    amount === undefined ||
+    amount === '' ||
+    !Number.isFinite(Number(amount))
+  ) {
     return '—'
   }
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
-    maximumFractionDigits: 0,
   }).format(Number(amount))
 }
 

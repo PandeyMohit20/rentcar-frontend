@@ -30,8 +30,23 @@ import settingsReducer from '@/redux/slices/settingsSlice'
 const persistConfig = {
   key: import.meta.env.VITE_PERSIST_KEY || 'rentcar-root',
   storage: import.meta.env.VITE_PERSIST_STORAGE === 'sessionStorage' ? sessionStorage : storage,
-  whitelist: ['ui', 'wishlist', 'comparison'],
-  version: 2,
+  whitelist: ['ui'],
+  version: 3,
+  // Whitelists govern writes, not old persisted payloads. Never rehydrate legacy
+  // auth, checkout or customer data left by an earlier frontend version.
+  migrate: (state) =>
+    Promise.resolve(
+      state
+        ? {
+            _persist: state._persist,
+            ui: {
+              themeMode: state.ui?.themeMode === 'dark' ? 'dark' : 'light',
+              sidebarOpen: false,
+              isPageLoading: false,
+            },
+          }
+        : state
+    ),
 }
 
 const rootReducer = combineReducers({

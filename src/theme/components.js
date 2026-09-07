@@ -5,6 +5,7 @@ const components = (mode) => ({
   MuiButton: {
     styleOverrides: {
       root: {
+        minHeight: 44,
         borderRadius: 8,
         fontWeight: 600,
         textTransform: 'none',
@@ -33,7 +34,15 @@ const components = (mode) => ({
   },
   MuiOutlinedInput: {
     styleOverrides: {
-      root: { borderRadius: 8 },
+      root: { borderRadius: 8, minHeight: 44, minWidth: 0 },
+    },
+  },
+  MuiIconButton: {
+    styleOverrides: { root: { minWidth: 44, minHeight: 44 } },
+  },
+  MuiButtonBase: {
+    styleOverrides: {
+      root: { '&.Mui-focusVisible': { outline: '2px solid currentColor', outlineOffset: 3 } },
     },
   },
   MuiAppBar: {
@@ -51,7 +60,14 @@ const components = (mode) => ({
   },
   MuiDialog: {
     styleOverrides: {
-      paper: { borderRadius: 16 },
+      paper: {
+        borderRadius: 16,
+        '@media (max-width: 480px)': {
+          margin: 8,
+          width: 'calc(100% - 16px)',
+          maxHeight: 'calc(100% - 16px)',
+        },
+      },
     },
   },
   MuiPaper: {

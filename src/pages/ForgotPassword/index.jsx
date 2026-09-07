@@ -35,7 +35,7 @@ function ForgotPasswordPage() {
     <>
       <Seo title="Forgot Password" description="Reset your password." />
       <Box sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom align="center">
+        <Typography component="h1" variant="h5" gutterBottom align="center">
           Forgot Password
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>
@@ -47,8 +47,8 @@ function ForgotPasswordPage() {
             onSubmit={methods.handleSubmit(onSubmit)}
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
-            <InputField name="email" label="Email" type="email" />
-            <LoadingButton type="submit" size="large">
+            <InputField name="email" label="Email" type="email" autoComplete="email" />
+            <LoadingButton type="submit" size="large" loading={methods.formState.isSubmitting}>
               Send Reset Link
             </LoadingButton>
           </Box>

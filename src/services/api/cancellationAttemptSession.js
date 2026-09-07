@@ -28,14 +28,22 @@ export const cancellationAttemptSession = {
     }
     const next = { bookingId, idempotencyKey: createUuid() }
     memoryAttempt = next
-    try { window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next)) } catch { /* Keep a stable key in memory. */ }
+    try {
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+    } catch {
+      /* Keep a stable key in memory. */
+    }
     return next.idempotencyKey
   },
   clear(bookingId) {
     const current = read()
     if (!bookingId || current?.bookingId === bookingId) {
       memoryAttempt = null
-      try { window.sessionStorage.removeItem(STORAGE_KEY) } catch { /* Storage unavailable. */ }
+      try {
+        window.sessionStorage.removeItem(STORAGE_KEY)
+      } catch {
+        /* Storage unavailable. */
+      }
     }
   },
 }
