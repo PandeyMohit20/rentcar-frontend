@@ -21,6 +21,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { AccountPageShell } from '@/components/account'
 import EmptyState from '@/components/common/EmptyState'
+import ImageLazy from '@/components/common/ImageLazy'
 import { AccountSkeleton } from '@/components/account/AccountUI'
 import MaterialCard from '@/components/ui/MaterialCard'
 import LoadingButton from '@/components/buttons/LoadingButton'
@@ -169,6 +170,7 @@ function BookingDetailsPage() {
   const hasPendingRefund = refunds.some((refund) =>
     ['pending', 'processing'].includes(refund.status)
   )
+  const vehicleName = [booking.car?.brand, booking.car?.model].filter(Boolean).join(' ')
 
   return (
     <AccountPageShell
@@ -181,6 +183,36 @@ function BookingDetailsPage() {
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Stack spacing={3}>
+            {booking.car && (
+              <MaterialCard sx={{ p: { xs: 2, md: 3 } }}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                  {booking.car.primaryImage?.url && (
+                    <Box sx={{ width: { xs: '100%', sm: 220 }, flexShrink: 0 }}>
+                      <ImageLazy
+                        src={booking.car.primaryImage.url}
+                        alt={booking.car.primaryImage.altText || vehicleName || 'Booked vehicle'}
+                        ratio="16/10"
+                      />
+                    </Box>
+                  )}
+                  <Box sx={{ width: '100%' }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Vehicle
+                    </Typography>
+                    {vehicleName && (
+                      <Typography component="h2" variant="h5" sx={{ mt: 0.5 }}>
+                        {vehicleName}
+                      </Typography>
+                    )}
+                    {booking.car.registrationNumber && (
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        Registration: {booking.car.registrationNumber}
+                      </Typography>
+                    )}
+                  </Box>
+                </Stack>
+              </MaterialCard>
+            )}
             <MaterialCard sx={{ p: { xs: 2, md: 3 } }}>
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}

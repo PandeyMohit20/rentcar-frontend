@@ -6,6 +6,7 @@ import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { AccountSection, AccountError } from '@/components/account/AccountUI'
 import { setAccountFieldErrors } from '@/features/account/errors'
+import { hasValidPaymentPhone } from '@/features/payment/phonePrerequisite'
 
 const personalSchema = z.object({
   dateOfBirth: z
@@ -21,19 +22,25 @@ const personalSchema = z.object({
   gender: z.enum(['', 'male', 'female', 'other', 'undisclosed']),
   bio: z.string().trim().max(1000, 'Use 1,000 characters or fewer.'),
 })
-const contactSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Enter at least 2 characters.')
-    .max(255, 'Use 255 characters or fewer.'),
-  email: z.string().trim().email('Enter a valid email address.').max(255),
-  phone: z
-    .string()
-    .trim()
-    .max(50)
-    .regex(/^\+?[0-9\s\-()]*$/, 'Use digits, spaces, +, hyphens or parentheses.'),
-})
+const contactSchema = (requirePhone) =>
+  z.object({
+    name: z
+      .string()
+      .trim()
+      .min(2, 'Enter at least 2 characters.')
+      .max(255, 'Use 255 characters or fewer.'),
+    email: z.string().trim().email('Enter a valid email address.').max(255),
+    phone: z
+      .string()
+      .trim()
+      .max(50)
+      .refine(
+        (value) => (!requirePhone && !value) || hasValidPaymentPhone(value),
+        requirePhone
+          ? 'Add a valid mobile number to continue to payment.'
+          : 'Enter a valid phone number.'
+      ),
+  })
 const personalFields = [
   { name: 'dateOfBirth', label: 'Date of birth', type: 'date' },
   { name: 'gender', label: 'Gender' },
@@ -45,8 +52,15 @@ const contactFields = [
   { name: 'phone', label: 'Phone number', type: 'tel', autoComplete: 'tel' },
 ]
 
-export default function ProfileSection({ data, mutation, personal = false }) {
-  const [editing, setEditing] = useState(false)
+export default function ProfileSection({
+  data,
+  mutation,
+  personal = false,
+  requirePhone = false,
+  startEditing = false,
+  onSaved,
+}) {
+  const [editing, setEditing] = useState(startEditing)
   const fields = personal ? personalFields : contactFields
   const defaults = Object.fromEntries(
     fields.map(({ name }) => [
@@ -62,7 +76,7 @@ export default function ProfileSection({ data, mutation, personal = false }) {
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: defaults,
-    resolver: zodResolver(personal ? personalSchema : contactSchema),
+    resolver: zodResolver(personal ? personalSchema : contactSchema(requirePhone)),
   })
   const busy = mutation.isPending || isSubmitting
   const edit = () => {
@@ -72,9 +86,10 @@ export default function ProfileSection({ data, mutation, personal = false }) {
   }
   const save = async (values) => {
     try {
-      await mutation.mutateAsync(values)
+      const saved = await mutation.mutateAsync(values)
       toast.success(personal ? 'Profile updated' : 'Contact information updated')
       setEditing(false)
+      onSaved?.(saved)
     } catch (error) {
       setAccountFieldErrors(
         error,

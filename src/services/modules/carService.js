@@ -1,7 +1,7 @@
 import httpClient from '@/services/api/httpClient'
 import { API_ENDPOINTS } from '@/constants/apiEndpoints'
 
-const absoluteImageUrl = (url) => {
+export const absoluteImageUrl = (url) => {
   if (!url || /^https?:\/\//i.test(url)) return url || null
   try {
     return new URL(url, import.meta.env.VITE_API_BASE_URL).href

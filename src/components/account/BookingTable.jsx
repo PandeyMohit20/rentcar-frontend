@@ -47,9 +47,16 @@ function BookingTable({
       field: 'bookingNumber',
       headerName: 'Booking',
       render: (row) => (
-        <Typography variant="body2" fontWeight={700} sx={{ overflowWrap: 'anywhere' }}>
-          {row.bookingNumber || 'Booking'}
-        </Typography>
+        <Stack>
+          <Typography variant="body2" fontWeight={700} sx={{ overflowWrap: 'anywhere' }}>
+            {row.bookingNumber || 'Booking'}
+          </Typography>
+          {row.car && (
+            <Typography variant="caption" color="text.secondary">
+              {[row.car.brand, row.car.model].filter(Boolean).join(' ')}
+            </Typography>
+          )}
+        </Stack>
       ),
     },
     { field: 'startAt', headerName: 'Trip', render: (row) => <TripDates booking={row} /> },
@@ -113,6 +120,11 @@ function BookingTable({
             <Typography fontWeight={700} sx={{ overflowWrap: 'anywhere' }}>
               {booking.bookingNumber || 'Booking'}
             </Typography>
+            {booking.car && (
+              <Typography variant="body2" color="text.secondary">
+                {[booking.car.brand, booking.car.model].filter(Boolean).join(' ')}
+              </Typography>
+            )}
             <Stack direction="row" gap={1} flexWrap="wrap">
               <Status value={booking.status} />
               <Status value={booking.paymentStatus} payment />

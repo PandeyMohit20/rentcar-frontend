@@ -1,5 +1,5 @@
-﻿import { Box, Button, Stack, Typography } from '@mui/material'
-import { Link } from 'react-router-dom'
+﻿import { Alert, Box, Button, Stack, Typography } from '@mui/material'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AccountPageShell from '@/components/account/AccountPageShell'
 import { AccountSection, AccountSkeleton, AccountError } from '@/components/account/AccountUI'
 import {
@@ -12,19 +12,34 @@ import ProfileSection from '@/features/profile/ProfileSection'
 import { useKycStatus } from '@/features/kyc'
 import KycBadge from '@/features/kyc/KycBadge'
 import { ROUTES } from '@/constants/routes'
+import { hasValidPaymentPhone, safePaymentReturnPath } from '@/features/payment/phonePrerequisite'
 
 export default function ProfilePage() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const paymentReturnTo = safePaymentReturnPath(location.state?.returnTo)
   const profile = useProfile()
   const account = useAccountIdentity()
   const kyc = useKycStatus()
   const updateProfile = useUpdateProfile()
   const updateAccount = useUpdateAccount()
+  const returnToPayment = (savedUser) => {
+    if (paymentReturnTo && hasValidPaymentPhone(savedUser?.phone)) {
+      navigate(paymentReturnTo, { replace: true })
+    }
+  }
   return (
     <AccountPageShell
       title="My Profile"
       description="Your details, thoughtfully organised. Update your information whenever you need to."
     >
       <Stack spacing={3}>
+        {paymentReturnTo && (
+          <Alert severity="info">
+            Add your mobile number to your contact information. You will return to your booking
+            after it is saved.
+          </Alert>
+        )}
         <Box
           sx={{
             display: 'grid',
@@ -37,7 +52,13 @@ export default function ProfilePage() {
           ) : account.error ? (
             <AccountError error={account.error} onRetry={() => account.refetch()} />
           ) : (
-            <ProfileSection data={account.data} mutation={updateAccount} />
+            <ProfileSection
+              data={account.data}
+              mutation={updateAccount}
+              requirePhone={Boolean(paymentReturnTo)}
+              startEditing={location.state?.edit === 'phone'}
+              onSaved={returnToPayment}
+            />
           )}
           {profile.isPending ? (
             <AccountSkeleton />

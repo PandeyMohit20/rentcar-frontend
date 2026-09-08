@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Alert, Button, Container, Divider, Stack, Typography } from '@mui/material'
 import authSession from '@/services/api/authSession'
 import { BOOKING_STATUS_META, PAYMENT_STATUS_META } from '@/features/account/accountConstants'
@@ -18,6 +18,7 @@ import bookingAttemptSession from '@/services/api/bookingAttemptSession'
 import loadRazorpay from '@/utils/loadRazorpay'
 import { useAuth } from '@/hooks/useAuth'
 import { hasCapturedPayment, paymentEligible, recoveredPayment } from '@/features/payment/recovery'
+import { getPaymentContact, runPaymentPhoneGuard } from '@/features/payment/phonePrerequisite'
 
 const TERMINAL_BOOKINGS = new Set([
   'CONFIRMED',
@@ -30,6 +31,7 @@ const TERMINAL_BOOKINGS = new Set([
 
 function BookingStatusPage() {
   const { bookingId } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { user } = useAuth()
@@ -41,6 +43,7 @@ function BookingStatusPage() {
   const [pollingTimedOut, setPollingTimedOut] = useState(false)
   const [now, setNow] = useState(() => Date.now())
   const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const [phoneRequired, setPhoneRequired] = useState(false)
   const checkout = useRef(null)
   const mounted = useRef(true)
   const sessionVersion = useRef(authSession.getVersion())
@@ -137,7 +140,11 @@ function BookingStatusPage() {
         currency: order.payment.currencyCode,
         name: 'RentCar',
         description: `Payment for booking ${bookingQuery.data?.bookingNumber || ''}`,
-        prefill: { name: user?.name || '', email: user?.email || '', contact: user?.phone || '' },
+        prefill: {
+          name: user?.name || '',
+          email: user?.email || '',
+          contact: getPaymentContact(user?.phone),
+        },
         handler: (response) => {
           if (!isCurrentSession()) return
           setCheckoutOpen(false)
@@ -295,6 +302,22 @@ function BookingStatusPage() {
     !bookingQuery.isFetching &&
     !paymentQuery.error
   const busy = checkoutOpen || orderMutation.isPending || verifyMutation.isPending
+  const startPayment = () =>
+    runPaymentPhoneGuard({
+      phone: user?.phone,
+      onBlocked: () => {
+        setFlowError('')
+        setPhoneRequired(true)
+      },
+      onReady: () => {
+        setPhoneRequired(false)
+        orderMutation.mutate(booking.id)
+      },
+    })
+  const completeProfile = () =>
+    navigate(ROUTES.MY_PROFILE, {
+      state: { returnTo: location.pathname, edit: 'phone' },
+    })
   const restart = () => {
     const target =
       validRecovery &&
@@ -369,6 +392,19 @@ function BookingStatusPage() {
               {flowError}
             </Alert>
           )}
+          {phoneRequired && (
+            <Alert
+              severity="warning"
+              sx={{ mb: 2 }}
+              action={
+                <Button color="inherit" onClick={completeProfile}>
+                  Complete Profile
+                </Button>
+              }
+            >
+              Add your mobile number before continuing to payment.
+            </Alert>
+          )}
           {paymentQuery.error && (
             <Alert severity="warning" sx={{ mb: 2 }}>
               We could not refresh payment details. Your booking summary is shown; refresh the
@@ -418,11 +454,7 @@ function BookingStatusPage() {
           )}
           <Divider sx={{ my: 3 }} />
           {canPay && (
-            <LoadingButton
-              loading={busy}
-              disabled={busy}
-              onClick={() => orderMutation.mutate(booking.id)}
-            >
+            <LoadingButton loading={busy} disabled={busy} onClick={startPayment}>
               {paymentId ? 'Retry / Reopen Payment' : 'Pay Now with Razorpay'}
             </LoadingButton>
           )}
