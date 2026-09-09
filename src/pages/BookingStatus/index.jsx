@@ -1,3 +1,4 @@
+import TaxBreakdown from '@/features/invoice/TaxBreakdown'
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Alert, Button, Container, Divider, Stack, Typography } from '@mui/material'
@@ -18,6 +19,7 @@ import bookingAttemptSession from '@/services/api/bookingAttemptSession'
 import loadRazorpay from '@/utils/loadRazorpay'
 import { useAuth } from '@/hooks/useAuth'
 import { hasCapturedPayment, paymentEligible, recoveredPayment } from '@/features/payment/recovery'
+import { bookingStatusPresentation } from '@/features/payment/bookingStatusPresentation'
 import { getPaymentContact, runPaymentPhoneGuard } from '@/features/payment/phonePrerequisite'
 
 const TERMINAL_BOOKINGS = new Set([
@@ -272,8 +274,9 @@ function BookingStatusPage() {
 
   const booking = bookingQuery.data
   const payment = recoveredPayment(booking, paymentQuery.data)
+  const { hasPaymentHold, terminalMessage } = bookingStatusPresentation(booking, payment)
   const holdMs = booking?.holdExpiresAt ? new Date(booking.holdExpiresAt).getTime() : 0
-  const holdExpired = Boolean(holdMs && holdMs <= now)
+  const holdExpired = Boolean(hasPaymentHold && holdMs && holdMs <= now)
   const holdMinutes = holdMs > now ? Math.max(1, Math.ceil((holdMs - now) / 60000)) : 0
   const isConfirmed =
     booking?.status === 'CONFIRMED' &&
@@ -373,6 +376,10 @@ function BookingStatusPage() {
               Payment was received, but the booking could not be confirmed automatically. Support
               review is required. Do not make another payment.
             </Alert>
+          ) : terminalMessage ? (
+            <Alert severity="info" sx={{ my: 3 }}>
+              {terminalMessage}
+            </Alert>
           ) : isExpired ? (
             <Alert severity="warning" sx={{ my: 3 }}>
               Booking hold expired. Payment continuation is disabled.
@@ -439,7 +446,8 @@ function BookingStatusPage() {
                 Payment-order amount: {formatCurrency(payment.amount, payment.currencyCode)}
               </Typography>
             )}
-            {booking.holdExpiresAt && (
+            <TaxBreakdown snapshot={booking.financialSnapshot} />
+            {hasPaymentHold && booking.holdExpiresAt && (
               <Typography>
                 Hold expires: {formatBusinessDateTime(booking.holdExpiresAt)}
                 {!isExpired && ` (about ${holdMinutes} min remaining)`}

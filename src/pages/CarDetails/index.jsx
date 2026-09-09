@@ -1,3 +1,4 @@
+import TaxBreakdown from '@/features/invoice/TaxBreakdown'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom'
 import { Box, Container, Typography, Grid, Chip, Stack, Alert, Divider } from '@mui/material'
@@ -266,6 +267,7 @@ function CarDetailsPage() {
               {activeQuote && (
                 <Box sx={{ mt: 3 }}>
                   <Divider sx={{ mb: 2 }} />
+                  <TaxBreakdown snapshot={activeQuote.financialSnapshot} />
                   <Typography component="h2" variant="h6">
                     Trusted quote
                   </Typography>

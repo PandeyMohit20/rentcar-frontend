@@ -1,3 +1,4 @@
+import TaxBreakdown from '@/features/invoice/TaxBreakdown'
 import { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -252,6 +253,7 @@ function BookingDetailsPage() {
               <Typography variant="h6" sx={{ mb: 1 }}>
                 Price summary
               </Typography>
+              <TaxBreakdown snapshot={booking.financialSnapshot} />
               <DetailRow label="Rental subtotal">
                 {formatCurrency(booking.subtotal, booking.currencyCode)}
               </DetailRow>

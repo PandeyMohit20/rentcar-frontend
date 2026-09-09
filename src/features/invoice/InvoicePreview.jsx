@@ -1,3 +1,5 @@
+import TaxBreakdown from './TaxBreakdown'
+import InvoiceDownload from './InvoiceDownload'
 import { memo } from 'react'
 import PropTypes from 'prop-types'
 import { Box, Chip, Divider, Stack, Typography } from '@mui/material'
@@ -55,12 +57,21 @@ function InvoicePreview({ invoice }) {
         )}
       </Stack>
 
+      <InvoiceDownload invoice={invoice} />
+      <TaxBreakdown snapshot={invoice.snapshot?.financial} />
       <Divider />
       <AmountRow
         label="Rental subtotal"
         amount={invoice.subtotal}
         currencyCode={invoice.currencyCode}
       />
+      {invoice.snapshot && (
+        <AmountRow
+          label="Security deposit"
+          amount={invoice.snapshot.financial.securityDeposit}
+          currencyCode={invoice.currencyCode}
+        />
+      )}
       <AmountRow label="Tax" amount={invoice.tax} currencyCode={invoice.currencyCode} />
       {discount > 0 && (
         <AmountRow label="Discount" amount={-discount} currencyCode={invoice.currencyCode} />
