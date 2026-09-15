@@ -147,7 +147,7 @@ function SearchPage() {
       <Seo title="Search Cars" description="Browse cars or check real interval availability." />
       <Container maxWidth="lg" sx={pageStyles.container}>
         <Typography component="h1" variant="h4" gutterBottom sx={pageStyles.header}>
-          Search Cars
+          Find your next drive
         </Typography>
         {isAvailabilityMode && (
           <Box sx={{ mb: 2 }}>
@@ -164,218 +164,243 @@ function SearchPage() {
         >
           Trip and filters
         </Button>
-        <ResponsiveSearchFilters
-          open={filtersOpen}
-          onClose={closeFilters}
-          onExited={() => filterTrigger.current?.focus()}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: 'minmax(0,1fr)', md: '270px minmax(0,1fr)' },
+            gap: { xs: 0, md: 4 },
+            alignItems: 'start',
+          }}
         >
-          <MaterialCard sx={pageStyles.formCard}>
-            <Box component="form" onSubmit={submit}>
-              {branchError && (
-                <Alert
-                  severity="warning"
-                  sx={{ mb: 2 }}
-                  action={<Button onClick={retryBranches}>Retry</Button>}
-                >
-                  Branches could not be loaded. Your selected trip is preserved.
-                </Alert>
-              )}
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 3 }}>
-                  <TextField
-                    select
-                    fullWidth
-                    label="Operating branch"
-                    value={draft.branchId}
-                    onChange={update('branchId')}
+          <ResponsiveSearchFilters
+            open={filtersOpen}
+            onClose={closeFilters}
+            onExited={() => filterTrigger.current?.focus()}
+          >
+            <MaterialCard sx={pageStyles.formCard}>
+              <Box component="form" onSubmit={submit}>
+                <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+                  Refine your drive
+                </Typography>
+                {branchError && (
+                  <Alert
+                    severity="warning"
+                    sx={{ mb: 2 }}
+                    action={<Button onClick={retryBranches}>Retry</Button>}
                   >
-                    <MenuItem value="">All branches</MenuItem>
-                    {(branchData?.items || []).map((branch) => (
-                      <MenuItem key={branch.id} value={branch.id}>
-                        {[branch.name, branch.city].filter(Boolean).join(', ')}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                    Branches could not be loaded. Your selected trip is preserved.
+                  </Alert>
+                )}
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      select
+                      fullWidth
+                      label="Operating branch"
+                      value={draft.branchId}
+                      onChange={update('branchId')}
+                    >
+                      <MenuItem value="">All branches</MenuItem>
+                      {(branchData?.items || []).map((branch) => (
+                        <MenuItem key={branch.id} value={branch.id}>
+                          {[branch.name, branch.city].filter(Boolean).join(', ')}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      label="Pickup date"
+                      value={draft.pickupDate}
+                      onChange={update('pickupDate')}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      type="time"
+                      label="Pickup time"
+                      value={draft.pickupTime}
+                      onChange={update('pickupTime')}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      label="Return date"
+                      value={draft.returnDate}
+                      onChange={update('returnDate')}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      type="time"
+                      label="Return time"
+                      value={draft.returnTime}
+                      onChange={update('returnTime')}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Brand"
+                      value={draft.brand}
+                      onChange={update('brand')}
+                      inputProps={{ maxLength: 100 }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      select
+                      fullWidth
+                      label="Fuel"
+                      value={draft.fuelType}
+                      onChange={update('fuelType')}
+                    >
+                      <MenuItem value="">Any</MenuItem>
+                      {['petrol', 'diesel', 'cng', 'electric', 'hybrid', 'lpg'].map((value) => (
+                        <MenuItem key={value} value={value}>
+                          {value}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      select
+                      fullWidth
+                      label="Transmission"
+                      value={draft.transmission}
+                      onChange={update('transmission')}
+                    >
+                      <MenuItem value="">Any</MenuItem>
+                      {['automatic', 'manual'].map((value) => (
+                        <MenuItem key={value} value={value}>
+                          {value}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      label="Minimum seats"
+                      inputProps={{ min: 1, max: 100, step: 1, inputMode: 'numeric' }}
+                      value={draft.seats}
+                      onChange={update('seats')}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <Button type="submit" variant="contained" size="large">
+                      Apply
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        setDraft((current) => ({
+                          ...current,
+                          brand: '',
+                          fuelType: '',
+                          transmission: '',
+                          seats: '',
+                        }))
+                      }
+                    >
+                      Clear filters
+                    </Button>
+                  </Grid>
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                  <TextField
-                    fullWidth
-                    type="date"
-                    label="Pickup date"
-                    value={draft.pickupDate}
-                    onChange={update('pickupDate')}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                  <TextField
-                    fullWidth
-                    type="time"
-                    label="Pickup time"
-                    value={draft.pickupTime}
-                    onChange={update('pickupTime')}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                  <TextField
-                    fullWidth
-                    type="date"
-                    label="Return date"
-                    value={draft.returnDate}
-                    onChange={update('returnDate')}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                  <TextField
-                    fullWidth
-                    type="time"
-                    label="Return time"
-                    value={draft.returnTime}
-                    onChange={update('returnTime')}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 2 }}>
-                  <TextField
-                    fullWidth
-                    label="Brand"
-                    value={draft.brand}
-                    onChange={update('brand')}
-                    inputProps={{ maxLength: 100 }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 2 }}>
-                  <TextField
-                    select
-                    fullWidth
-                    label="Fuel"
-                    value={draft.fuelType}
-                    onChange={update('fuelType')}
-                  >
-                    <MenuItem value="">Any</MenuItem>
-                    {['petrol', 'diesel', 'cng', 'electric', 'hybrid', 'lpg'].map((value) => (
-                      <MenuItem key={value} value={value}>
-                        {value}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid size={{ xs: 12, md: 2 }}>
-                  <TextField
-                    select
-                    fullWidth
-                    label="Transmission"
-                    value={draft.transmission}
-                    onChange={update('transmission')}
-                  >
-                    <MenuItem value="">Any</MenuItem>
-                    {['automatic', 'manual'].map((value) => (
-                      <MenuItem key={value} value={value}>
-                        {value}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid size={{ xs: 12, md: 2 }}>
-                  <TextField
-                    fullWidth
-                    type="number"
-                    label="Minimum seats"
-                    inputProps={{ min: 1, max: 100, step: 1, inputMode: 'numeric' }}
-                    value={draft.seats}
-                    onChange={update('seats')}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 2 }}>
-                  <Button type="submit" variant="contained" size="large">
-                    Apply
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      setDraft((current) => ({
-                        ...current,
-                        brand: '',
-                        fuelType: '',
-                        transmission: '',
-                        seats: '',
-                      }))
-                    }
-                  >
-                    Clear filters
-                  </Button>
-                </Grid>
-              </Grid>
-              {formError && (
-                <Alert severity="error" sx={{ mt: 2 }}>
-                  {formError}
-                </Alert>
-              )}
-              {intervalError && (
-                <Alert severity="warning" sx={{ mt: 2 }}>
-                  {intervalError} Update the interval to run availability search.
-                </Alert>
-              )}
-            </Box>
-          </MaterialCard>
-        </ResponsiveSearchFilters>
-        <Typography component="h2" variant="h5" gutterBottom sx={pageStyles.resultsTitle}>
-          {isAvailabilityMode ? 'Available for your selected trip' : 'Browse cars'}
-        </Typography>
-        {isAvailabilityMode && (
-          <Typography color="text.secondary">
-            Availability checked now; no car is reserved or held.
-          </Typography>
-        )}
-        {intervalError ? (
-          <Alert severity="warning">
-            Correct your trip dates before searching for available cars.
-          </Alert>
-        ) : isLoading ? (
-          <ContentSkeleton label="Loading cars" />
-        ) : error ? (
-          <EmptyState
-            title={isAvailabilityMode ? 'Availability search failed' : 'Unable to load cars'}
-            description={error.message || 'Please try again.'}
-            actionLabel="Retry"
-            onAction={refetch}
-          />
-        ) : !data?.cars?.length ? (
-          <EmptyState
-            title={
-              isAvailabilityMode ? 'No cars are available for the selected time' : 'No cars found'
-            }
-            description="Change the dates, branch, or filters and try again."
-          />
-        ) : (
-          <Grid container spacing={3}>
-            {data.cars.map((car) => (
-              <Grid key={car.id} size={{ xs: 12, sm: 6, md: 4 }}>
-                <CarCard car={car} to={detailUrl(car.id)} />
-              </Grid>
-            ))}
-          </Grid>
-        )}
-        {!intervalError && meta?.totalPages > 1 && (
-          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', mt: 4 }}>
-            <Button
-              disabled={Number(meta.page) <= 1}
-              onClick={() => setPage(Number(meta.page) - 1)}
-            >
-              Previous
-            </Button>
-            <Typography sx={{ py: 1 }}>
-              Page {meta.page} of {meta.totalPages}
+                {formError && (
+                  <Alert severity="error" sx={{ mt: 2 }}>
+                    {formError}
+                  </Alert>
+                )}
+                {intervalError && (
+                  <Alert severity="warning" sx={{ mt: 2 }}>
+                    {intervalError} Update the interval to run availability search.
+                  </Alert>
+                )}
+              </Box>
+            </MaterialCard>
+          </ResponsiveSearchFilters>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography component="h2" variant="h5" gutterBottom sx={pageStyles.resultsTitle}>
+              {isAvailabilityMode ? 'Available for your trip' : 'Explore the fleet'}
             </Typography>
-            <Button
-              disabled={Number(meta.page) >= Number(meta.totalPages)}
-              onClick={() => setPage(Number(meta.page) + 1)}
-            >
-              Next
-            </Button>
+            {!error && !intervalError && !isLoading && meta?.total != null && (
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }} role="status">
+                {meta.total} cars found
+              </Typography>
+            )}
+            {isAvailabilityMode && (
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Availability checked now; no car is reserved or held.
+              </Typography>
+            )}
+            {intervalError ? (
+              <Alert severity="warning">
+                Correct your trip dates before searching for available cars.
+              </Alert>
+            ) : isLoading ? (
+              <ContentSkeleton label="Loading cars" />
+            ) : error ? (
+              <EmptyState
+                title={isAvailabilityMode ? 'Availability search failed' : 'Unable to load cars'}
+                description={error.message || 'Please try again.'}
+                actionLabel="Retry"
+                onAction={refetch}
+              />
+            ) : !data?.cars?.length ? (
+              <EmptyState
+                title={
+                  isAvailabilityMode
+                    ? 'No cars are available for the selected time'
+                    : 'No cars found'
+                }
+                description="Change the dates, branch, or filters and try again."
+              />
+            ) : (
+              <Grid container spacing={3}>
+                {data.cars.map((car) => (
+                  <Grid key={car.id} size={{ xs: 12, sm: 6 }}>
+                    <CarCard
+                      car={car}
+                      to={detailUrl(car.id)}
+                      availabilityChecked={isAvailabilityMode}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+            {!intervalError && meta?.totalPages > 1 && (
+              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', mt: 4 }}>
+                <Button
+                  disabled={Number(meta.page) <= 1}
+                  onClick={() => setPage(Number(meta.page) - 1)}
+                >
+                  Previous
+                </Button>
+                <Typography sx={{ py: 1 }}>
+                  Page {meta.page} of {meta.totalPages}
+                </Typography>
+                <Button
+                  disabled={Number(meta.page) >= Number(meta.totalPages)}
+                  onClick={() => setPage(Number(meta.page) + 1)}
+                >
+                  Next
+                </Button>
+              </Box>
+            )}
           </Box>
-        )}
+        </Box>
       </Container>
     </>
   )

@@ -9,8 +9,10 @@ export const pageStyles = {
     mb: 4,
   },
   formCard: {
-    p: 3,
+    p: 2.5,
     mb: 4,
+    position: { md: 'sticky' },
+    top: 100,
   },
   resultsTitle: {
     mb: 3,

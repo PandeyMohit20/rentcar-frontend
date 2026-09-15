@@ -1,13 +1,25 @@
-import TaxBreakdown from '@/features/invoice/TaxBreakdown'
+import QuotePriceBreakdown from '@/components/booking/QuotePriceBreakdown'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom'
-import { Box, Container, Typography, Grid, Chip, Stack, Alert, Divider } from '@mui/material'
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Chip,
+  Alert,
+  Divider,
+  Button,
+  Skeleton,
+} from '@mui/material'
 import Seo from '@/components/common/Seo'
 import MaterialCard from '@/components/ui/MaterialCard'
 import PrimaryButton from '@/components/buttons/PrimaryButton'
 import EmptyState from '@/components/common/EmptyState'
 import ContentSkeleton from '@/components/common/ContentSkeleton'
-import ImageLazy from '@/components/common/ImageLazy'
+import ImageGallery from '@/components/common/ImageGallery'
+import JourneySteps from '@/components/common/JourneySteps'
+import MobileBookingCTA from '@/components/booking/MobileBookingCTA'
 import { bookingService, carService, pricingService } from '@/services/modules'
 import { useApiMutation, useApiQuery, useQueryClient } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
@@ -39,6 +51,7 @@ function CarDetailsPage() {
     const current = quoteSession.get()
     return current?.contextKey === contextKey ? current : null
   })
+  const [priorQuote, setPriorQuote] = useState(null)
   const [quoteError, setQuoteError] = useState('')
   const [bookingError, setBookingError] = useState('')
   const [now, setNow] = useState(() => Date.now())
@@ -89,6 +102,13 @@ function CarDetailsPage() {
   })
 
   const activeQuote = quote?.contextKey === contextKey ? quote : null
+  const priceChanged = Boolean(
+    activeQuote &&
+    priorQuote &&
+    priorQuote.contextKey === contextKey &&
+    (Number(priorQuote.pricing?.payableAmount) !== Number(activeQuote.pricing?.payableAmount) ||
+      priorQuote.currencyCode !== activeQuote.currencyCode)
+  )
   useEffect(() => {
     const current = quoteSession.get()
     if (current && current.contextKey !== contextKey) quoteSession.clear()
@@ -110,6 +130,7 @@ function CarDetailsPage() {
     activeQuote && !quoteExpired ? Math.max(1, Math.ceil((expiresAtMs - now) / 60000)) : 0
   const createQuote = () => {
     if (!hasValidInterval || quoteMutation.isPending || bookingMutation.isPending) return
+    if (activeQuote) setPriorQuote(activeQuote)
     quoteSession.clear()
     setQuote(null)
     quoteMutation.mutate({ carId: id, pickupDateTime: pickup, returnDateTime: returnValue })
@@ -163,6 +184,10 @@ function CarDetailsPage() {
         description={`View ${car.brand} ${car.model} rental details.`}
       />
       <Container maxWidth="lg" sx={pageStyles.container}>
+        <JourneySteps active={1} />
+        <Button component={Link} to={`${ROUTES.SEARCH}?${params}`} sx={{ mb: 2, px: 0 }}>
+          Back to results
+        </Button>
         <Typography component="h1" variant="h4" sx={pageStyles.title}>
           {car.brand} {car.model}
         </Typography>
@@ -171,21 +196,35 @@ function CarDetailsPage() {
         </Typography>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 8 }}>
-            <MaterialCard sx={{ p: 3 }}>
-              <ImageLazy
-                src={car.primaryImageUrl || '/placeholder-car.svg'}
-                alt={`${car.brand} ${car.model}`}
-                ratio="16/10"
-              />
-              {car.images.length > 1 && (
-                <Stack direction="row" spacing={1} sx={{ mt: 2, overflowX: 'auto' }}>
-                  {car.images.slice(1).map((image) => (
-                    <Box key={image.id || image.url} sx={{ width: 120, flex: '0 0 auto' }}>
-                      <ImageLazy src={image.url} alt={image.alt} ratio="16/10" />
-                    </Box>
-                  ))}
-                </Stack>
-              )}
+            <MaterialCard sx={{ p: { xs: 2, sm: 3 } }}>
+              <ImageGallery images={car.images} alt={`${car.brand} ${car.model}`} />
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3,minmax(0,1fr))',
+                  gap: 1,
+                  mt: 3,
+                  py: 2,
+                  borderTop: 1,
+                  borderBottom: 1,
+                  borderColor: 'divider',
+                }}
+              >
+                {[
+                  ['Transmission', car.transmission],
+                  ['Fuel', car.fuelType],
+                  ['Seats', car.seatingCapacity],
+                ].map(([label, value]) => (
+                  <Box key={label}>
+                    <Typography variant="caption" color="text.secondary">
+                      {label}
+                    </Typography>
+                    <Typography sx={{ textTransform: 'capitalize', fontWeight: 700 }}>
+                      {value || 'Unavailable'}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
               {car.features.length > 0 && (
                 <>
                   <Typography variant="h6" sx={{ mt: 3 }} gutterBottom>
@@ -204,11 +243,55 @@ function CarDetailsPage() {
                 </>
               )}
             </MaterialCard>
+            <MaterialCard sx={{ p: 3, mt: 3 }}>
+              <Typography component="h2" variant="h6">
+                Pickup location
+              </Typography>
+              <Typography sx={{ mt: 1 }}>
+                {car.branch?.name || 'Pickup details unavailable'}
+              </Typography>
+              {car.branch?.address && (
+                <Typography color="text.secondary">{car.branch.address}</Typography>
+              )}
+              {car.vendor?.companyName && (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  Provided by {car.vendor.companyName}
+                </Typography>
+              )}
+              <Divider sx={{ my: 3 }} />
+              <Typography component="h2" variant="h6">
+                Before you reserve
+              </Typography>
+              <Typography color="text.secondary" sx={{ mt: 1 }}>
+                Review the rental terms and cancellation policy for your trip. Your car is reserved
+                only after you continue with a valid quote.
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                <Button component={Link} to={ROUTES.TERMS_CONDITIONS}>
+                  Rental terms
+                </Button>
+                <Button component={Link} to={ROUTES.CANCELLATION_POLICY}>
+                  Cancellation policy
+                </Button>
+                <Button component={Link} to={ROUTES.REFUND_POLICY}>
+                  Refund policy
+                </Button>
+              </Box>
+            </MaterialCard>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
-            <MaterialCard sx={{ p: 3, position: 'sticky', top: 90 }}>
-              <Typography variant="h5" color="primary">
-                {formatCurrency(car.dailyPrice, car.currencyCode)}
+            <MaterialCard
+              id="booking-summary"
+              tabIndex={-1}
+              sx={{ p: 3, position: 'sticky', top: 100, scrollMarginTop: 110 }}
+            >
+              <Typography variant="overline" color="text.secondary">
+                YOUR NEXT DRIVE
+              </Typography>
+              <Typography variant="h4" color="primary">
+                {car.dailyPrice == null
+                  ? 'Request a quote'
+                  : formatCurrency(car.dailyPrice, car.currencyCode)}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 per day — discovery price, not a final quote
@@ -232,7 +315,7 @@ function CarDetailsPage() {
                   <PrimaryButton
                     fullWidth
                     onClick={createQuote}
-                    disabled={quoteMutation.isPending}
+                    disabled={quoteMutation.isPending || bookingMutation.isPending}
                     sx={{ mt: 2 }}
                   >
                     {quoteMutation.isPending
@@ -259,6 +342,18 @@ function CarDetailsPage() {
                   </PrimaryButton>
                 </>
               )}
+              {quoteMutation.isPending && (
+                <Box role="status" aria-label="Generating your quote" sx={{ mt: 2 }}>
+                  <Skeleton height={32} />
+                  <Skeleton height={32} />
+                  <Skeleton height={48} />
+                </Box>
+              )}
+              {priceChanged && activeQuote && (
+                <Alert severity="warning" sx={{ mt: 2 }}>
+                  Your trip price has changed. Review the updated total before reserving.
+                </Alert>
+              )}
               {quoteError && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                   {quoteError}
@@ -267,52 +362,17 @@ function CarDetailsPage() {
               {activeQuote && (
                 <Box sx={{ mt: 3 }}>
                   <Divider sx={{ mb: 2 }} />
-                  <TaxBreakdown snapshot={activeQuote.financialSnapshot} />
                   <Typography component="h2" variant="h6">
-                    Trusted quote
+                    Your trip quote
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     Your rental price for the selected trip. Reserve to place a payment hold.
                   </Typography>
-                  {activeQuote.duration?.breakdown?.map((unit, index) => (
-                    <Box
-                      key={`${unit.unit}-${index}`}
-                      sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}
-                    >
-                      <Typography>
-                        {unit.count} × {unit.unit}
-                      </Typography>
-                      <Typography>
-                        {formatCurrency(unit.amount, activeQuote.currencyCode)}
-                      </Typography>
-                    </Box>
-                  ))}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                    <Typography>Rental subtotal</Typography>
-                    <Typography>
-                      {formatCurrency(
-                        activeQuote.pricing?.rentalSubtotal,
-                        activeQuote.currencyCode
-                      )}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography>Security deposit</Typography>
-                    <Typography>
-                      {formatCurrency(
-                        activeQuote.pricing?.securityDeposit,
-                        activeQuote.currencyCode
-                      )}
-                    </Typography>
-                  </Box>
-                  <Divider sx={{ my: 1 }} />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography fontWeight={700}>Total payable</Typography>
-                    <Typography fontWeight={700}>
-                      {formatCurrency(activeQuote.pricing?.payableAmount, activeQuote.currencyCode)}
-                    </Typography>
-                  </Box>
-                  <Alert severity={quoteExpired ? 'warning' : 'success'} sx={{ mt: 2 }}>
+                  <QuotePriceBreakdown quote={activeQuote} />
+                  <Alert
+                    severity={quoteExpired || remainingMinutes <= 2 ? 'warning' : 'success'}
+                    sx={{ mt: 2 }}
+                  >
                     {quoteExpired
                       ? 'This quote has expired. Request a fresh quote.'
                       : `Expires ${formatBusinessDateTime(activeQuote.expiresAt)} (about ${remainingMinutes} min remaining).`}
@@ -342,6 +402,51 @@ function CarDetailsPage() {
           </Grid>
         </Grid>
       </Container>
+      <MobileBookingCTA
+        price={
+          activeQuote && !quoteExpired
+            ? formatCurrency(activeQuote.pricing?.payableAmount, activeQuote.currencyCode)
+            : car.dailyPrice == null
+              ? 'Request a quote'
+              : formatCurrency(car.dailyPrice, car.currencyCode)
+        }
+        caption={
+          activeQuote && !quoteExpired
+            ? 'Trip total - review breakdown'
+            : 'Daily rate - quote required'
+        }
+        label={
+          bookingMutation.isPending
+            ? 'Reserving...'
+            : quoteMutation.isPending
+              ? 'Getting quote...'
+              : activeQuote && !quoteExpired
+                ? isAuthenticated
+                  ? 'Reserve Car'
+                  : 'Sign in'
+                : hasValidInterval
+                  ? 'Get Quote'
+                  : 'Select dates'
+        }
+        disabled={
+          bookingMutation.isPending ||
+          quoteMutation.isPending ||
+          (Boolean(activeQuote) && isRestoring)
+        }
+        onClick={() => {
+          const summary = document.getElementById('booking-summary')
+          summary?.scrollIntoView({
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+              ? 'instant'
+              : 'smooth',
+            block: 'start',
+          })
+          summary?.focus({ preventScroll: true })
+          if (activeQuote && !quoteExpired) createBooking()
+          else if (hasValidInterval) createQuote()
+          else navigate(`${ROUTES.SEARCH}?${params}`)
+        }}
+      />
     </>
   )
 }

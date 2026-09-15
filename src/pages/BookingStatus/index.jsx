@@ -1,7 +1,12 @@
 import TaxBreakdown from '@/features/invoice/TaxBreakdown'
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Alert, Button, Container, Divider, Stack, Typography } from '@mui/material'
+import { Alert, Box, Button, Container, Divider, Stack, Typography } from '@mui/material'
+import JourneySteps from '@/components/common/JourneySteps'
+import ImageLazy from '@/components/common/ImageLazy'
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
+import { useBookingInvoice } from '@/features/bookings/useBookings'
+import InvoiceDownload from '@/features/invoice/InvoiceDownload'
 import authSession from '@/services/api/authSession'
 import { BOOKING_STATUS_META, PAYMENT_STATUS_META } from '@/features/account/accountConstants'
 import Seo from '@/components/common/Seo'
@@ -140,7 +145,7 @@ function BookingStatusPage() {
         key: order.keyId,
         order_id: order.payment.providerOrderId,
         currency: order.payment.currencyCode,
-        name: 'RentCar',
+        name: 'CaronRent',
         description: `Payment for booking ${bookingQuery.data?.bookingNumber || ''}`,
         prefill: {
           name: user?.name || '',
@@ -282,6 +287,7 @@ function BookingStatusPage() {
     booking?.status === 'CONFIRMED' &&
     booking?.paymentStatus === 'succeeded' &&
     (!payment || (payment.status === 'succeeded' && payment.operationalStatus === 'normal'))
+  const invoiceQuery = useBookingInvoice(bookingId, isConfirmed)
   const isReview = payment?.operationalStatus === 'review_required'
   const isLateConflict = payment?.operationalStatus === 'late_payment_conflict'
   const isExpired = booking?.status === 'EXPIRED' || holdExpired
@@ -357,12 +363,74 @@ function BookingStatusPage() {
         title={`Booking ${booking.bookingNumber}`}
         description="Track your booking and payment status."
       />
-      <Container maxWidth="md" sx={{ py: 6 }}>
+      <Container maxWidth="md" sx={{ py: { xs: 2, md: 4 } }}>
+        <JourneySteps active={isConfirmed ? 3 : 2} />
         <MaterialCard sx={{ p: { xs: 2, md: 4 } }}>
           <Typography component="h1" variant="h4">
-            Booking status
+            {isConfirmed ? 'You are ready for the road.' : 'Your reservation'}
           </Typography>
-          <Typography color="text.secondary">{booking.bookingNumber}</Typography>
+          <Typography color="text.secondary" sx={{ mt: 1 }}>
+            Booking {booking.bookingNumber}
+          </Typography>
+          {isConfirmed && (
+            <CheckCircleOutlineRoundedIcon sx={{ color: 'primary.main', fontSize: 48, mt: 2 }} />
+          )}
+          {booking.car && (
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={2}
+              sx={{ mt: 3, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}
+            >
+              {booking.car.primaryImage?.url && (
+                <Box
+                  sx={{
+                    width: { xs: '100%', sm: 160 },
+                    flexShrink: 0,
+                    borderRadius: 1,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <ImageLazy
+                    src={booking.car.primaryImage.url}
+                    alt={[booking.car.brand, booking.car.model].filter(Boolean).join(' ')}
+                  />
+                </Box>
+              )}
+              <Box>
+                <Typography variant="overline" color="text.secondary">
+                  YOUR DRIVE
+                </Typography>
+                <Typography component="h2" variant="h5">
+                  {[booking.car.brand, booking.car.model].filter(Boolean).join(' ')}
+                </Typography>
+                {booking.car.branch?.name && (
+                  <Typography color="text.secondary">{booking.car.branch.name}</Typography>
+                )}
+              </Box>
+            </Stack>
+          )}
+          <Box sx={{ mt: 3, p: 2.5, border: 1, borderColor: 'divider', borderRadius: 1 }}>
+            <Typography variant="caption" color="text.secondary">
+              {isConfirmed ? 'Confirmed booking total' : 'Booking total'}
+            </Typography>
+            <Typography variant="h3" sx={{ color: 'primary.main', fontWeight: 800 }}>
+              {formatCurrency(booking.totalAmount, booking.currencyCode)}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {isConfirmed
+                ? 'Payment confirmed'
+                : 'Review your reservation before continuing to payment'}
+            </Typography>
+          </Box>
+          {busy && (
+            <Alert severity="info" sx={{ mt: 2 }} role="status">
+              {verifyMutation.isPending
+                ? 'Verifying your payment. Please keep this page open.'
+                : checkoutOpen
+                  ? 'Secure checkout is open. Complete your payment in Razorpay.'
+                  : 'Preparing your secure payment...'}
+            </Alert>
+          )}
           {isConfirmed ? (
             <Alert severity="success" sx={{ my: 3 }}>
               Your booking is confirmed. View the booking details for your trip.
@@ -459,6 +527,24 @@ function BookingStatusPage() {
               The payment amount differs from the booking total. Check the amount shown in Razorpay
               before continuing.
             </Alert>
+          )}
+          {isConfirmed && (
+            <Box sx={{ mt: 2 }}>
+              {invoiceQuery.isLoading ? (
+                <Typography role="status">Loading invoice...</Typography>
+              ) : invoiceQuery.error ? (
+                <Alert
+                  severity={invoiceQuery.error.status === 404 ? 'info' : 'error'}
+                  action={<Button onClick={() => invoiceQuery.refetch()}>Retry</Button>}
+                >
+                  {invoiceQuery.error.status === 404
+                    ? 'Your invoice has not been issued yet.'
+                    : invoiceQuery.error.message || 'Unable to load invoice.'}
+                </Alert>
+              ) : (
+                <InvoiceDownload invoice={invoiceQuery.data} />
+              )}
+            </Box>
           )}
           <Divider sx={{ my: 3 }} />
           {canPay && (

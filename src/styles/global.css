@@ -1,12 +1,12 @@
 /* ── Global CSS Variables ─────────────────────────────────────────────── */
 :root {
-  --color-primary: #1976d2;
-  --color-primary-dark: #004ba0;
-  --color-primary-light: #63a4ff;
-  --color-secondary: #ff6f00;
-  --color-text-primary: #1a1a2e;
-  --color-text-secondary: #5f6368;
-  --color-background: #f5f7fa;
+  --color-primary: #12695b;
+  --color-primary-dark: #0b4b41;
+  --color-primary-light: #79c8b7;
+  --color-secondary: #a86a35;
+  --color-text-primary: #162b28;
+  --color-text-secondary: #52645e;
+  --color-background: #f6f7f4;
   --color-surface: #ffffff;
   --color-border: rgba(0, 0, 0, 0.12);
   --color-error: #d32f2f;
@@ -166,4 +166,21 @@ ol {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+section[id] {
+  scroll-margin-top: 100px;
+}
+.skip-link {
+  position: fixed;
+  top: -80px;
+  left: 16px;
+  z-index: 1500;
+  background: #fff;
+  color: #0b4b41;
+  padding: 12px 20px;
+  border-radius: 6px;
+}
+.skip-link:focus {
+  top: 12px;
 }

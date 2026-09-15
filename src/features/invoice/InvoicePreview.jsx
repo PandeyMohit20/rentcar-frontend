@@ -30,6 +30,8 @@ function InvoicePreview({ invoice }) {
   if (!invoice) return null
 
   const discount = Number(invoice.discount || 0)
+  const uat = invoice.snapshot?.financial?.taxMode === 'UAT_BYPASS'
+  const unregistered = invoice.snapshot?.financial?.gstRegistrationStatus === 'UNREGISTERED'
 
   return (
     <Box aria-label={`Invoice ${invoice.invoiceNumber}`}>
@@ -40,7 +42,13 @@ function InvoicePreview({ invoice }) {
         spacing={1}
       >
         <Box>
-          <Typography variant="h6">Invoice</Typography>
+          <Typography variant="h6">
+            {uat
+              ? 'UAT Receipt'
+              : unregistered
+                ? invoice.snapshot?.seller?.documentTitle || 'Billing document'
+                : 'Invoice'}
+          </Typography>
           <Typography variant="body2" color="text.secondary">
             {invoice.invoiceNumber}
           </Typography>
@@ -72,7 +80,9 @@ function InvoicePreview({ invoice }) {
           currencyCode={invoice.currencyCode}
         />
       )}
-      <AmountRow label="Tax" amount={invoice.tax} currencyCode={invoice.currencyCode} />
+      {!uat && !unregistered && (
+        <AmountRow label="Tax" amount={invoice.tax} currencyCode={invoice.currencyCode} />
+      )}
       {discount > 0 && (
         <AmountRow label="Discount" amount={-discount} currencyCode={invoice.currencyCode} />
       )}

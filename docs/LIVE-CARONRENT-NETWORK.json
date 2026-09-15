@@ -1,0 +1,717 @@
+{
+  "startedAt": "2026-09-15T06:08:38.824Z",
+  "api": "http://localhost:5000/api/v1",
+  "origin": "http://localhost:5173",
+  "mode": "LIVE; no interception or fixtures",
+  "network": [
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/health",
+      "status": 200,
+      "purpose": "Connectivity and live data selection",
+      "result": "Success"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/health/database",
+      "status": 200,
+      "purpose": "Connectivity and live data selection",
+      "result": "Success"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Connectivity and live data selection",
+      "result": "Success"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/featured",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/availability/search",
+      "status": 200,
+      "purpose": "Search actual availability",
+      "request": {
+        "pickupDateTime": "2026-09-22T10:00:00+05:30",
+        "returnDateTime": "2026-09-23T10:00:00+05:30",
+        "branchId": "d5f9c996-6a74-47d0-b2e3-2a75688486a9",
+        "page": 1,
+        "limit": 12
+      },
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/featured",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/availability/search",
+      "status": 200,
+      "purpose": "Search actual availability",
+      "request": {
+        "pickupDateTime": "2026-09-22T10:00:00+05:30",
+        "returnDateTime": "2026-09-23T10:00:00+05:30",
+        "branchId": "d5f9c996-6a74-47d0-b2e3-2a75688486a9",
+        "page": 1,
+        "limit": 12
+      },
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/featured",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/availability/search",
+      "status": 200,
+      "purpose": "Search actual availability",
+      "request": {
+        "pickupDateTime": "2026-09-22T10:00:00+05:30",
+        "returnDateTime": "2026-09-23T10:00:00+05:30",
+        "branchId": "d5f9c996-6a74-47d0-b2e3-2a75688486a9",
+        "page": 1,
+        "limit": 12
+      },
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/featured",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/availability/search",
+      "status": 200,
+      "purpose": "Search actual availability",
+      "request": {
+        "pickupDateTime": "2026-09-22T10:00:00+05:30",
+        "returnDateTime": "2026-09-23T10:00:00+05:30",
+        "branchId": "d5f9c996-6a74-47d0-b2e3-2a75688486a9",
+        "page": 1,
+        "limit": 12
+      },
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/featured",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/availability/search",
+      "status": 200,
+      "purpose": "Search actual availability",
+      "request": {
+        "pickupDateTime": "2026-09-22T10:00:00+05:30",
+        "returnDateTime": "2026-09-23T10:00:00+05:30",
+        "branchId": "d5f9c996-6a74-47d0-b2e3-2a75688486a9",
+        "page": 1,
+        "limit": 12
+      },
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/locations/branches",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Authentication required. Provide a Bearer token.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401,
+      "purpose": "Restore guest session",
+      "result": "Refresh token is required.",
+      "hasInternalStack": false,
+      "errorCode": "AUTH_UNAUTHORIZED"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "status": 200,
+      "purpose": "Read live catalog/location data",
+      "result": "Success",
+      "hasInternalStack": false
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/pricing/quote",
+      "status": 409,
+      "purpose": "Create real trip quote",
+      "request": {
+        "carId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+        "pickupDateTime": "2026-09-22T10:00:00+05:30",
+        "returnDateTime": "2026-09-23T10:00:00+05:30"
+      },
+      "result": "PARTIALLY_APPROVED_REQUIRES_RATE_AND_CESS_CONFIRMATION",
+      "hasInternalStack": false,
+      "errorCode": "PARTIALLY_APPROVED_REQUIRES_RATE_AND_CESS_CONFIRMATION"
+    }
+  ],
+  "checks": [
+    {
+      "scenario": "Backend and database health",
+      "result": "PASS",
+      "details": "HTTP 200"
+    },
+    {
+      "scenario": "Home loads live fleet and branches",
+      "result": "PASS",
+      "details": "Runtime Axios base URL verified; HTTP 200 catalog and branches"
+    },
+    {
+      "scenario": "Home to availability search",
+      "result": "PASS",
+      "details": "Actual form selection; branch and exact IST timestamps preserved in URL"
+    },
+    {
+      "scenario": "Search refresh persistence",
+      "result": "PASS",
+      "details": "Same branch/pickup/return"
+    },
+    {
+      "scenario": "Browser back/forward and car context",
+      "result": "PASS",
+      "details": "Live vehicle details; original query unchanged"
+    },
+    {
+      "scenario": "Live Home search form 390",
+      "result": "PASS",
+      "details": {
+        "width": 390,
+        "scrollWidth": 382
+      }
+    },
+    {
+      "scenario": "Live results 390",
+      "result": "PASS",
+      "details": {
+        "width": 390,
+        "scrollWidth": 382
+      }
+    },
+    {
+      "scenario": "Live filter drawer 390",
+      "result": "PASS",
+      "details": {
+        "width": 390,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "scenario": "Live car details 390",
+      "result": "PASS",
+      "details": {
+        "width": 390,
+        "scrollWidth": 382
+      }
+    },
+    {
+      "scenario": "MobileBookingCTA with live car",
+      "result": "PASS",
+      "details": "Quote action visible; no reservation yet"
+    },
+    {
+      "scenario": "Live Home search form 768",
+      "result": "PASS",
+      "details": {
+        "width": 768,
+        "scrollWidth": 760
+      }
+    },
+    {
+      "scenario": "Live results 768",
+      "result": "PASS",
+      "details": {
+        "width": 768,
+        "scrollWidth": 760
+      }
+    },
+    {
+      "scenario": "Live filter drawer 768",
+      "result": "PASS",
+      "details": {
+        "width": 768,
+        "scrollWidth": 768
+      }
+    },
+    {
+      "scenario": "Live car details 768",
+      "result": "PASS",
+      "details": {
+        "width": 768,
+        "scrollWidth": 760
+      }
+    },
+    {
+      "scenario": "Live Home search form 1024",
+      "result": "PASS",
+      "details": {
+        "width": 1024,
+        "scrollWidth": 1016
+      }
+    },
+    {
+      "scenario": "Live results 1024",
+      "result": "PASS",
+      "details": {
+        "width": 1024,
+        "scrollWidth": 1016
+      }
+    },
+    {
+      "scenario": "Live car details 1024",
+      "result": "PASS",
+      "details": {
+        "width": 1024,
+        "scrollWidth": 1016
+      }
+    },
+    {
+      "scenario": "Live Home search form 1440",
+      "result": "PASS",
+      "details": {
+        "width": 1440,
+        "scrollWidth": 1432
+      }
+    },
+    {
+      "scenario": "Live results 1440",
+      "result": "PASS",
+      "details": {
+        "width": 1440,
+        "scrollWidth": 1432
+      }
+    },
+    {
+      "scenario": "Live car details 1440",
+      "result": "PASS",
+      "details": {
+        "width": 1440,
+        "scrollWidth": 1432
+      }
+    },
+    {
+      "scenario": "Desktop sticky booking card",
+      "result": "PASS",
+      "details": "Live vehicle quote card uses sticky positioning"
+    },
+    {
+      "scenario": "Live gallery",
+      "result": "PASS",
+      "details": "Actual vehicle image URLs; fullscreen and zoom controls"
+    }
+  ],
+  "bookingsCreated": [],
+  "paymentsAttempted": false,
+  "branchId": "d5f9c996-6a74-47d0-b2e3-2a75688486a9",
+  "runtimeApi": "http://localhost:5000/api/v1",
+  "trip": {
+    "branchId": "d5f9c996-6a74-47d0-b2e3-2a75688486a9",
+    "pickup": "2026-09-22T10:00:00+05:30",
+    "return": "2026-09-23T10:00:00+05:30"
+  },
+  "carId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+  "quoteRequest": {
+    "method": "POST",
+    "endpoint": "/api/v1/pricing/quote",
+    "status": 409,
+    "purpose": "Create real trip quote",
+    "request": {
+      "carId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "pickupDateTime": "2026-09-22T10:00:00+05:30",
+      "returnDateTime": "2026-09-23T10:00:00+05:30"
+    },
+    "result": "PARTIALLY_APPROVED_REQUIRES_RATE_AND_CESS_CONFIRMATION",
+    "hasInternalStack": false,
+    "errorCode": "PARTIALLY_APPROVED_REQUIRES_RATE_AND_CESS_CONFIRMATION"
+  },
+  "quoteUiMessage": "PARTIALLY_APPROVED_REQUIRES_RATE_AND_CESS_CONFIRMATION",
+  "boundary": {
+    "scenario": "Real pricing quote",
+    "result": "FAIL",
+    "endpoint": "/api/v1/pricing/quote",
+    "status": 409,
+    "message": "PARTIALLY_APPROVED_REQUIRES_RATE_AND_CESS_CONFIRMATION",
+    "uiMessage": "PARTIALLY_APPROVED_REQUIRES_RATE_AND_CESS_CONFIRMATION"
+  }
+}

@@ -19,7 +19,9 @@ import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import Brand from '@/components/common/Brand'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import { ROUTES } from '@/constants/routes'
 import { useAuth } from '@/hooks/useAuth'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -32,30 +34,39 @@ function Navbar({ menus = [] }) {
   const { isAuthenticated, isRestoring } = useAuth()
   const { mode, toggleTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { pathname } = useLocation()
 
-  const authLinks = isAuthenticated
-    ? [
-        { label: 'My Bookings', to: ROUTES.MY_BOOKINGS },
-        { label: 'Profile', to: ROUTES.PROFILE },
-      ]
-    : []
+  const authLinks = isAuthenticated ? [{ label: 'Profile', to: ROUTES.PROFILE }] : []
 
   const renderLink = (menu) => (
-    <Button key={menu.to} color="inherit" component={Link} to={menu.to}>
+    <Button
+      key={menu.to}
+      color="inherit"
+      component={Link}
+      to={menu.to}
+      aria-current={pathname === menu.to ? 'page' : undefined}
+      sx={{ color: pathname === menu.to ? 'primary.main' : 'text.secondary', fontSize: 13 }}
+    >
       {menu.label}
     </Button>
   )
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="sticky" color="inherit">
-        <Toolbar>
+    <Box sx={{ position: 'sticky', top: 0, zIndex: 1100, flexShrink: 0 }}>
+      <AppBar
+        position="static"
+        color="inherit"
+        sx={{ borderRadius: 0, boxShadow: '0 3px 16px rgba(16,35,32,.04)' }}
+      >
+        <Toolbar sx={{ maxWidth: 1280, width: '100%', mx: 'auto', minHeight: { xs: 68, md: 80 } }}>
           <IconButton
             edge="start"
             color="inherit"
-            aria-label="open drawer"
+            aria-label="Open navigation"
+            aria-expanded={mobileOpen}
+            aria-controls={mobileOpen ? 'mobile-navigation' : undefined}
             onClick={() => setMobileOpen(true)}
-            sx={{ mr: 1, display: { xs: 'inline-flex', md: 'none' } }}
+            sx={{ mr: 1, display: { xs: 'inline-flex', lg: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -66,7 +77,7 @@ function Navbar({ menus = [] }) {
             color="inherit"
             sx={{ fontWeight: 800, fontSize: '1.15rem', letterSpacing: -0.5 }}
           >
-            RentCar
+            <Brand />
           </Button>
 
           <Box sx={{ flexGrow: 1 }} />
@@ -85,7 +96,7 @@ function Navbar({ menus = [] }) {
             </Tooltip>
           </Stack>
 
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, ml: 1 }}>
+          <Box sx={{ display: { xs: 'none', lg: 'flex' }, gap: 1, ml: 1 }}>
             {menus.map(renderLink)}
             {authLinks.map(renderLink)}
             {isRestoring ? null : isAuthenticated ? (
@@ -100,7 +111,21 @@ function Navbar({ menus = [] }) {
       </AppBar>
 
       <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
-        <Box sx={{ width: 280 }} role="presentation" onClick={() => setMobileOpen(false)}>
+        <Box
+          id="mobile-navigation"
+          component="nav"
+          aria-label="Mobile navigation"
+          sx={{ width: 300, maxWidth: '90vw', p: 2 }}
+          onClick={() => setMobileOpen(false)}
+        >
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+          >
+            <Brand />
+            <IconButton aria-label="Close navigation" onClick={() => setMobileOpen(false)}>
+              <CloseRoundedIcon />
+            </IconButton>
+          </Box>
           <List>
             {[...menus, ...authLinks].map((menu) => (
               <ListItem key={menu.to} disablePadding>

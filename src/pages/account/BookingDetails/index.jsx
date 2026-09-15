@@ -1,3 +1,4 @@
+import JourneySteps from '@/components/common/JourneySteps'
 import TaxBreakdown from '@/features/invoice/TaxBreakdown'
 import { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
@@ -181,6 +182,47 @@ function BookingDetailsPage() {
       actionIcon={ArrowBackIcon}
       onAction={() => navigate(ROUTES.MY_BOOKINGS)}
     >
+      <Box
+        sx={{
+          mb: 3,
+          p: { xs: 2, md: 3 },
+          bgcolor: 'background.paper',
+          border: 1,
+          borderColor: 'divider',
+          borderRadius: 2,
+        }}
+      >
+        <Stack
+          direction="row"
+          flexWrap="wrap"
+          gap={1}
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mb: 3 }}
+        >
+          <Typography component="h2" variant="h5">
+            Your trip at a glance
+          </Typography>
+          <Chip label={bookingMeta.label} color={bookingMeta.color} />
+        </Stack>
+        {['PAYMENT_PENDING', 'CONFIRMED', 'ACTIVE', 'COMPLETED'].includes(booking.status) && (
+          <JourneySteps active={booking.status === 'PAYMENT_PENDING' ? 2 : 3} />
+        )}
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} justifyContent="space-between">
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              PICKUP
+            </Typography>
+            <Typography fontWeight={700}>{formatBusinessDateTime(booking.startAt)}</Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              RETURN
+            </Typography>
+            <Typography fontWeight={700}>{formatBusinessDateTime(booking.endAt)}</Typography>
+          </Box>
+        </Stack>
+      </Box>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Stack spacing={3}>

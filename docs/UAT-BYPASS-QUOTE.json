@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-09-15T11:32:02.012Z",
+  "method": "POST",
+  "endpoint": "http://localhost:5000/api/v1/pricing/quote",
+  "status": 201,
+  "request": {
+    "carId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+    "pickupDateTime": "2026-09-22T10:00:00+05:30",
+    "returnDateTime": "2026-09-23T10:00:00+05:30"
+  },
+  "response": {
+    "success": true,
+    "message": "Trusted pricing quote created successfully.",
+    "data": {
+      "quoteId": "88554667-d38e-44b9-a5d3-edf3bc357e54",
+      "carId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "pickupDateTime": "2026-09-22T10:00:00+05:30",
+      "returnDateTime": "2026-09-23T10:00:00+05:30",
+      "currencyCode": "INR",
+      "duration": {
+        "totalMinutes": 1440,
+        "billableHours": 24,
+        "breakdown": [
+          {
+            "unit": "day",
+            "count": 1,
+            "rate": 2100,
+            "amount": 2100
+          }
+        ],
+        "rentalSubtotal": 2100
+      },
+      "pricing": {
+        "pricingId": "6e3f21b1-cb22-47a3-a596-48095607704f",
+        "rentalSubtotal": 2100,
+        "securityDeposit": 3500,
+        "payableAmount": 5600,
+        "financialSnapshot": {
+          "version": 2,
+          "taxMode": "UAT_BYPASS",
+          "policyStatus": "uat_bypass",
+          "policyVersion": null,
+          "gstRegistrationStatus": null,
+          "rentalSubtotal": 2100,
+          "additionalCharges": 0,
+          "taxableAmount": null,
+          "tax": {
+            "type": "UAT_BYPASS",
+            "totalTax": 0
+          },
+          "cess": {
+            "treatment": "uat_bypass",
+            "totalCess": 0
+          },
+          "securityDeposit": 3500,
+          "depositTreatment": "uat_bypass",
+          "grandTotal": 5600,
+          "currency": "INR"
+        }
+      },
+      "financialSnapshot": {
+        "version": 2,
+        "taxMode": "UAT_BYPASS",
+        "policyStatus": "uat_bypass",
+        "policyVersion": null,
+        "gstRegistrationStatus": null,
+        "rentalSubtotal": 2100,
+        "additionalCharges": 0,
+        "taxableAmount": null,
+        "tax": {
+          "type": "UAT_BYPASS",
+          "totalTax": 0
+        },
+        "cess": {
+          "treatment": "uat_bypass",
+          "totalCess": 0
+        },
+        "securityDeposit": 3500,
+        "depositTreatment": "uat_bypass",
+        "grandTotal": 5600,
+        "currency": "INR"
+      },
+      "expiresAt": "2026-09-15T11:42:01.976Z",
+      "availability": {
+        "available": true,
+        "held": false
+      },
+      "quoteToken": "[REDACTED]"
+    }
+  }
+}

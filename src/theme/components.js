@@ -17,9 +17,10 @@ const components = (mode) => ({
   MuiCard: {
     styleOverrides: {
       root: {
-        borderRadius: 12,
+        borderRadius: 10,
+        border: `1px solid ${mode === 'light' ? '#e1e7e1' : '#3b5049'}`,
         boxShadow:
-          mode === 'light' ? '0 2px 8px rgba(0, 0, 0, 0.06)' : '0 2px 8px rgba(0, 0, 0, 0.4)',
+          mode === 'light' ? '0 2px 6px rgba(16, 35, 32, 0.025)' : '0 2px 8px rgba(0, 0, 0, 0.4)',
       },
     },
   },

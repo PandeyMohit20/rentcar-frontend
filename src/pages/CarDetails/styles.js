@@ -3,7 +3,8 @@
  */
 export const pageStyles = {
   container: {
-    py: 4,
+    pt: 4,
+    pb: { xs: 13, md: 6 },
   },
   title: {
     mb: 1,

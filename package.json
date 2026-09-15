@@ -8,7 +8,7 @@
     "dev": "vite",
     "start": "vite",
     "build": "vite build",
-    "test": "node --test tests/payment-phone-prerequisite.test.js tests/booking-status-presentation.test.js",
+    "test": "node --test tests/payment-phone-prerequisite.test.js tests/booking-status-presentation.test.js tests/gst-presentation.test.js tests/uat-tax-presentation.test.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

@@ -1,0 +1,194 @@
+{
+  "checkedAt": "2026-09-15T09:21:40.556Z",
+  "check": "Quote Readiness",
+  "method": "Direct read-only invocation of the same service used by GET /api/v1/admin/billing-approval",
+  "httpStatus": null,
+  "environment": "development",
+  "testDatabaseMock": false,
+  "result": "BLOCKED",
+  "approvalStatus": "PARTIALLY_APPROVED_REQUIRES_RATE_AND_CESS_CONFIRMATION",
+  "blockerCount": 35,
+  "blockers": [
+    {
+      "code": "MISSING_VENDOR_TAX_PROFILE",
+      "entityId": "564ebf45-1cae-4ca1-a29e-d4794733b57c",
+      "field": "taxProfile"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "10a38e07-f769-4816-8aba-967185ad206e",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "10a38e07-f769-4816-8aba-967185ad206e",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "563fb074-8272-4dd1-a378-51141f9e899f",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "563fb074-8272-4dd1-a378-51141f9e899f",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "68dec66f-f98a-42e7-880a-2166065c76f3",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "68dec66f-f98a-42e7-880a-2166065c76f3",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "7c002acf-5ad6-4179-86a2-80281deb2f19",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "7c002acf-5ad6-4179-86a2-80281deb2f19",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "8b961fab-6eee-4858-819c-8c4c339f6216",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "8b961fab-6eee-4858-819c-8c4c339f6216",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "93913ed5-db88-4e4a-b943-95fb8911101a",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "93913ed5-db88-4e4a-b943-95fb8911101a",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "9f2313e6-f2e1-438c-bf8a-32a6b6503d62",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "9f2313e6-f2e1-438c-bf8a-32a6b6503d62",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "ad8e18a1-8e70-4197-b950-46f057a484e1",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "ad8e18a1-8e70-4197-b950-46f057a484e1",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "c78a7595-0544-406b-987d-7133dae108d7",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "c78a7595-0544-406b-987d-7133dae108d7",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "cab40dbd-71be-4ea1-89f2-9df0e719d63b",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "cab40dbd-71be-4ea1-89f2-9df0e719d63b",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "cfde7ac8-b29a-48c7-a949-70ad29e78659",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "cfde7ac8-b29a-48c7-a949-70ad29e78659",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "dc96154a-7035-481b-b335-8fccb6f4d310",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "dc96154a-7035-481b-b335-8fccb6f4d310",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "e4a00579-9bdc-4931-b099-4e75e3940e5c",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "e4a00579-9bdc-4931-b099-4e75e3940e5c",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "GST_DECISION_REQUIRED",
+      "entityId": "f98fa5b7-daf8-4f09-b46d-a15d14e64ad8",
+      "field": "gstRateBps"
+    },
+    {
+      "code": "CESS_DECISION_REQUIRED",
+      "entityId": "f98fa5b7-daf8-4f09-b46d-a15d14e64ad8",
+      "field": "cessRateBps"
+    },
+    {
+      "code": "RATE_CONFIRMATION_REQUIRED",
+      "entityId": "2b8410cb-c275-4bde-a426-afd7376b9af8",
+      "field": "rateConfirmed"
+    },
+    {
+      "code": "CESS_CONFIRMATION_REQUIRED",
+      "entityId": "2b8410cb-c275-4bde-a426-afd7376b9af8",
+      "field": "cessConfirmed"
+    },
+    {
+      "code": "TAX_CONFIRMATION_REQUIRED",
+      "entityId": "2b8410cb-c275-4bde-a426-afd7376b9af8",
+      "field": "taxConfirmed"
+    },
+    {
+      "code": "TAX_POLICY_CONFIGURATION_INVALID",
+      "entityId": "2b8410cb-c275-4bde-a426-afd7376b9af8",
+      "field": null
+    }
+  ],
+  "settingUpdatedAt": "2026-09-09T10:00:09.344Z",
+  "configuredVendorProfiles": 0,
+  "quoteRetried": false,
+  "bookingsCreated": [],
+  "paymentsCreated": [],
+  "dataChanged": false
+}

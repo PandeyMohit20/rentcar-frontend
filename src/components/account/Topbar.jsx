@@ -3,13 +3,14 @@ import MenuIcon from '@mui/icons-material/Menu'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
 import { Link } from 'react-router-dom'
+import Brand from '@/components/common/Brand'
 import { ROUTES } from '@/constants/routes'
 import { useTheme } from '@/contexts/ThemeContext'
 
 function Topbar({ onMenuClick, menuOpen }) {
   const { mode, toggleTheme } = useTheme()
   return (
-    <AppBar position="static" color="inherit" elevation={0}>
+    <AppBar position="sticky" color="inherit" elevation={0}>
       <Toolbar sx={{ gap: 1 }}>
         <IconButton
           color="inherit"
@@ -27,7 +28,7 @@ function Topbar({ onMenuClick, menuOpen }) {
           color="inherit"
           sx={{ fontWeight: 800, fontSize: '1.15rem', px: 1 }}
         >
-          RentCar
+          <Brand />
         </Button>
         <Box sx={{ flexGrow: 1 }} />
         <IconButton

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { Box, Container, Grid, Typography, Link, Divider } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import { ROUTES } from '@/constants/routes'
+import Brand from '@/components/common/Brand'
 import { APP_NAME } from '@/constants/app'
 
 /**
@@ -30,13 +31,19 @@ function Footer({ links = [], secondaryLinks = [] }) {
   return (
     <Box
       component="footer"
-      sx={{ mt: 8, py: 5, bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider' }}
+      sx={{
+        mt: 4,
+        py: { xs: 4, md: 7 },
+        bgcolor: 'background.paper',
+        borderTop: 1,
+        borderColor: 'divider',
+      }}
     >
       <Container maxWidth="lg">
         <Grid container spacing={4}>
           <Grid size={{ xs: 12, md: 4 }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 800 }}>
-              {APP_NAME}
+              <Brand />
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Find a car, review your trip quote, and manage your bookings.
@@ -54,6 +61,7 @@ function Footer({ links = [], secondaryLinks = [] }) {
                   to={link.to}
                   color="text.secondary"
                   variant="body2"
+                  sx={{ minHeight: 36, display: 'flex', alignItems: 'center' }}
                 >
                   {link.label}
                 </Link>
@@ -72,6 +80,7 @@ function Footer({ links = [], secondaryLinks = [] }) {
                   to={link.to}
                   color="text.secondary"
                   variant="body2"
+                  sx={{ minHeight: 36, display: 'flex', alignItems: 'center' }}
                 >
                   {link.label}
                 </Link>

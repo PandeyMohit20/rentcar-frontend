@@ -1,4 +1,5 @@
 ﻿import { Box, Button, Chip, Stack, TablePagination, Typography, useMediaQuery } from '@mui/material'
+import ImageLazy from '@/components/common/ImageLazy'
 import DataTable from '@/components/tables/DataTable'
 import { AccountSkeleton } from './AccountUI'
 import { formatCurrency } from '@/utils/formatters'
@@ -117,6 +118,14 @@ function BookingTable({
       {bookings.map((booking) => (
         <Box key={booking.id} sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2 }}>
           <Stack spacing={2}>
+            {booking.car?.primaryImage?.url && (
+              <ImageLazy
+                src={booking.car.primaryImage.url}
+                alt={[booking.car.brand, booking.car.model].filter(Boolean).join(' ')}
+                ratio="16/7"
+                sx={{ borderRadius: 1 }}
+              />
+            )}
             <Typography fontWeight={700} sx={{ overflowWrap: 'anywhere' }}>
               {booking.bookingNumber || 'Booking'}
             </Typography>

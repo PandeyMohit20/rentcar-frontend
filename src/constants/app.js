@@ -1,7 +1,7 @@
 /**
  * Global application constants.
  */
-export const APP_NAME = import.meta.env.VITE_APP_NAME || 'RentCar'
+export const APP_NAME = 'CaronRent'
 export const APP_ENV = import.meta.env.VITE_APP_ENV || 'development'
 export const APP_VERSION = import.meta.env.VITE_APP_VERSION || '1.0.0'
 

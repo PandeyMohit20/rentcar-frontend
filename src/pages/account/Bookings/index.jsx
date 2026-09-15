@@ -10,6 +10,8 @@ import {
   Select,
   Stack,
   Typography,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 import { AccountPageShell, BookingTable } from '@/components/account'
@@ -85,6 +87,36 @@ function BookingsPage() {
           </FormControl>
         </Stack>
 
+        <ToggleButtonGroup
+          exclusive
+          value={status}
+          onChange={(_event, value) => {
+            if (value !== null) {
+              setStatus(value)
+              setPage(1)
+            }
+          }}
+          aria-label="Quick booking status filters"
+          sx={{
+            mb: 3,
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 1,
+            '& .MuiToggleButton-root': {
+              border: 1,
+              borderColor: 'divider',
+              borderRadius: '6px !important',
+              px: 2,
+              minHeight: 44,
+              textTransform: 'none',
+            },
+          }}
+        >
+          <ToggleButton value="">All bookings</ToggleButton>
+          <ToggleButton value="CONFIRMED">Confirmed</ToggleButton>
+          <ToggleButton value="COMPLETED">Completed</ToggleButton>
+          <ToggleButton value="CANCELLED">Cancelled</ToggleButton>
+        </ToggleButtonGroup>
         {bookingsQuery.error ? (
           <Alert
             severity="error"

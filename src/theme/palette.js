@@ -4,15 +4,15 @@
 const palette = (mode) => ({
   mode,
   primary: {
-    main: '#2563eb',
-    light: '#60a5fa',
-    dark: '#1d4ed8',
-    contrastText: '#ffffff',
+    main: mode === 'light' ? '#12695b' : '#79c8b7',
+    light: '#79c8b7',
+    dark: '#0b4b41',
+    contrastText: mode === 'light' ? '#ffffff' : '#162b28',
   },
   secondary: {
-    main: '#f97316',
-    light: '#fb923c',
-    dark: '#ea580c',
+    main: '#a86a35',
+    light: '#d5a477',
+    dark: '#805027',
     contrastText: '#ffffff',
   },
   success: {
@@ -40,18 +40,18 @@ const palette = (mode) => ({
     contrastText: '#ffffff',
   },
   background: {
-    default: mode === 'light' ? '#f8fafc' : '#0f172a',
-    paper: mode === 'light' ? '#ffffff' : '#1e293b',
+    default: mode === 'light' ? '#f6f7f4' : '#162b28',
+    paper: mode === 'light' ? '#ffffff' : '#203632',
   },
   text: {
-    primary: mode === 'light' ? '#0f172a' : '#f1f5f9',
-    secondary: mode === 'light' ? '#475569' : '#94a3b8',
-    disabled: mode === 'light' ? '#94a3b8' : '#64748b',
+    primary: mode === 'light' ? '#162b28' : '#f1f5f2',
+    secondary: mode === 'light' ? '#52645e' : '#9badA5',
+    disabled: mode === 'light' ? '#9badA5' : '#64748b',
   },
   divider: mode === 'light' ? 'rgba(15, 23, 42, 0.12)' : 'rgba(248, 250, 252, 0.12)',
   action: {
-    hover: mode === 'light' ? 'rgba(37, 99, 235, 0.08)' : 'rgba(37, 99, 235, 0.16)',
-    selected: mode === 'light' ? 'rgba(37, 99, 235, 0.14)' : 'rgba(37, 99, 235, 0.24)',
+    hover: mode === 'light' ? 'rgba(18, 105, 91, 0.08)' : 'rgba(18, 105, 91, 0.16)',
+    selected: mode === 'light' ? 'rgba(18, 105, 91, 0.14)' : 'rgba(18, 105, 91, 0.24)',
   },
 })
 

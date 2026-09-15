@@ -28,7 +28,9 @@ export default function InvoiceDownload({ invoice }) {
   return (
     <Stack spacing={1} sx={{ my: 2 }}>
       {invoice.pdfBlocker ? (
-        <Alert severity="info">PDF unavailable: {invoice.pdfBlocker}</Alert>
+        <Alert severity="info">
+          This document is currently unavailable. Please contact support.
+        </Alert>
       ) : (
         <Button onClick={download} disabled={busy}>
           {busy ? 'Downloading…' : 'Download Invoice PDF'}

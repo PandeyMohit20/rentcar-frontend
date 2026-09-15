@@ -1,21 +1,15 @@
-import PropTypes from 'prop-types'
 import { useState } from 'react'
-import { Paper, TextField, MenuItem, InputAdornment, Button } from '@mui/material'
-import LocationOnIcon from '@mui/icons-material/LocationOn'
-import SearchIcon from '@mui/icons-material/Search'
+import { Box, Paper, TextField, MenuItem, Button, Typography } from '@mui/material'
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
+import DateTimeSelector from '@/features/search/DateTimeSelector'
 
-/**
- * Hero search bar for location + dates + category.
- * Presentational only — calls onSearch with form values.
- */
-function HeroSearchForm({ locations = [], categories = [], onSearch }) {
+export default function HeroSearchForm({ locations = [], onSearch }) {
   const [values, setValues] = useState({
     branchId: '',
     pickupDate: '',
     pickupTime: '',
     returnDate: '',
     returnTime: '',
-    brand: '',
   })
   const update = (key) => (event) =>
     setValues((current) => ({ ...current, [key]: event.target.value }))
@@ -26,113 +20,70 @@ function HeroSearchForm({ locations = [], categories = [], onSearch }) {
         event.preventDefault()
         onSearch?.(values)
       }}
-      elevation={3}
       sx={{
-        p: 2,
-        display: 'grid',
-        gridTemplateColumns: {
-          xs: 'minmax(0, 1fr)',
-          sm: 'repeat(2, minmax(0, 1fr))',
-          lg: 'repeat(4, minmax(0, 1fr))',
-        },
-        gap: 2,
-        alignItems: 'stretch',
-        borderRadius: 3,
-        maxWidth: 1100,
+        p: { xs: 2.5, md: 3 },
+        border: 1,
+        borderColor: 'divider',
+        borderRadius: 2,
+        boxShadow: '0 12px 40px rgba(16,35,32,.07)',
       }}
     >
-      <TextField
-        select
-        label="Operating branch"
-        value={values.branchId}
-        onChange={update('branchId')}
-        fullWidth
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <LocationOnIcon color="primary" />
-            </InputAdornment>
-          ),
+      <Typography component="h2" variant="h6" sx={{ mb: 2.5 }}>
+        Where will your next journey take you?
+      </Typography>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: 'minmax(0,1fr)', lg: '1.2fr 1fr 1fr auto' },
+          gap: 2,
+          alignItems: 'end',
         }}
-        sx={{ flex: { md: 1 } }}
       >
-        <MenuItem value="">All branches</MenuItem>
-        {locations.map((loc) => (
-          <MenuItem key={loc.id} value={loc.id}>
-            {loc.label}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      <TextField
-        type="date"
-        label="Pickup"
-        value={values.pickupDate}
-        onChange={update('pickupDate')}
-        InputLabelProps={{ shrink: true }}
-        fullWidth
-      />
-      <TextField
-        type="time"
-        label="Pickup time"
-        value={values.pickupTime}
-        onChange={update('pickupTime')}
-        InputLabelProps={{ shrink: true }}
-        fullWidth
-      />
-      <TextField
-        type="date"
-        label="Return"
-        value={values.returnDate}
-        onChange={update('returnDate')}
-        InputLabelProps={{ shrink: true }}
-        fullWidth
-      />
-      <TextField
-        type="time"
-        label="Return time"
-        value={values.returnTime}
-        onChange={update('returnTime')}
-        InputLabelProps={{ shrink: true }}
-        fullWidth
-      />
-
-      <TextField
-        select
-        label="Brand"
-        value={values.brand}
-        onChange={update('brand')}
-        fullWidth
-        sx={{ flex: { md: 1 } }}
-      >
-        <MenuItem value="">All</MenuItem>
-        {categories.map((cat) => (
-          <MenuItem key={cat} value={cat}>
-            {cat}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      <Button
-        variant="contained"
-        color="primary"
-        size="large"
-        startIcon={<SearchIcon />}
-        type="submit"
-        sx={{ px: 4, whiteSpace: 'nowrap' }}
-      >
-        Search Cars
-      </Button>
+        <Box>
+          <Typography variant="caption" sx={{ display: 'block', mb: 1, fontWeight: 700 }}>
+            PICKUP LOCATION
+          </Typography>
+          <TextField
+            select
+            label="Pickup location"
+            value={values.branchId}
+            onChange={update('branchId')}
+            fullWidth
+          >
+            <MenuItem value="">All pickup locations</MenuItem>
+            {locations.map((location) => (
+              <MenuItem key={location.id} value={location.id}>
+                {location.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Box>
+        <DateTimeSelector
+          label="Pickup"
+          date={values.pickupDate}
+          time={values.pickupTime}
+          onDateChange={update('pickupDate')}
+          onTimeChange={update('pickupTime')}
+        />
+        <DateTimeSelector
+          label="Return"
+          date={values.returnDate}
+          time={values.returnTime}
+          onDateChange={update('returnDate')}
+          onTimeChange={update('returnTime')}
+        />
+        <Button
+          variant="contained"
+          type="submit"
+          startIcon={<SearchRoundedIcon />}
+          sx={{ minHeight: 44 }}
+        >
+          Search Cars
+        </Button>
+      </Box>
+      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
+        All trip times are in IST (Asia/Kolkata). Leave dates empty to explore the fleet.
+      </Typography>
     </Paper>
   )
 }
-
-HeroSearchForm.propTypes = {
-  locations: PropTypes.arrayOf(
-    PropTypes.shape({ id: PropTypes.string.isRequired, label: PropTypes.string.isRequired })
-  ),
-  categories: PropTypes.arrayOf(PropTypes.string),
-  onSearch: PropTypes.func,
-}
-
-export default HeroSearchForm

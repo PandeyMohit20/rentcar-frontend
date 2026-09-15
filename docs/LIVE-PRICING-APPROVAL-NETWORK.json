@@ -1,0 +1,52 @@
+{
+  "testedAt": "2026-09-15T06:33:26.037Z",
+  "apiBaseUrl": "http://localhost:5000/api/v1",
+  "network": [
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/health",
+      "status": 200,
+      "purpose": "Backend connectivity",
+      "result": "success",
+      "stackPresent": false
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/health/database",
+      "status": 200,
+      "purpose": "Real database connectivity",
+      "result": "success",
+      "stackPresent": false
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/pricing/quote",
+      "status": 409,
+      "purpose": "Exact original guest quote retry",
+      "result": "PARTIALLY_APPROVED_REQUIRES_RATE_AND_CESS_CONFIRMATION",
+      "stackPresent": false,
+      "request": {
+        "carId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+        "pickupDateTime": "2026-09-22T10:00:00+05:30",
+        "returnDateTime": "2026-09-23T10:00:00+05:30"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/admin/billing-approval",
+      "status": 401,
+      "purpose": "Unauthenticated review denied",
+      "result": "AUTH_UNAUTHORIZED",
+      "stackPresent": false
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/admin/billing-approval/complete",
+      "status": 401,
+      "purpose": "Unauthenticated approval denied",
+      "result": "AUTH_UNAUTHORIZED",
+      "stackPresent": false
+    }
+  ],
+  "noBusinessDataWrites": true
+}

@@ -1,8 +1,13 @@
 import { Stack, Typography } from '@mui/material'
 import { formatCurrency } from '@/utils/formatters'
+import { taxPresentation } from '@/utils/pricingPresentation'
 
 export default function TaxBreakdown({ snapshot }) {
   if (!snapshot) return null
+  const presentation = taxPresentation(snapshot)
+  if (presentation.mode === 'none') return null
+  if (presentation.mode === 'unregistered' || presentation.mode === 'pending')
+    return <Typography sx={{ my: 2 }}>{presentation.message}</Typography>
   const f = snapshot
   return (
     <Stack spacing={0.5} sx={{ my: 2 }}>
