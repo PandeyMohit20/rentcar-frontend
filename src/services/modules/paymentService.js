@@ -5,6 +5,10 @@ import { API_ENDPOINTS } from '@/constants/apiEndpoints'
  * Payment-related API service.
  */
 export const paymentService = {
+  async reconcileBooking(bookingId) {
+    return (await httpClient.post(`/payments/${bookingId}/reconcile`, {}))?.data
+  },
+
   async createOrder(bookingId) {
     return (await httpClient.post(API_ENDPOINTS.PAYMENTS.ORDERS, { bookingId }))?.data
   },

@@ -1,0 +1,30 @@
+[
+  {
+    "width": 390,
+    "overflow": false,
+    "cancelled": true,
+    "refunded": true,
+    "payEnabled": false
+  },
+  {
+    "width": 768,
+    "overflow": false,
+    "cancelled": true,
+    "refunded": true,
+    "payEnabled": false
+  },
+  {
+    "width": 1024,
+    "overflow": false,
+    "cancelled": true,
+    "refunded": true,
+    "payEnabled": false
+  },
+  {
+    "width": 1440,
+    "overflow": false,
+    "cancelled": true,
+    "refunded": true,
+    "payEnabled": false
+  }
+]

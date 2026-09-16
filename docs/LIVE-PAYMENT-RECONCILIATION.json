@@ -1,0 +1,278 @@
+{
+  "bookingId": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+  "network": [
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/payments/07cf7a07-ca7e-4a99-83aa-93486199e8de/reconcile",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/payments/07cf7a07-ca7e-4a99-83aa-93486199e8de/reconcile",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/payments/c4c32fe0-9b8e-443d-b135-0de3d5daa662",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de/invoice",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de/invoice",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/payments/07cf7a07-ca7e-4a99-83aa-93486199e8de/reconcile",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/payments/07cf7a07-ca7e-4a99-83aa-93486199e8de/reconcile",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/bookings/me",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/me",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de/refunds",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de/refunds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de/invoice",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de/invoice/download",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de/invoice/download",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de/invoice/download",
+      "status": 200
+    }
+  ],
+  "state": {
+    "path": "/booking/status/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+    "headings": [
+      "You are ready for the road.",
+      "Hyundai i20",
+      "₹5,600.00"
+    ],
+    "alerts": [
+      "Your booking is confirmed. View the booking details for your trip."
+    ],
+    "buttons": [
+      "Download Invoice PDF",
+      "Refresh Status",
+      "View Booking Details",
+      "My Bookings"
+    ]
+  },
+  "updatedAt": "2026-09-16T10:02:11.552Z",
+  "idempotency": [
+    {
+      "outcome": "already_settled",
+      "bookingId": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "bookingStatus": "CONFIRMED",
+      "paymentStatus": "succeeded"
+    },
+    {
+      "outcome": "already_settled",
+      "bookingId": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "bookingStatus": "CONFIRMED",
+      "paymentStatus": "succeeded"
+    }
+  ],
+  "refresh": {
+    "confirmed": true,
+    "amount": true,
+    "bookingReference": true
+  },
+  "myBookings": {
+    "referenceCount": 1,
+    "vehicle": true,
+    "amount": true,
+    "confirmed": true
+  },
+  "bookingDetails": {
+    "path": "/account/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+    "reference": true,
+    "vehicle": true,
+    "total": true,
+    "confirmed": true,
+    "receipt": true,
+    "fakeTaxLines": false,
+    "buttons": [
+      "Download Invoice PDF"
+    ]
+  },
+  "receipt": {
+    "httpPdf": true,
+    "bytes": 2455,
+    "title": true,
+    "bookingReference": true,
+    "invoiceNumber": true,
+    "paymentReference": true,
+    "total": true,
+    "rental": true,
+    "deposit": true,
+    "forbiddenTaxLines": false
+  },
+  "responsive": [
+    {
+      "width": 390,
+      "noHorizontalOverflow": true,
+      "receiptVisible": true,
+      "bookingReference": true
+    },
+    {
+      "width": 768,
+      "noHorizontalOverflow": true,
+      "receiptVisible": true,
+      "bookingReference": true
+    },
+    {
+      "width": 1024,
+      "noHorizontalOverflow": true,
+      "receiptVisible": true,
+      "bookingReference": true
+    },
+    {
+      "width": 1440,
+      "noHorizontalOverflow": true,
+      "receiptVisible": true,
+      "bookingReference": true
+    }
+  ],
+  "database": {
+    "checkedAt": "2026-09-16T10:03:17.686Z",
+    "booking": {
+      "id": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "status": "CONFIRMED",
+      "paymentStatus": "succeeded",
+      "totalAmount": "5600"
+    },
+    "payment": [
+      {
+        "id": "c4c32fe0-9b8e-443d-b135-0de3d5daa662",
+        "status": "succeeded",
+        "providerOrderId": "order_Tcdwp4drSeyyGv",
+        "providerPaymentId": "pay_TcdzDHHiltBtqa",
+        "amount": "5600"
+      }
+    ],
+    "invoice": {
+      "id": "3bf31feb-b6bd-4a25-a995-ee0b441a166d",
+      "number": "INV-3bf31feb-b6bd-4a25-a995-ee0b441a166d",
+      "total": "5600",
+      "title": "UAT Receipt",
+      "taxMode": "UAT_BYPASS",
+      "gstinAbsent": true
+    },
+    "audits": [
+      {
+        "id": "33c8c409-c9f5-4ff3-be66-56ff0983c843",
+        "result": "reconciled",
+        "metadata": {
+          "source": "provider_reconciliation",
+          "bookingId": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+          "localPaymentId": "c4c32fe0-9b8e-443d-b135-0de3d5daa662",
+          "orderId": "order_Tcdwp4drSeyyGv",
+          "previousStatus": "pending",
+          "providerPaymentId": "pay_TcdzDHHiltBtqa",
+          "providerStatus": "captured",
+          "resultingStatus": "succeeded",
+          "bookingStatus": "CONFIRMED"
+        },
+        "createdAt": "2026-09-16T09:58:39.299Z"
+      }
+    ],
+    "counts": {
+      "booking": 1,
+      "payment": 1,
+      "providerPaymentLinks": 1,
+      "confirmation": 1,
+      "receipt": 1,
+      "refund": 0
+    },
+    "webhook": {
+      "httpStatus": 200,
+      "config": [
+        {
+          "id": "TZmsMPcge7csUG",
+          "url": "https://fioricet-loop-panel-budgets.trycloudflare.com/api/v1/payments/webhook/razorpay",
+          "active": true,
+          "captureEnabled": true,
+          "secretExists": true
+        }
+      ],
+      "genuineEvents": 0
+    }
+  }
+}

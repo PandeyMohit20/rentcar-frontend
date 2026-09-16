@@ -1,0 +1,338 @@
+{
+  "observedAt": "2026-09-16T10:31:48.759Z",
+  "environment": "development; Razorpay TEST; UAT_BYPASS",
+  "backend": "http://localhost:5000/api/v1",
+  "database": "localhost/rentcar",
+  "records": [
+    {
+      "bookingId": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "bookingNumber": "BK-AA79986CAD974B36",
+      "status": "CONFIRMED",
+      "paymentStatus": "succeeded",
+      "startAt": "2026-09-22T04:30:00.000Z",
+      "endAt": "2026-09-23T04:30:00.000Z",
+      "holdExpiresAt": "2026-09-16T08:45:52.298Z",
+      "amount": 5600,
+      "currency": "INR",
+      "taxMode": "UAT_BYPASS",
+      "payments": [
+        {
+          "id": "c4c32fe0-9b8e-443d-b135-0de3d5daa662",
+          "status": "succeeded",
+          "orderId": "order_Tcdwp4drSeyyGv",
+          "paymentId": "pay_TcdzDHHiltBtqa",
+          "amount": 5600,
+          "operationalStatus": "normal"
+        }
+      ],
+      "invoices": [
+        {
+          "id": "3bf31feb-b6bd-4a25-a995-ee0b441a166d",
+          "number": "INV-3bf31feb-b6bd-4a25-a995-ee0b441a166d",
+          "total": 5600,
+          "title": "UAT Receipt"
+        }
+      ],
+      "refunds": [],
+      "emails": [
+        {
+          "id": "99ae484a-d26d-4ca7-8014-a72994b93228",
+          "eventType": "booking_confirmed",
+          "status": "accepted",
+          "attempts": 1,
+          "invoiceAttached": true,
+          "error": null
+        },
+        {
+          "id": "b1b5c61e-cf2d-4ecc-a7ee-deb30ffe8b0b",
+          "eventType": "booking_created",
+          "status": "pending",
+          "attempts": 0,
+          "invoiceAttached": false,
+          "error": null
+        }
+      ],
+      "confirmationCount": 1,
+      "cancellationCount": 0,
+      "checks": {
+        "paymentOwnership": true,
+        "paymentAmounts": true,
+        "uniqueCapture": true,
+        "uniqueReceipt": true,
+        "receiptAmounts": true,
+        "uniqueRefund": true,
+        "refundBounds": true
+      }
+    },
+    {
+      "bookingId": "8608f292-f50e-4afa-af2e-984eeddf843f",
+      "bookingNumber": "BK-692880FA798B42C1",
+      "status": "CANCELLED",
+      "paymentStatus": "pending",
+      "startAt": "2026-10-08T04:30:00.000Z",
+      "endAt": "2026-10-09T04:30:00.000Z",
+      "holdExpiresAt": "2026-09-16T10:31:22.141Z",
+      "amount": 5600,
+      "currency": "INR",
+      "taxMode": "UAT_BYPASS",
+      "payments": [
+        {
+          "id": "d85280a2-7a55-49bd-b2a1-5b993265f5d5",
+          "status": "pending",
+          "orderId": "order_TcfvQOeptqsTpR",
+          "paymentId": null,
+          "amount": 5600,
+          "operationalStatus": "normal"
+        }
+      ],
+      "invoices": [],
+      "refunds": [],
+      "emails": [],
+      "confirmationCount": 0,
+      "cancellationCount": 1,
+      "checks": {
+        "paymentOwnership": true,
+        "paymentAmounts": true,
+        "uniqueCapture": true,
+        "uniqueReceipt": true,
+        "receiptAmounts": true,
+        "uniqueRefund": true,
+        "refundBounds": true
+      }
+    },
+    {
+      "bookingId": "165cc3f6-b0d0-477d-ae58-97690ff9da78",
+      "bookingNumber": "BK-204952AFA4634EB8",
+      "status": "CANCELLED",
+      "paymentStatus": "refunded",
+      "startAt": "2026-10-10T04:30:00.000Z",
+      "endAt": "2026-10-11T04:30:00.000Z",
+      "holdExpiresAt": "2026-09-16T10:31:50.165Z",
+      "amount": 5600,
+      "currency": "INR",
+      "taxMode": "UAT_BYPASS",
+      "payments": [
+        {
+          "id": "5242bb0d-2f8d-4e5c-ab58-6876217b51a4",
+          "status": "failed",
+          "orderId": "order_Tcfk2BddTzLE2c",
+          "paymentId": null,
+          "amount": 5600,
+          "operationalStatus": "normal"
+        },
+        {
+          "id": "5a48e5e8-d5ca-4e1d-9396-3e36501611aa",
+          "status": "refunded",
+          "orderId": "order_TcfnbiAy3jQ6Ng",
+          "paymentId": "pay_TcfnvtOAjitABw",
+          "amount": 5600,
+          "operationalStatus": "normal"
+        }
+      ],
+      "invoices": [
+        {
+          "id": "0461feab-84f3-4ce8-9df3-bdb3da651b5a",
+          "number": "INV-0461feab-84f3-4ce8-9df3-bdb3da651b5a",
+          "total": 5600,
+          "title": "UAT Receipt"
+        }
+      ],
+      "refunds": [
+        {
+          "id": "ab78340e-d6f5-4eba-b2bc-17e3ff57f2c7",
+          "providerId": "rfnd_TcfqI4ldGYL4y7",
+          "status": "succeeded",
+          "amount": 5600
+        }
+      ],
+      "emails": [
+        {
+          "id": "090a7f1a-1426-448b-8d32-33edfd512687",
+          "eventType": "booking_confirmed",
+          "status": "accepted",
+          "attempts": 1,
+          "invoiceAttached": true,
+          "error": null
+        },
+        {
+          "id": "55c988ca-15e4-4397-8e84-8972cf8f0085",
+          "eventType": "payment_failed",
+          "status": "pending",
+          "attempts": 0,
+          "invoiceAttached": false,
+          "error": null
+        },
+        {
+          "id": "a90a67db-028c-40a6-b39d-d759c6250184",
+          "eventType": "booking_cancelled",
+          "status": "accepted",
+          "attempts": 1,
+          "invoiceAttached": false,
+          "error": null
+        },
+        {
+          "id": "a95e77ff-83bd-41d1-afbc-3494f1f74e26",
+          "eventType": "booking_created",
+          "status": "pending",
+          "attempts": 0,
+          "invoiceAttached": false,
+          "error": null
+        },
+        {
+          "id": "f2872e2a-6ee0-4f6a-951c-011bc98eefdc",
+          "eventType": "refund_succeeded",
+          "status": "accepted",
+          "attempts": 1,
+          "invoiceAttached": false,
+          "error": null
+        }
+      ],
+      "confirmationCount": 1,
+      "cancellationCount": 1,
+      "checks": {
+        "paymentOwnership": true,
+        "paymentAmounts": true,
+        "uniqueCapture": true,
+        "uniqueReceipt": true,
+        "receiptAmounts": true,
+        "uniqueRefund": true,
+        "refundBounds": true
+      }
+    },
+    {
+      "bookingId": "ed9b97dd-045e-4896-bf7e-c60f752f746c",
+      "bookingNumber": "BK-A6D1FDE464D64F15",
+      "status": "CANCELLED",
+      "paymentStatus": "pending",
+      "startAt": "2026-10-06T04:30:00.000Z",
+      "endAt": "2026-10-07T04:30:00.000Z",
+      "holdExpiresAt": "2026-09-16T10:42:57.748Z",
+      "amount": 5600,
+      "currency": "INR",
+      "taxMode": "UAT_BYPASS",
+      "payments": [],
+      "invoices": [],
+      "refunds": [],
+      "emails": [],
+      "confirmationCount": 0,
+      "cancellationCount": 1,
+      "checks": {
+        "paymentOwnership": true,
+        "paymentAmounts": true,
+        "uniqueCapture": true,
+        "uniqueReceipt": true,
+        "receiptAmounts": true,
+        "uniqueRefund": true,
+        "refundBounds": true
+      }
+    },
+    {
+      "bookingId": "4a681a0b-2952-48b5-8c0e-5c12ddbf2e70",
+      "bookingNumber": "BK-A65F9658F2354DA1",
+      "status": "CANCELLED",
+      "paymentStatus": "pending",
+      "startAt": "2026-10-08T04:30:00.000Z",
+      "endAt": "2026-10-09T04:30:00.000Z",
+      "holdExpiresAt": "2026-09-16T10:46:36.141Z",
+      "amount": 5600,
+      "currency": "INR",
+      "taxMode": "UAT_BYPASS",
+      "payments": [],
+      "invoices": [],
+      "refunds": [],
+      "emails": [],
+      "confirmationCount": 0,
+      "cancellationCount": 1,
+      "checks": {
+        "paymentOwnership": true,
+        "paymentAmounts": true,
+        "uniqueCapture": true,
+        "uniqueReceipt": true,
+        "receiptAmounts": true,
+        "uniqueRefund": true,
+        "refundBounds": true
+      }
+    }
+  ],
+  "provider": [
+    {
+      "method": "GET",
+      "endpoint": "/v1/orders/order_Tcdwp4drSeyyGv/payments",
+      "status": 200,
+      "bookingId": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "payments": [
+        {
+          "id": "pay_TcdyNGK5uShD5a",
+          "status": "created",
+          "amount": 560000,
+          "currency": "INR",
+          "orderId": "order_Tcdwp4drSeyyGv",
+          "refundedAmount": 0
+        },
+        {
+          "id": "pay_TcdzDHHiltBtqa",
+          "status": "captured",
+          "amount": 560000,
+          "currency": "INR",
+          "orderId": "order_Tcdwp4drSeyyGv",
+          "refundedAmount": 0
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/v1/orders/order_TcfvQOeptqsTpR/payments",
+      "status": 200,
+      "bookingId": "8608f292-f50e-4afa-af2e-984eeddf843f",
+      "payments": []
+    },
+    {
+      "method": "GET",
+      "endpoint": "/v1/orders/order_Tcfk2BddTzLE2c/payments",
+      "status": 200,
+      "bookingId": "165cc3f6-b0d0-477d-ae58-97690ff9da78",
+      "payments": [
+        {
+          "id": "pay_TcfltXwOn6yDzy",
+          "status": "failed",
+          "amount": 560000,
+          "currency": "INR",
+          "orderId": "order_Tcfk2BddTzLE2c",
+          "refundedAmount": 0
+        },
+        {
+          "id": "pay_TcfmOG7Ui8n68a",
+          "status": "failed",
+          "amount": 560000,
+          "currency": "INR",
+          "orderId": "order_Tcfk2BddTzLE2c",
+          "refundedAmount": 0
+        },
+        {
+          "id": "pay_TcfmaHPhlsTPah",
+          "status": "failed",
+          "amount": 560000,
+          "currency": "INR",
+          "orderId": "order_Tcfk2BddTzLE2c",
+          "refundedAmount": 0
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "endpoint": "/v1/orders/order_TcfnbiAy3jQ6Ng/payments",
+      "status": 200,
+      "bookingId": "165cc3f6-b0d0-477d-ae58-97690ff9da78",
+      "payments": [
+        {
+          "id": "pay_TcfnvtOAjitABw",
+          "status": "refunded",
+          "amount": 560000,
+          "currency": "INR",
+          "orderId": "order_TcfnbiAy3jQ6Ng",
+          "refundedAmount": 560000
+        }
+      ]
+    }
+  ]
+}

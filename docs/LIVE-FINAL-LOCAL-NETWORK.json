@@ -1,0 +1,182 @@
+[
+  {
+    "at": "2026-09-16T10:41:45.466Z",
+    "result": {
+      "id": "eb22d240-ae16-4e5b-8d32-db92ffbbaf70",
+      "number": "BK-0198B03612FC4FDC",
+      "status": "PAYMENT_PENDING",
+      "total": "5600",
+      "createdAt": "2026-09-16T10:41:45.451Z"
+    },
+    "network": [
+      {
+        "method": "POST",
+        "endpoint": "/api/v1/pricing/quote",
+        "status": 201
+      },
+      {
+        "method": "POST",
+        "endpoint": "/api/v1/bookings",
+        "status": 201
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T10:42:06.928Z",
+    "result": "opened fresh booking",
+    "network": []
+  },
+  {
+    "at": "2026-09-16T10:42:09.905Z",
+    "result": {
+      "checkoutRequested": true
+    },
+    "network": [
+      {
+        "method": "GET",
+        "endpoint": "/api/v1/bookings/eb22d240-ae16-4e5b-8d32-db92ffbbaf70",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "endpoint": "/api/v1/payments/orders",
+        "status": 201
+      },
+      {
+        "method": "GET",
+        "endpoint": "/api/v1/payments/a76cd522-51f1-4f03-a701-356239db6aee",
+        "status": 200
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T10:42:13.941Z",
+    "result": {
+      "testBankRequested": true
+    },
+    "network": [
+      {
+        "method": "GET",
+        "endpoint": "/api/v1/bookings/eb22d240-ae16-4e5b-8d32-db92ffbbaf70",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "endpoint": "/api/v1/payments/a76cd522-51f1-4f03-a701-356239db6aee",
+        "status": 200
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T10:42:27.565Z",
+    "result": {
+      "closed": true
+    },
+    "network": []
+  },
+  {
+    "at": "2026-09-16T10:42:30.147Z",
+    "result": {
+      "retryRequested": true
+    },
+    "network": [
+      {
+        "method": "POST",
+        "endpoint": "/api/v1/payments/orders",
+        "status": 201
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T10:42:43.356Z",
+    "result": {
+      "netbanking": true
+    },
+    "network": []
+  },
+  {
+    "at": "2026-09-16T10:42:47.377Z",
+    "result": {
+      "bank": false
+    },
+    "network": [
+      {
+        "endpoint": "/api/v1/bookings/eb22d240-ae16-4e5b-8d32-db92ffbbaf70",
+        "status": 200
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T10:42:56.133Z",
+    "result": {
+      "buttons": [
+        {
+          "test": "nav-back",
+          "title": "Go back",
+          "text": ""
+        },
+        {
+          "test": "account-menu-btn",
+          "title": "",
+          "text": "\n\n\n\n"
+        },
+        {
+          "test": "checkout-more-options",
+          "title": "Show more options",
+          "text": ""
+        },
+        {
+          "test": "checkout-close",
+          "title": "Close Checkout",
+          "text": ""
+        },
+        {
+          "title": "",
+          "text": ""
+        },
+        {
+          "title": "",
+          "text": ""
+        }
+      ]
+    },
+    "network": []
+  },
+  {
+    "at": "2026-09-16T10:43:06.903Z",
+    "result": {
+      "text": "C\nCaronRent\nPrice Summary\n₹[number],[number]Using as [number]Secured by\nPayment Options\nCards\nNetbanking\nWallet\nSuggested Banks\nBank of Baroda - Retail Banking\nFor Individuals\nCanara Bank\nCanara Bank payments are currently facing issues. Please try with other payment options.\nPunjab National Bank - Retail Banking\nFor Individuals\nPNB (Erstwhile-United Bank of India)\nIDBI\nAll Banks\nAirtel Payments Bank\nIndian Bank (Erstwhile Allahabad Bank)\nAU Small Finance Bank\nBank of Baroda - Retail Banking\nFor Individuals\nBank of India - Corporate Banking\nFor Businesses\nCentral Bank of India\nCanara Bank\nCanara Bank payments are currently facing issues. Please try with other payment options.\nUnion Bank of India (Erstwhile Corporation Bank)\nCatholic Syrian Bank\nDCB Bank\nDeutsche Bank\nDhanlaxmi Bank\nDhanlaxmi Bank payments are currently facing issues. Please try with other payment options.\nEquitas Small Finance Bank\nFincare Small Finance Bank\nIDBI\nIDFC FIRST Bank\nIndian Bank\nIndusind Bank\nIndian Overseas Bank\nJammu and Kashmir Bank\nJana Small Finance Bank\nKarnataka Bank\nKarur Vysya Bank\nLakshmi Vilas Bank - Retail Banking\nFor Individuals\nBank of Maharashtra\nNSDL Payments Bank\nPNB (Erstwhile-Oriental Bank of Commerce)\nPunjab & Sind Bank\nPunjab National Bank - Retail Banking\nFor Individuals\nRBL Bank\nSouth Indian Bank\nSaraswat Co-operative Bank\nSVC Co-Operative Bank Ltd.\nTamilnad Mercantile Bank\nUnion Bank of India\nUCO Bank\nUjjivan Small Finance Bank\nPNB (Erstwhile-United Bank of India)\nBank of Baroda - Retail Banking (Erstwhile Vijaya Bank)\nYes Bank"
+    },
+    "network": []
+  },
+  {
+    "at": "2026-09-16T10:43:13.959Z",
+    "result": "<div class=\"flex items-center truncate\"><!----><!----><!----><!----><!----><img data-testid=\"\" src=\"https://cdn.razorpay.com/bank/BARB_R.gif\" alt=\"Bank of Baroda - Retail Banking\" class=\"object-contain h-5 w-5\" loading=\"lazy\"><!----> <div class=\"mx-4 flex flex-col truncate\"><span class=\"font-medium text-on-surface\">Bank of Baroda - Retail Banking</span> <!----><!----><!----><!----><!----><!----><!----><div class=\"flex flex-col empty:hidden \"><!----><!----><span class=\"mt-0.5 text-sm text-on-surface opacity-50\">For Individuals</span><!----></div><!----></div></div>",
+    "network": []
+  },
+  {
+    "at": "2026-09-16T10:43:25.694Z",
+    "result": {
+      "bank": true
+    },
+    "network": [
+      {
+        "method": "GET",
+        "endpoint": "/api/v1/payments/a76cd522-51f1-4f03-a701-356239db6aee",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "endpoint": "/api/v1/bookings/eb22d240-ae16-4e5b-8d32-db92ffbbaf70",
+        "status": 200
+      }
+    ]
+  },
+  {
+    "at": "2026-09-16T10:43:26.345Z",
+    "result": {
+      "officialFailure": true
+    },
+    "network": []
+  }
+]

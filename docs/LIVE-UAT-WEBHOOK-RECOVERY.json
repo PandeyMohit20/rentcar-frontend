@@ -1,0 +1,82 @@
+{
+  "checkedAt": "2026-09-16T09:47:54.034Z",
+  "mode": "TEST",
+  "bookingId": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+  "orderId": "order_Tcdwp4drSeyyGv",
+  "providerPaymentId": "pay_TcdzDHHiltBtqa",
+  "providerStatus": "captured",
+  "amountPaise": 560000,
+  "currency": "INR",
+  "oldWebhook": "https://prerequisite-bench-gotten-prisoner.trycloudflare.com/api/v1/payments/webhook/razorpay",
+  "oldRunningTunnel": "https://portion-portrait-trailers-convicted.trycloudflare.com",
+  "newWebhook": "https://fioricet-loop-panel-budgets.trycloudflare.com/api/v1/payments/webhook/razorpay",
+  "dns": {
+    "oldConfigured": "NXDOMAIN",
+    "oldRunning": "NXDOMAIN",
+    "new": "resolved"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "endpoint": "https://api.razorpay.com/v1/payments/pay_TcdzDHHiltBtqa",
+      "status": 200,
+      "result": "captured; correct order/currency/amount"
+    },
+    {
+      "method": "POST",
+      "endpoint": "http://localhost:5000/api/v1/payments/webhook/razorpay",
+      "status": 400,
+      "result": "PAYMENT_SIGNATURE_INVALID; unsigned empty-object reachability probe only"
+    },
+    {
+      "method": "POST",
+      "endpoint": "https://fioricet-loop-panel-budgets.trycloudflare.com/api/v1/payments/webhook/razorpay",
+      "status": 400,
+      "result": "Same signature rejection as intended local backend; no event accepted"
+    },
+    {
+      "method": "PUT",
+      "endpoint": "https://api.razorpay.com/v1/webhooks/TZmsMPcge7csUG",
+      "status": 200,
+      "result": "TEST URL updated; URL-only PUT cleared subscriptions, corrected immediately with explicit original event set"
+    },
+    {
+      "method": "GET",
+      "endpoint": "https://api.razorpay.com/v1/webhooks",
+      "status": 200,
+      "result": "New URL active; original five events enabled; secret_exists true"
+    }
+  ],
+  "enabledEvents": [
+    "payment.authorized",
+    "payment.failed",
+    "payment.captured",
+    "refund.processed",
+    "refund.failed"
+  ],
+  "secretChanged": false,
+  "liveConfigurationChanged": false,
+  "genuineEventRedelivery": "BLOCKED: no signed-in dashboard session or retry control available",
+  "localState": {
+    "booking": "PAYMENT_PENDING",
+    "payment": "pending",
+    "providerPaymentId": null,
+    "localPaymentCount": 1,
+    "matchingWebhookEvents": 0,
+    "invoices": 0,
+    "refunds": 0
+  },
+  "createdThisRun": {
+    "bookings": 0,
+    "payments": 0,
+    "refunds": 0
+  },
+  "regression": {
+    "backendSuites": 54,
+    "backendTests": 381,
+    "adminTests": 9,
+    "frontendTests": 13,
+    "lint": "passed; frontend 33 existing warnings",
+    "builds": "passed"
+  }
+}

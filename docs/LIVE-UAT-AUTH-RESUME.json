@@ -1,0 +1,488 @@
+{
+  "date": "2026-09-16T08:27:49.928Z",
+  "network": [
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/pricing/quote",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/pricing/quote",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/auth/me",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/cars/080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/pricing/quote",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/pricing/quote",
+      "status": 201
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/bookings",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/bookings",
+      "status": 201
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/users/me",
+      "status": 204
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/kyc/status",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/bookings",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/pricing/quote",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/bookings",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/pricing/quote",
+      "status": 409
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/payments/orders",
+      "status": 204
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/payments/orders",
+      "status": 201
+    },
+    {
+      "method": "OPTIONS",
+      "endpoint": "/api/v1/payments/c4c32fe0-9b8e-443d-b135-0de3d5daa662",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/payments/c4c32fe0-9b8e-443d-b135-0de3d5daa662",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/payments/c4c32fe0-9b8e-443d-b135-0de3d5daa662",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/refresh",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/users/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/kyc/status",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/bookings/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/v1/payments/c4c32fe0-9b8e-443d-b135-0de3d5daa662",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/v1/auth/login",
+      "status": 200,
+      "result": "Actual login form submission; no body retained"
+    },
+    {
+      "method": "GET",
+      "endpoint": "https://api.razorpay.com/v1/orders/order_Tcdwp4drSeyyGv",
+      "status": 200,
+      "result": "INR 560000 paise"
+    },
+    {
+      "method": "GET",
+      "endpoint": "https://api.razorpay.com/v1/orders/order_Tcdwp4drSeyyGv/payments",
+      "status": 200,
+      "result": "pay_TcdzDHHiltBtqa captured; 560000 paise"
+    },
+    {
+      "method": "GET",
+      "endpoint": "https://api.razorpay.com/v1/webhooks",
+      "status": 200,
+      "result": "Configured TEST webhook active; payment.captured enabled"
+    },
+    {
+      "method": "GET",
+      "endpoint": "https://prerequisite-bench-gotten-prisoner.trycloudflare.com/api/v1/payments/webhook/razorpay",
+      "status": null,
+      "result": "DNS ENOTFOUND; no HTTP response"
+    }
+  ],
+  "quote": {
+    "quoteId": "8220409a-c1d8-4e47-8012-f9c19cf928f8",
+    "carId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+    "pickupDateTime": "2026-09-22T10:00:00+05:30",
+    "returnDateTime": "2026-09-23T10:00:00+05:30",
+    "currencyCode": "INR",
+    "duration": {
+      "totalMinutes": 1440,
+      "billableHours": 24,
+      "breakdown": [
+        {
+          "unit": "day",
+          "count": 1,
+          "rate": 2100,
+          "amount": 2100
+        }
+      ],
+      "rentalSubtotal": 2100
+    },
+    "pricing": {
+      "pricingId": "6e3f21b1-cb22-47a3-a596-48095607704f",
+      "rentalSubtotal": 2100,
+      "securityDeposit": 3500,
+      "payableAmount": 5600,
+      "financialSnapshot": {
+        "version": 2,
+        "taxMode": "UAT_BYPASS",
+        "policyStatus": "uat_bypass",
+        "policyVersion": null,
+        "gstRegistrationStatus": null,
+        "rentalSubtotal": 2100,
+        "additionalCharges": 0,
+        "taxableAmount": null,
+        "tax": {
+          "type": "UAT_BYPASS",
+          "totalTax": 0
+        },
+        "cess": {
+          "treatment": "uat_bypass",
+          "totalCess": 0
+        },
+        "securityDeposit": 3500,
+        "depositTreatment": "uat_bypass",
+        "grandTotal": 5600,
+        "currency": "INR"
+      }
+    },
+    "financialSnapshot": {
+      "version": 2,
+      "taxMode": "UAT_BYPASS",
+      "policyStatus": "uat_bypass",
+      "policyVersion": null,
+      "gstRegistrationStatus": null,
+      "rentalSubtotal": 2100,
+      "additionalCharges": 0,
+      "taxableAmount": null,
+      "tax": {
+        "type": "UAT_BYPASS",
+        "totalTax": 0
+      },
+      "cess": {
+        "treatment": "uat_bypass",
+        "totalCess": 0
+      },
+      "securityDeposit": 3500,
+      "depositTreatment": "uat_bypass",
+      "grandTotal": 5600,
+      "currency": "INR"
+    },
+    "expiresAt": "2026-09-16T08:37:46.972Z",
+    "availability": {
+      "available": true,
+      "held": false
+    },
+    "contextKey": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7|2026-09-22T10:00:00+05:30|2026-09-23T10:00:00+05:30|d5f9c996-6a74-47d0-b2e3-2a75688486a9"
+  },
+  "login": {
+    "path": "/login",
+    "from": {
+      "pathname": "/cars/080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+      "search": "?pickup=2026-09-22T10%3A00%3A00%2B05%3A30&return=2026-09-23T10%3A00%3A00%2B05%3A30&branchId=d5f9c996-6a74-47d0-b2e3-2a75688486a9",
+      "hash": "",
+      "state": null,
+      "key": "default"
+    },
+    "tripSaved": true
+  },
+  "authentication": "PASS: login 200, refresh 200, auth/me 200, trip restored",
+  "bookingsCreated": [
+    "07cf7a07-ca7e-4a99-83aa-93486199e8de"
+  ],
+  "paymentsCreated": [
+    "c4c32fe0-9b8e-443d-b135-0de3d5daa662"
+  ],
+  "authenticatedQuote": {
+    "quoteId": "982e3215-91e0-4a07-8da3-8add312c6d71",
+    "carId": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7",
+    "pickupDateTime": "2026-09-22T10:00:00+05:30",
+    "returnDateTime": "2026-09-23T10:00:00+05:30",
+    "currencyCode": "INR",
+    "duration": {
+      "totalMinutes": 1440,
+      "billableHours": 24,
+      "breakdown": [
+        {
+          "unit": "day",
+          "count": 1,
+          "rate": 2100,
+          "amount": 2100
+        }
+      ],
+      "rentalSubtotal": 2100
+    },
+    "pricing": {
+      "pricingId": "6e3f21b1-cb22-47a3-a596-48095607704f",
+      "rentalSubtotal": 2100,
+      "securityDeposit": 3500,
+      "payableAmount": 5600,
+      "financialSnapshot": {
+        "version": 2,
+        "taxMode": "UAT_BYPASS",
+        "policyStatus": "uat_bypass",
+        "policyVersion": null,
+        "gstRegistrationStatus": null,
+        "rentalSubtotal": 2100,
+        "additionalCharges": 0,
+        "taxableAmount": null,
+        "tax": {
+          "type": "UAT_BYPASS",
+          "totalTax": 0
+        },
+        "cess": {
+          "treatment": "uat_bypass",
+          "totalCess": 0
+        },
+        "securityDeposit": 3500,
+        "depositTreatment": "uat_bypass",
+        "grandTotal": 5600,
+        "currency": "INR"
+      }
+    },
+    "financialSnapshot": {
+      "version": 2,
+      "taxMode": "UAT_BYPASS",
+      "policyStatus": "uat_bypass",
+      "policyVersion": null,
+      "gstRegistrationStatus": null,
+      "rentalSubtotal": 2100,
+      "additionalCharges": 0,
+      "taxableAmount": null,
+      "tax": {
+        "type": "UAT_BYPASS",
+        "totalTax": 0
+      },
+      "cess": {
+        "treatment": "uat_bypass",
+        "totalCess": 0
+      },
+      "securityDeposit": 3500,
+      "depositTreatment": "uat_bypass",
+      "grandTotal": 5600,
+      "currency": "INR"
+    },
+    "expiresAt": "2026-09-16T08:40:50.530Z",
+    "availability": {
+      "available": true,
+      "held": false
+    },
+    "contextKey": "080cbda9-d5fe-4e6d-bf04-a25e2755a9a7|2026-09-22T10:00:00+05:30|2026-09-23T10:00:00+05:30|d5f9c996-6a74-47d0-b2e3-2a75688486a9"
+  },
+  "bookingPage": {
+    "path": "/booking/status/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+    "alerts": [
+      "This booking is awaiting payment or confirmation. Refresh its status if you have already paid."
+    ],
+    "buttons": [
+      "",
+      "",
+      "Sign out",
+      "Pay Now with Razorpay",
+      "Refresh Status",
+      ""
+    ]
+  },
+  "bookingId": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+  "idempotency": {
+    "replay": {},
+    "mismatch": {
+      "status": 409,
+      "code": "CONFLICT",
+      "message": "Idempotency key was already used for a different request."
+    },
+    "unavailable": {
+      "status": 409,
+      "code": "CONFLICT",
+      "message": "Car is not available for the requested interval."
+    }
+  },
+  "checkoutState": {
+    "path": "/booking/status/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+    "alerts": [
+      "This booking is awaiting payment or confirmation. Refresh its status if you have already paid."
+    ],
+    "frames": [
+      {
+        "title": "",
+        "host": "api.razorpay.com"
+      }
+    ],
+    "buttons": [
+      "",
+      "",
+      "Sign out",
+      "Retry / Reopen Payment",
+      "Refresh Status",
+      ""
+    ]
+  },
+  "paymentSuccessAttempt": {
+    "path": "/booking/status/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+    "alerts": [
+      "This booking is awaiting payment or confirmation. Refresh its status if you have already paid.",
+      "Razorpay reported that the payment attempt failed. No card details were stored.",
+      "Automatic status checks have paused. Refresh the status when ready."
+    ],
+    "buttons": [
+      "",
+      "",
+      "Sign out",
+      "Retry / Reopen Payment",
+      "Refresh Status",
+      ""
+    ]
+  },
+  "orderId": "order_Tcdwp4drSeyyGv",
+  "finalPage": {
+    "path": "/booking/status/07cf7a07-ca7e-4a99-83aa-93486199e8de",
+    "alerts": [
+      "This booking is awaiting payment or confirmation. Refresh its status if you have already paid."
+    ]
+  },
+  "paymentProvider": {
+    "orderId": "order_Tcdwp4drSeyyGv",
+    "capturedPaymentId": "pay_TcdzDHHiltBtqa",
+    "incompleteAttemptId": "pay_TcdyNGK5uShD5a",
+    "amountPaise": 560000,
+    "currency": "INR",
+    "status": "captured"
+  },
+  "blocker": {
+    "endpoint": "https://prerequisite-bench-gotten-prisoner.trycloudflare.com/api/v1/payments/webhook/razorpay",
+    "httpStatus": null,
+    "error": "DNS ENOTFOUND",
+    "localPaymentWebhookEvents": 0
+  },
+  "database": {
+    "bookingId": "07cf7a07-ca7e-4a99-83aa-93486199e8de",
+    "bookingNumber": "BK-AA79986CAD974B36",
+    "bookingStatus": "PAYMENT_PENDING",
+    "paymentStatus": "pending",
+    "amount": 5600,
+    "holdExpiresAt": "2026-09-16T08:45:52.298Z",
+    "bookingCountForIdempotencyKey": 1,
+    "localPaymentCount": 1,
+    "invoiceCount": 0,
+    "refundCount": 0,
+    "correctCustomer": true
+  }
+}

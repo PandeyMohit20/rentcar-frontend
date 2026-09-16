@@ -50,6 +50,9 @@ function BookingStatusPage() {
   const [pollingTimedOut, setPollingTimedOut] = useState(false)
   const [now, setNow] = useState(() => Date.now())
   const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const [reconciling, setReconciling] = useState(false)
+  const [reconcileAfter, setReconcileAfter] = useState(0)
+  const reconcileInFlight = useRef(false)
   const [phoneRequired, setPhoneRequired] = useState(false)
   const checkout = useRef(null)
   const mounted = useRef(true)
@@ -110,6 +113,39 @@ function BookingStatusPage() {
     const associatedId = result.data?.payment?.id
     if (!result.error && associatedId) {
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PAYMENTS.DETAILS(associatedId) })
+    }
+  }
+
+  const reconcilePayment = async () => {
+    if (reconcileInFlight.current || Date.now() < reconcileAfter) return
+    reconcileInFlight.current = true
+    setReconciling(true)
+    setFlowError('')
+    try {
+      const latest = await bookingQuery.refetch()
+      if (latest.error) throw latest.error
+      if (latest.data?.paymentStatus === 'succeeded') return
+      setReconcileAfter(Date.now() + 30000)
+      const result = await paymentService.reconcileBooking(bookingId)
+      if (!isCurrentSession()) return
+      setFlowMessage(
+        result.outcome === 'pending'
+          ? 'The provider is still processing this payment. Please do not pay again.'
+          : result.outcome === 'review_required'
+            ? 'Payment received, but this booking needs review. Please contact support.'
+            : result.outcome === 'failed'
+              ? 'The provider reports that this payment attempt failed.'
+              : 'Payment checked. Updating your booking?'
+      )
+      await refreshTruth()
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BOOKINGS.MINE })
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.INVOICES.FOR_BOOKING(bookingId) })
+    } catch (error) {
+      if (isCurrentSession())
+        setFlowError(error?.message || 'Unable to check payment. Please retry later.')
+    } finally {
+      reconcileInFlight.current = false
+      if (isCurrentSession()) setReconciling(false)
     }
   }
 
@@ -310,7 +346,7 @@ function BookingStatusPage() {
     !bookingQuery.error &&
     !bookingQuery.isFetching &&
     !paymentQuery.error
-  const busy = checkoutOpen || orderMutation.isPending || verifyMutation.isPending
+  const busy = reconciling || checkoutOpen || orderMutation.isPending || verifyMutation.isPending
   const startPayment = () =>
     runPaymentPhoneGuard({
       phone: user?.phone,
@@ -550,6 +586,16 @@ function BookingStatusPage() {
           {canPay && (
             <LoadingButton loading={busy} disabled={busy} onClick={startPayment}>
               {paymentId ? 'Retry / Reopen Payment' : 'Pay Now with Razorpay'}
+            </LoadingButton>
+          )}
+          {paymentId && !hasCapturedPayment(payment) && booking.paymentStatus !== 'succeeded' && (
+            <LoadingButton
+              sx={{ ml: 1 }}
+              loading={reconciling}
+              disabled={busy || now < reconcileAfter}
+              onClick={reconcilePayment}
+            >
+              Check payment with provider
             </LoadingButton>
           )}
           {pendingVerification && !verifyMutation.isPending && (
