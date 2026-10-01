@@ -35,28 +35,10 @@ export const walletService = {
     }
   },
 
-  async createTopup(amount) {
-    const response = await httpClient.post('/wallet/topups', {
-      amount: String(amount),
-    })
-
-    return unwrap(response)
-  },
-
-  async verifyTopup(payload) {
-    const response = await httpClient.post('/wallet/topups/verify', payload)
-
-    return unwrap(response)
-  },
-
-  async recharge(payload) {
-    const amount = typeof payload === 'object' ? payload?.amount : payload
-
-    const response = await httpClient.post('/wallet/topups', {
-      amount: String(amount),
-    })
-
-    return unwrap(response)
+  async recharge() {
+    throw new Error(
+      'Add Money will be enabled after Razorpay wallet top-up integration.'
+    )
   },
 }
 

@@ -1,8 +1,7 @@
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
+﻿import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined'
 import LuggageOutlinedIcon from '@mui/icons-material/LuggageOutlined'
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
-import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined'
 import { ROUTES } from '@/constants/routes'
 
 const ACCOUNT_NAV = [
@@ -13,11 +12,6 @@ const ACCOUNT_NAV = [
       { label: 'Profile', to: ROUTES.MY_PROFILE, icon: <PersonOutlineIcon /> },
       { label: 'Addresses', to: ROUTES.SAVED_ADDRESSES, icon: <LocationOnOutlinedIcon /> },
       { label: 'KYC Verification', to: ROUTES.KYC, icon: <VerifiedUserOutlinedIcon /> },
-      {
-        label: 'Wallet',
-        to: ROUTES.WALLET,
-        icon: <AccountBalanceWalletOutlinedIcon />,
-      },
     ],
   },
 ]

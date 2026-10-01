@@ -1,0 +1,484 @@
+import { useMemo, useState } from 'react'
+import {
+  Grid,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CircularProgress,
+  Divider,
+  Stack,
+  Chip,
+} from '@mui/material'
+import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded'
+import LockRoundedIcon from '@mui/icons-material/LockRounded'
+import PaymentsRoundedIcon from '@mui/icons-material/PaymentsRounded'
+import { AccountPageShell, WalletCard, TransactionTable } from '@/components/account'
+import {
+  useWalletBalance,
+  useWalletRefunds,
+  useWalletTransactions,
+  useRechargeWallet,
+} from '@/features/wallet'
+import { walletService } from '@/services/modules'
+import { useToast } from '@/contexts/ToastContext'
+import MaterialCard from '@/components/ui/MaterialCard'
+import loadRazorpay from '@/utils/loadRazorpay'
+
+const QUICK_AMOUNTS = [500, 1000, 2000, 5000]
+
+function getErrorMessage(error, fallback) {
+  return (
+    error?.response?.data?.message ||
+    error?.response?.data?.error?.message ||
+    error?.message ||
+    fallback
+  )
+}
+
+function WalletPage() {
+  const { showSuccess, showError } = useToast()
+
+  const { data: balanceData, refetch: refetchBalance } = useWalletBalance()
+
+  const { data: refundsData } = useWalletRefunds()
+
+  const { data: transactionsData, refetch: refetchTransactions } = useWalletTransactions()
+
+  const recharge = useRechargeWallet()
+
+  const [open, setOpen] = useState(false)
+  const [amount, setAmount] = useState('')
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
+
+  const balance = useMemo(() => balanceData ?? { balance: 0, currency: 'INR' }, [balanceData])
+
+  const transactions = useMemo(() => transactionsData?.transactions ?? [], [transactionsData])
+
+  const refunds = useMemo(() => refundsData?.refunds ?? [], [refundsData])
+
+  const numericAmount = Number(amount)
+
+  const validAmount =
+    Number.isFinite(numericAmount) &&
+    numericAmount >= 1 &&
+    numericAmount <= 100000 &&
+    /^\d+(?:\.\d{1,2})?$/.test(String(amount).trim())
+
+  const closeDialog = () => {
+    if (recharge.isPending || checkoutOpen) return
+
+    setOpen(false)
+    setAmount('')
+  }
+
+  const refreshWallet = async () => {
+    await Promise.all([refetchBalance(), refetchTransactions()])
+  }
+
+  const handleRecharge = async () => {
+    if (!validAmount) {
+      showError('Enter an amount between ₹1 and ₹1,00,000.')
+      return
+    }
+
+    try {
+      /*
+       * Step 1:
+       * Backend creates the trusted Razorpay order.
+       */
+      const created = await recharge.mutateAsync({
+        amount: numericAmount.toFixed(2),
+      })
+
+      const topup = created?.topup
+      const checkout = created?.checkout
+
+      if (!topup?.id || !checkout?.orderId || !checkout?.amount || !checkout?.currency) {
+        throw new Error('The payment order response was incomplete. Please try again.')
+      }
+
+      /*
+       * Step 2:
+       * Load Razorpay Checkout using the existing shared loader.
+       */
+      const Razorpay = await loadRazorpay()
+
+      if (!Razorpay) {
+        throw new Error('Razorpay Checkout could not be loaded.')
+      }
+
+      setCheckoutOpen(true)
+
+      const provider = new Razorpay({
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: checkout.amount,
+        currency: checkout.currency,
+        order_id: checkout.orderId,
+        name: 'RentCar',
+        description: 'Add money to RentCar Wallet',
+
+        theme: {
+          color: '#f97316',
+        },
+
+        modal: {
+          ondismiss: () => {
+            setCheckoutOpen(false)
+          },
+        },
+
+        handler: async (response) => {
+          try {
+            /*
+             * Step 3:
+             * Browser callback is NOT trusted by itself.
+             * Backend verifies signature + provider payment state.
+             */
+            const verified = await walletService.verifyTopup({
+              topupId: topup.id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            })
+
+            await refreshWallet()
+
+            const credited =
+              verified?.transaction?.amount ?? topup.amount ?? numericAmount.toFixed(2)
+
+            showSuccess(
+              `₹${Number(credited).toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })} added to your wallet successfully.`
+            )
+
+            setOpen(false)
+            setAmount('')
+          } catch (error) {
+            showError(
+              getErrorMessage(
+                error,
+                'Payment was received but wallet verification failed. Please retry verification or contact support.'
+              )
+            )
+          } finally {
+            setCheckoutOpen(false)
+          }
+        },
+      })
+
+      provider.on('payment.failed', (response) => {
+        setCheckoutOpen(false)
+
+        showError(response?.error?.description || 'Payment failed. Your wallet was not credited.')
+      })
+
+      provider.open()
+    } catch (error) {
+      setCheckoutOpen(false)
+
+      showError(getErrorMessage(error, 'Unable to start wallet payment.'))
+    }
+  }
+
+  return (
+    <AccountPageShell
+      title="My Wallet"
+      description="Add money securely and use your balance for RentCar payments."
+    >
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <WalletCard
+            balance={balance.balance}
+            currency={balance.currency}
+            onAddMoney={() => setOpen(true)}
+          />
+
+          <MaterialCard
+            sx={{
+              mt: 3,
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(145deg, rgba(249,115,22,0.08), rgba(255,255,255,0.96))',
+            }}
+          >
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Box
+                sx={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 2,
+                  display: 'grid',
+                  placeItems: 'center',
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                }}
+              >
+                <LockRoundedIcon />
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle1" fontWeight={700}>
+                  Secure wallet
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary">
+                  Payments are processed securely through Razorpay.
+                </Typography>
+              </Box>
+            </Stack>
+          </MaterialCard>
+        </Grid>
+
+        <Grid item xs={12} md={8}>
+          <MaterialCard
+            sx={{
+              p: { xs: 2, sm: 3 },
+              mb: 3,
+              borderRadius: 3,
+            }}
+          >
+            <Stack
+              direction={{
+                xs: 'column',
+                sm: 'row',
+              }}
+              justifyContent="space-between"
+              spacing={1}
+              sx={{ mb: 2 }}
+            >
+              <Box>
+                <Typography variant="h6" fontWeight={700}>
+                  Recent Transactions
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary">
+                  Your latest wallet credits and debits
+                </Typography>
+              </Box>
+
+              <Chip
+                icon={<AccountBalanceWalletRoundedIcon />}
+                label={`${transactions.length} transactions`}
+                variant="outlined"
+              />
+            </Stack>
+
+            <Divider sx={{ mb: 2 }} />
+
+            <TransactionTable transactions={transactions} />
+          </MaterialCard>
+
+          <MaterialCard
+            sx={{
+              p: { xs: 2, sm: 3 },
+              borderRadius: 3,
+            }}
+          >
+            <Typography variant="h6" fontWeight={700} gutterBottom>
+              Refund History
+            </Typography>
+
+            {refunds.length === 0 ? (
+              <Box
+                sx={{
+                  py: 3,
+                  textAlign: 'center',
+                  color: 'text.secondary',
+                }}
+              >
+                <Typography variant="body2">No refunds yet.</Typography>
+              </Box>
+            ) : (
+              refunds.map((refund) => (
+                <Typography key={refund.id} variant="body2">
+                  {refund.id} — {refund.status}
+                </Typography>
+              ))
+            )}
+          </MaterialCard>
+        </Grid>
+      </Grid>
+
+      <Dialog
+        open={open}
+        onClose={closeDialog}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            overflow: 'hidden',
+          },
+        }}
+      >
+        <Box
+          sx={{
+            px: 3,
+            pt: 3,
+            pb: 2,
+            background: 'linear-gradient(135deg, rgba(249,115,22,0.14), rgba(249,115,22,0.03))',
+          }}
+        >
+          <Box
+            sx={{
+              width: 52,
+              height: 52,
+              borderRadius: 3,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              display: 'grid',
+              placeItems: 'center',
+              mb: 2,
+            }}
+          >
+            <PaymentsRoundedIcon />
+          </Box>
+
+          <DialogTitle
+            sx={{
+              p: 0,
+              fontWeight: 800,
+            }}
+          >
+            Add Money
+          </DialogTitle>
+
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Add funds to your RentCar wallet securely through Razorpay.
+          </Typography>
+        </Box>
+
+        <DialogContent sx={{ pt: '24px !important' }}>
+          <Typography variant="caption" color="text.secondary" fontWeight={700}>
+            SELECT AMOUNT
+          </Typography>
+
+          <Grid container spacing={1} sx={{ mt: 0.25, mb: 2.5 }}>
+            {QUICK_AMOUNTS.map((value) => (
+              <Grid item xs={6} key={value}>
+                <Button
+                  fullWidth
+                  variant={numericAmount === value ? 'contained' : 'outlined'}
+                  onClick={() => setAmount(String(value))}
+                  disabled={recharge.isPending || checkoutOpen}
+                  sx={{
+                    py: 1.15,
+                    borderRadius: 2,
+                    fontWeight: 700,
+                  }}
+                >
+                  ₹{value.toLocaleString('en-IN')}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+
+          <TextField
+            label="Custom Amount"
+            type="number"
+            value={amount}
+            onChange={(event) => setAmount(event.target.value)}
+            inputProps={{
+              min: 1,
+              max: 100000,
+              step: '0.01',
+            }}
+            InputProps={{
+              startAdornment: (
+                <Typography
+                  sx={{
+                    mr: 1,
+                    fontWeight: 700,
+                  }}
+                >
+                  ₹
+                </Typography>
+              ),
+            }}
+            helperText="Minimum ₹1 • Maximum ₹1,00,000"
+            fullWidth
+            disabled={recharge.isPending || checkoutOpen}
+          />
+
+          {validAmount && (
+            <Box
+              sx={{
+                mt: 2,
+                p: 2,
+                borderRadius: 2,
+                bgcolor: 'action.hover',
+              }}
+            >
+              <Stack direction="row" justifyContent="space-between">
+                <Typography variant="body2" color="text.secondary">
+                  Amount to add
+                </Typography>
+
+                <Typography variant="subtitle2" fontWeight={800}>
+                  ₹
+                  {numericAmount.toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </Typography>
+              </Stack>
+
+              <Typography variant="caption" color="text.secondary">
+                The same amount you pay will be credited to your wallet.
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+
+        <DialogActions
+          sx={{
+            px: 3,
+            pb: 3,
+            pt: 1,
+          }}
+        >
+          <Button
+            onClick={closeDialog}
+            color="inherit"
+            disabled={recharge.isPending || checkoutOpen}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={handleRecharge}
+            variant="contained"
+            disabled={!validAmount || recharge.isPending || checkoutOpen}
+            startIcon={
+              recharge.isPending || checkoutOpen ? (
+                <CircularProgress size={17} color="inherit" />
+              ) : (
+                <LockRoundedIcon />
+              )
+            }
+            sx={{
+              minWidth: 150,
+              borderRadius: 2,
+              fontWeight: 700,
+            }}
+          >
+            {recharge.isPending
+              ? 'Creating Order...'
+              : checkoutOpen
+                ? 'Payment Open'
+                : 'Pay Securely'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </AccountPageShell>
+  )
+}
+
+export default WalletPage

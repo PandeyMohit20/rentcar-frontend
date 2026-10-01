@@ -31,8 +31,6 @@ const NotFoundPage = lazy(() => import('@/pages/NotFound'))
 const MyProfilePage = lazy(() => import('@/pages/account/Profile'))
 const KycPage = lazy(() => import('@/pages/account/KYC'))
 const MyBookingsPage = lazy(() => import('@/pages/account/Bookings'))
-const WalletPage = lazy(() => import('@/pages/account/Wallet'))
-const WalletHistoryPage = lazy(() => import('@/pages/account/WalletHistory'))
 const BookingDetailsPage = lazy(() => import('@/pages/account/BookingDetails'))
 const SavedAddressesPage = lazy(() => import('@/pages/account/SavedAddresses'))
 
@@ -145,8 +143,6 @@ function AppRoutes() {
         <Route path={ROUTES.KYC} element={withSuspense(KycPage)} />
         <Route path={ROUTES.DRIVING_LICENSE} element={<Navigate to={ROUTES.KYC} replace />} />
         <Route path={ROUTES.DOCUMENTS} element={<Navigate to={ROUTES.KYC} replace />} />
-        <Route path={ROUTES.WALLET} element={withSuspense(WalletPage)} />
-        <Route path={ROUTES.WALLET_HISTORY} element={withSuspense(WalletHistoryPage)} />
         <Route path={ROUTES.MY_BOOKINGS} element={withSuspense(MyBookingsPage)} />
         <Route path={ROUTES.BOOKING_DETAILS} element={withSuspense(BookingDetailsPage)} />
         <Route path={ROUTES.SAVED_ADDRESSES} element={withSuspense(SavedAddressesPage)} />

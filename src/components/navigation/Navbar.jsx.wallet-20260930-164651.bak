@@ -19,7 +19,6 @@ import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
-import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined'
 import { Link, useLocation } from 'react-router-dom'
 import Brand from '@/components/common/Brand'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
@@ -27,7 +26,6 @@ import { ROUTES } from '@/constants/routes'
 import { useAuth } from '@/hooks/useAuth'
 import { useTheme } from '@/contexts/ThemeContext'
 import LogoutButton from '@/components/authentication/LogoutButton'
-import { useWalletBalance } from '@/features/wallet'
 
 /**
  * Main navigation bar with theme toggle, search, wishlist and notifications.
@@ -37,18 +35,6 @@ function Navbar({ menus = [] }) {
   const { mode, toggleTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
   const { pathname } = useLocation()
-  const wallet = useWalletBalance()
-
-  const walletBalance = Number(
-    wallet.data?.balance ?? wallet.data?.wallet?.balance ?? wallet.data?.availableBalance ?? 0
-  )
-
-  const walletAmount = new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number.isFinite(walletBalance) ? walletBalance : 0)
 
   const authLinks = isAuthenticated ? [{ label: 'Profile', to: ROUTES.PROFILE }] : []
 
@@ -103,56 +89,6 @@ function Navbar({ menus = [] }) {
               </IconButton>
             </Tooltip>
 
-            {isAuthenticated && (
-              <>
-                <Tooltip title="My Wallet">
-                  <Button
-                    component={Link}
-                    to={ROUTES.WALLET}
-                    color="inherit"
-                    aria-label="wallet"
-                    startIcon={<AccountBalanceWalletOutlinedIcon />}
-                    sx={{
-                      display: { xs: 'none', sm: 'inline-flex' },
-                      minWidth: 0,
-                      px: 1.4,
-                      py: 0.7,
-                      mr: 0.5,
-                      border: 1,
-                      borderColor: 'divider',
-                      borderRadius: 2.5,
-                      textTransform: 'none',
-                      fontWeight: 800,
-                      fontSize: 13,
-                      whiteSpace: 'nowrap',
-                      '& .MuiButton-startIcon': {
-                        color: 'primary.main',
-                      },
-                      '&:hover': {
-                        bgcolor: 'action.hover',
-                        borderColor: 'primary.main',
-                      },
-                    }}
-                  >
-                    {wallet.isPending ? 'Wallet' : walletAmount}
-                  </Button>
-                </Tooltip>
-
-                <Tooltip title={wallet.isPending ? 'Wallet' : walletAmount}>
-                  <IconButton
-                    component={Link}
-                    to={ROUTES.WALLET}
-                    color="inherit"
-                    aria-label="wallet-mobile"
-                    sx={{
-                      display: { xs: 'inline-flex', sm: 'none' },
-                    }}
-                  >
-                    <AccountBalanceWalletOutlinedIcon />
-                  </IconButton>
-                </Tooltip>
-              </>
-            )}
             <Tooltip title={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}>
               <IconButton color="inherit" onClick={toggleTheme} aria-label="toggle theme">
                 {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
@@ -207,17 +143,6 @@ function Navbar({ menus = [] }) {
               </ListItemButton>
             </ListItem>
 
-            {isAuthenticated && (
-              <ListItem disablePadding>
-                <ListItemButton component={Link} to={ROUTES.WALLET}>
-                  <AccountBalanceWalletOutlinedIcon sx={{ mr: 2, color: 'primary.main' }} />
-                  <ListItemText
-                    primary="Wallet"
-                    secondary={wallet.isPending ? 'Loading balance...' : walletAmount}
-                  />
-                </ListItemButton>
-              </ListItem>
-            )}
             {!isRestoring && (
               <ListItem disablePadding>
                 {isAuthenticated ? (

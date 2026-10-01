@@ -76,13 +76,6 @@ const authSession = {
     version += 1
   },
 
-  markSignedOut() {
-    accessToken = null
-    writeStoredToken(null)
-
-    signedOut = true
-    version += 1
-  },
   clearAccessToken() {
     accessToken = null
     writeStoredToken(null)
