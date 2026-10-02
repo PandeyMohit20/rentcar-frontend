@@ -1,23 +1,40 @@
-/**
- * Reviews API service — placeholder abstraction.
- * Real backend integration to be added later.
- */
-export const reviewService = {
-  async listMyReviews() {
-    return Promise.resolve({ data: { reviews: [] } })
+﻿import api from '@/services/api/axiosInstance'
+
+const reviewService = {
+  async listMyReviews(params = {}) {
+    const response = await api.get('/reviews/my', {
+      params,
+    })
+
+    return response.data?.data ?? response.data
   },
 
   async getReviewSummary() {
-    return Promise.resolve({ data: { average: 0, total: 0, breakdown: {} } })
+    const response = await api.get('/reviews/my/summary')
+
+    return response.data?.data ?? response.data
   },
 
   async createReview(payload) {
-    return Promise.resolve({ data: { id: `REV-${Date.now()}`, ...payload } })
+    const response = await api.post('/reviews', payload)
+
+    return response.data?.data ?? response.data
   },
 
   async updateReview(id, payload) {
-    return Promise.resolve({ data: { id, ...payload } })
+    const response = await api.patch(`/reviews/${id}`, payload)
+
+    return response.data?.data ?? response.data
+  },
+
+  async listCarReviews(carId, params = {}) {
+    const response = await api.get(`/reviews/car/${carId}`, {
+      params,
+    })
+
+    return response.data?.data ?? response.data
   },
 }
 
+export { reviewService }
 export default reviewService

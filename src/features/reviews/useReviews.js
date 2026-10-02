@@ -1,14 +1,15 @@
-import { useApiQuery, useApiMutation } from '@/hooks/useApi'
+﻿import { useApiQuery, useApiMutation } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
 import { reviewService } from '@/services/modules'
 
 /**
  * Reviews feature hooks.
  */
-export function useMyReviews() {
+
+export function useMyReviews(params = {}) {
   return useApiQuery({
-    queryKey: QUERY_KEYS.REVIEWS.ALL,
-    queryFn: reviewService.listMyReviews,
+    queryKey: [...QUERY_KEYS.REVIEWS.ALL, params],
+    queryFn: () => reviewService.listMyReviews(params),
   })
 }
 
@@ -19,16 +20,31 @@ export function useReviewSummary() {
   })
 }
 
+export function useCarReviews(carId, params = {}) {
+  return useApiQuery({
+    queryKey: QUERY_KEYS.CARS.REVIEWS(carId),
+    queryFn: () => reviewService.listCarReviews(carId, params),
+    enabled: Boolean(carId),
+  })
+}
+
 export function useCreateReview() {
   return useApiMutation({
     mutationFn: reviewService.createReview,
-    invalidateKeys: [QUERY_KEYS.REVIEWS.ALL, QUERY_KEYS.REVIEWS.SUMMARY],
+    invalidateKeys: [
+      QUERY_KEYS.REVIEWS.ALL,
+      QUERY_KEYS.REVIEWS.SUMMARY,
+    ],
   })
 }
 
 export function useUpdateReview() {
   return useApiMutation({
-    mutationFn: ({ id, ...payload }) => reviewService.updateReview(id, payload),
-    invalidateKeys: [QUERY_KEYS.REVIEWS.ALL, QUERY_KEYS.REVIEWS.SUMMARY],
+    mutationFn: ({ id, ...payload }) =>
+      reviewService.updateReview(id, payload),
+    invalidateKeys: [
+      QUERY_KEYS.REVIEWS.ALL,
+      QUERY_KEYS.REVIEWS.SUMMARY,
+    ],
   })
 }

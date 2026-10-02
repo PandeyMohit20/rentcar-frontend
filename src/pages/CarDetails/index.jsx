@@ -1,4 +1,4 @@
-import QuotePriceBreakdown from '@/components/booking/QuotePriceBreakdown'
+﻿import QuotePriceBreakdown from '@/components/booking/QuotePriceBreakdown'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom'
 import {
@@ -16,11 +16,13 @@ import Seo from '@/components/common/Seo'
 import MaterialCard from '@/components/ui/MaterialCard'
 import PrimaryButton from '@/components/buttons/PrimaryButton'
 import EmptyState from '@/components/common/EmptyState'
+import { CarReviews } from '@/features/car'
 import ContentSkeleton from '@/components/common/ContentSkeleton'
 import ImageGallery from '@/components/common/ImageGallery'
 import JourneySteps from '@/components/common/JourneySteps'
 import MobileBookingCTA from '@/components/booking/MobileBookingCTA'
 import { bookingService, carService, pricingService } from '@/services/modules'
+import { useCarReviews } from '@/features/reviews'
 import { useApiMutation, useApiQuery, useQueryClient } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
 import { formatCurrency } from '@/utils/formatters'
@@ -65,6 +67,16 @@ function CarDetailsPage() {
     queryFn: () => carService.getCarDetails(id),
     enabled: Boolean(id),
   })
+  const {
+    data: reviewsData,
+    isLoading: reviewsLoading,
+  } = useCarReviews(id)
+
+  const carReviews = reviewsData?.reviews ?? []
+  const reviewSummary = reviewsData?.summary ?? {
+    average: 0,
+    count: 0,
+  }
   const quoteMutation = useApiMutation({
     mutationFn: pricingService.createQuote,
     onSuccess: (result) => {
@@ -278,9 +290,26 @@ function CarDetailsPage() {
                 </Button>
               </Box>
             </MaterialCard>
+
+            <MaterialCard sx={{ p: 3, mt: 3 }} id="car-reviews">
+              {reviewsLoading ? (
+                <Box role="status" aria-label="Loading reviews">
+                  <Skeleton width="30%" height={32} />
+                  <Skeleton width="50%" height={24} />
+                  <Skeleton width="100%" height={80} />
+                </Box>
+              ) : (
+                <CarReviews
+                  reviews={carReviews}
+                  rating={Number(reviewSummary.average || 0)}
+                  reviewCount={Number(reviewSummary.count || 0)}
+                />
+              )}
+            </MaterialCard>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <MaterialCard
+              id="booking-summary"
               id="booking-summary"
               tabIndex={-1}
               sx={{ p: 3, position: 'sticky', top: 100, scrollMarginTop: 110 }}
@@ -455,3 +484,4 @@ function CarDetailsRoute() {
   return <CarDetailsPage key={`${location.pathname}${location.search}`} />
 }
 export default CarDetailsRoute
+

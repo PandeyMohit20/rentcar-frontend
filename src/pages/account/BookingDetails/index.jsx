@@ -1,4 +1,4 @@
-import JourneySteps from '@/components/common/JourneySteps'
+﻿import JourneySteps from '@/components/common/JourneySteps'
 import TaxBreakdown from '@/features/invoice/TaxBreakdown'
 import { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
@@ -16,6 +16,7 @@ import {
   DialogTitle,
   Divider,
   Grid,
+  Rating,
   Stack,
   TextField,
   Typography,
@@ -34,7 +35,15 @@ import {
   useBookingRefunds,
   useCancelBooking,
 } from '@/features/bookings'
-import { BOOKING_STATUS_META, PAYMENT_STATUS_META, REFUND_STATUS_META } from '@/features/account'
+import {
+  useMyReviews,
+  useCreateReview,
+} from '@/features/reviews'
+import {
+  BOOKING_STATUS_META,
+  PAYMENT_STATUS_META,
+  REFUND_STATUS_META,
+} from '@/features/account'
 import { useToast } from '@/contexts/ToastContext'
 import { useQueryClient } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
@@ -45,12 +54,16 @@ import cancellationAttemptSession from '@/services/api/cancellationAttemptSessio
 
 const canCancel = (booking) => {
   if (!booking) return false
+
   const unpaid =
-    ['PENDING', 'PAYMENT_PENDING'].includes(booking.status) && booking.paymentStatus !== 'succeeded'
+    ['PENDING', 'PAYMENT_PENDING'].includes(booking.status) &&
+    booking.paymentStatus !== 'succeeded'
+
   const paidBeforePickup =
     booking.status === 'CONFIRMED' &&
     booking.paymentStatus === 'succeeded' &&
     new Date(booking.startAt).getTime() > Date.now()
+
   return unpaid || paidBeforePickup
 }
 
@@ -82,45 +95,93 @@ function BookingDetailsPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { showSuccess, showError } = useToast()
+
   const [cancelOpen, setCancelOpen] = useState(false)
   const [reason, setReason] = useState('')
+
+  const [rating, setRating] = useState(0)
+  const [comment, setComment] = useState('')
+
   const bookingQuery = useBookingDetails(id)
   const refundsQuery = useBookingRefunds(id)
+
+  const reviewsQuery = useMyReviews({ limit: 100 })
+  const createReview = useCreateReview()
+
   const booking = bookingQuery.data
-  const refunds = useMemo(() => refundsQuery.data ?? [], [refundsQuery.data])
-  const invoiceEligible = ['succeeded', 'refunded'].includes(booking?.paymentStatus)
+
+  const refunds = useMemo(
+    () => refundsQuery.data ?? [],
+    [refundsQuery.data]
+  )
+
+  const invoiceEligible = ['succeeded', 'refunded'].includes(
+    booking?.paymentStatus
+  )
+
   const invoiceQuery = useBookingInvoice(id, invoiceEligible)
   const cancelMutation = useCancelBooking()
+
+  const existingReview = useMemo(() => {
+    const reviews = reviewsQuery.data?.reviews ?? []
+
+    return (
+      reviews.find((review) => review.bookingId === id) ?? null
+    )
+  }, [reviewsQuery.data, id])
+
   const refundState = refunds
-    .map((refund) => `${refund.id}:${refund.status}:${refund.updatedAt || ''}`)
+    .map(
+      (refund) =>
+        `${refund.id}:${refund.status}:${refund.updatedAt || ''}`
+    )
     .join('|')
 
   useEffect(() => {
     if (!refundState) return
+
     refunds.forEach((refund) => {
-      queryClient.setQueryData(QUERY_KEYS.REFUNDS.DETAILS(refund.id), refund)
+      queryClient.setQueryData(
+        QUERY_KEYS.REFUNDS.DETAILS(refund.id),
+        refund
+      )
     })
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BOOKINGS.MINE })
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.BOOKINGS.DETAILS(id) })
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PAYMENTS.ALL })
+
+    queryClient.invalidateQueries({
+      queryKey: QUERY_KEYS.BOOKINGS.MINE,
+    })
+
+    queryClient.invalidateQueries({
+      queryKey: QUERY_KEYS.BOOKINGS.DETAILS(id),
+    })
+
+    queryClient.invalidateQueries({
+      queryKey: QUERY_KEYS.PAYMENTS.ALL,
+    })
   }, [id, queryClient, refundState, refunds])
 
   const closeCancelDialog = () => {
-    if (!cancelMutation.isPending) setCancelOpen(false)
+    if (!cancelMutation.isPending) {
+      setCancelOpen(false)
+    }
   }
 
   const submitCancellation = async () => {
     if (cancelMutation.isPending) return
+
     const trimmedReason = reason.trim()
+
     try {
       const result = await cancelMutation.mutateAsync({
         bookingId: id,
         reason: trimmedReason,
         idempotencyKey: cancellationAttemptSession.getOrCreateKey(id),
       })
+
       cancellationAttemptSession.clear(id)
       setCancelOpen(false)
       setReason('')
+
       showSuccess(
         result?.refund
           ? 'Booking cancelled. Refund status is shown below.'
@@ -135,9 +196,40 @@ function BookingDetailsPage() {
     }
   }
 
+  const submitReview = async () => {
+    if (
+      !id ||
+      booking?.status !== 'COMPLETED' ||
+      rating === 0 ||
+      createReview.isPending
+    ) {
+      return
+    }
+
+    try {
+      await createReview.mutateAsync({
+        bookingId: id,
+        rating,
+        comment: comment.trim(),
+      })
+
+      setRating(0)
+      setComment('')
+
+      showSuccess('Review submitted for moderation.')
+    } catch (error) {
+      showError(
+        error?.message || 'Failed to submit review.'
+      )
+    }
+  }
+
   if (bookingQuery.isLoading) {
     return (
-      <AccountPageShell title="Booking Details" description="Loading your booking…">
+      <AccountPageShell
+        title="Booking Details"
+        description="Loading your booking…"
+      >
         <AccountSkeleton />
       </AccountPageShell>
     )
@@ -145,12 +237,16 @@ function BookingDetailsPage() {
 
   if (bookingQuery.error || !booking) {
     return (
-      <AccountPageShell title="Booking Details" description="This booking is unavailable.">
+      <AccountPageShell
+        title="Booking Details"
+        description="This booking is unavailable."
+      >
         <MaterialCard>
           <EmptyState
             title="Booking not found"
             description={
-              bookingQuery.error?.message || 'The booking could not be found in your account.'
+              bookingQuery.error?.message ||
+              'The booking could not be found in your account.'
             }
             actionLabel="Back to My Bookings"
             onAction={() => navigate(ROUTES.MY_BOOKINGS)}
@@ -164,15 +260,44 @@ function BookingDetailsPage() {
     label: 'Status unavailable',
     color: 'default',
   }
+
   const paymentMeta = PAYMENT_STATUS_META[booking.paymentStatus] ?? {
     label: 'Status unavailable',
     color: 'default',
   }
+
   const cancellationAllowed = canCancel(booking)
+
   const hasPendingRefund = refunds.some((refund) =>
     ['pending', 'processing'].includes(refund.status)
   )
-  const vehicleName = [booking.car?.brand, booking.car?.model].filter(Boolean).join(' ')
+
+  const vehicleName = [booking.car?.brand, booking.car?.model]
+    .filter(Boolean)
+    .join(' ')
+
+  const reviewStatusMeta = {
+    pending: {
+      severity: 'info',
+      message: 'Your review is pending moderation.',
+    },
+    approved: {
+      severity: 'success',
+      message: 'Your review has been approved.',
+    },
+    rejected: {
+      severity: 'warning',
+      message: 'Your review was rejected by moderation.',
+    },
+    hidden: {
+      severity: 'info',
+      message: 'Your review is currently hidden.',
+    },
+  }
+
+  const existingReviewMeta = existingReview
+    ? reviewStatusMeta[existingReview.status]
+    : null
 
   return (
     <AccountPageShell
@@ -203,75 +328,141 @@ function BookingDetailsPage() {
           <Typography component="h2" variant="h5">
             Your trip at a glance
           </Typography>
-          <Chip label={bookingMeta.label} color={bookingMeta.color} />
+
+          <Chip
+            label={bookingMeta.label}
+            color={bookingMeta.color}
+          />
         </Stack>
-        {['PAYMENT_PENDING', 'CONFIRMED', 'ACTIVE', 'COMPLETED'].includes(booking.status) && (
-          <JourneySteps active={booking.status === 'PAYMENT_PENDING' ? 2 : 3} />
+
+        {[
+          'PAYMENT_PENDING',
+          'CONFIRMED',
+          'ACTIVE',
+          'COMPLETED',
+        ].includes(booking.status) && (
+          <JourneySteps
+            active={booking.status === 'PAYMENT_PENDING' ? 2 : 3}
+          />
         )}
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} justifyContent="space-between">
+
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={3}
+          justifyContent="space-between"
+        >
           <Box>
             <Typography variant="caption" color="text.secondary">
               PICKUP
             </Typography>
-            <Typography fontWeight={700}>{formatBusinessDateTime(booking.startAt)}</Typography>
+            <Typography fontWeight={700}>
+              {formatBusinessDateTime(booking.startAt)}
+            </Typography>
           </Box>
+
           <Box>
             <Typography variant="caption" color="text.secondary">
               RETURN
             </Typography>
-            <Typography fontWeight={700}>{formatBusinessDateTime(booking.endAt)}</Typography>
+            <Typography fontWeight={700}>
+              {formatBusinessDateTime(booking.endAt)}
+            </Typography>
           </Box>
         </Stack>
       </Box>
+
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Stack spacing={3}>
             {booking.car && (
               <MaterialCard sx={{ p: { xs: 2, md: 3 } }}>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <Stack
+                  direction={{ xs: 'column', sm: 'row' }}
+                  spacing={2}
+                  alignItems="center"
+                >
                   {booking.car.primaryImage?.url && (
-                    <Box sx={{ width: { xs: '100%', sm: 220 }, flexShrink: 0 }}>
+                    <Box
+                      sx={{
+                        width: { xs: '100%', sm: 220 },
+                        flexShrink: 0,
+                      }}
+                    >
                       <ImageLazy
                         src={booking.car.primaryImage.url}
-                        alt={booking.car.primaryImage.altText || vehicleName || 'Booked vehicle'}
+                        alt={
+                          booking.car.primaryImage.altText ||
+                          vehicleName ||
+                          'Booked vehicle'
+                        }
                         ratio="16/10"
                       />
                     </Box>
                   )}
+
                   <Box sx={{ width: '100%' }}>
-                    <Typography variant="subtitle2" color="text.secondary">
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                    >
                       Vehicle
                     </Typography>
+
                     {vehicleName && (
-                      <Typography component="h2" variant="h5" sx={{ mt: 0.5 }}>
+                      <Typography
+                        component="h2"
+                        variant="h5"
+                        sx={{ mt: 0.5 }}
+                      >
                         {vehicleName}
                       </Typography>
                     )}
+
                     {booking.car.registrationNumber && (
                       <Typography variant="body2" sx={{ mt: 1 }}>
-                        Registration: {booking.car.registrationNumber}
+                        Registration:{' '}
+                        {booking.car.registrationNumber}
                       </Typography>
                     )}
                   </Box>
                 </Stack>
               </MaterialCard>
             )}
+
             <MaterialCard sx={{ p: { xs: 2, md: 3 } }}>
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
-                alignItems={{ xs: 'flex-start', sm: 'center' }}
+                alignItems={{
+                  xs: 'flex-start',
+                  sm: 'center',
+                }}
                 justifyContent="space-between"
                 spacing={1}
                 sx={{ mb: 2 }}
               >
                 <Box>
-                  <Typography variant="h6">Reservation</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Created {formatBusinessDateTime(booking.createdAt)}
+                  <Typography variant="h6">
+                    Reservation
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                  >
+                    Created{' '}
+                    {formatBusinessDateTime(
+                      booking.createdAt
+                    )}
                   </Typography>
                 </Box>
+
                 <Stack direction="row" spacing={1}>
-                  <Chip label={bookingMeta.label} color={bookingMeta.color} size="small" />
+                  <Chip
+                    label={bookingMeta.label}
+                    color={bookingMeta.color}
+                    size="small"
+                  />
+
                   <Chip
                     label={paymentMeta.label}
                     color={paymentMeta.color}
@@ -280,13 +471,26 @@ function BookingDetailsPage() {
                   />
                 </Stack>
               </Stack>
+
               <Divider />
-              <DetailRow label="Booking number">{booking.bookingNumber}</DetailRow>
-              <DetailRow label="Pickup">{formatBusinessDateTime(booking.startAt)}</DetailRow>
-              <DetailRow label="Return">{formatBusinessDateTime(booking.endAt)}</DetailRow>
+
+              <DetailRow label="Booking number">
+                {booking.bookingNumber}
+              </DetailRow>
+
+              <DetailRow label="Pickup">
+                {formatBusinessDateTime(booking.startAt)}
+              </DetailRow>
+
+              <DetailRow label="Return">
+                {formatBusinessDateTime(booking.endAt)}
+              </DetailRow>
+
               {booking.holdExpiresAt && (
                 <DetailRow label="Payment hold expires">
-                  {formatBusinessDateTime(booking.holdExpiresAt)}
+                  {formatBusinessDateTime(
+                    booking.holdExpiresAt
+                  )}
                 </DetailRow>
               )}
             </MaterialCard>
@@ -295,90 +499,184 @@ function BookingDetailsPage() {
               <Typography variant="h6" sx={{ mb: 1 }}>
                 Price summary
               </Typography>
-              <TaxBreakdown snapshot={booking.financialSnapshot} />
+
+              <TaxBreakdown
+                snapshot={booking.financialSnapshot}
+              />
+
               <DetailRow label="Rental subtotal">
-                {formatCurrency(booking.subtotal, booking.currencyCode)}
+                {formatCurrency(
+                  booking.subtotal,
+                  booking.currencyCode
+                )}
               </DetailRow>
+
               <DetailRow label="Security deposit">
-                {formatCurrency(booking.securityDeposit, booking.currencyCode)}
+                {formatCurrency(
+                  booking.securityDeposit,
+                  booking.currencyCode
+                )}
               </DetailRow>
+
               <Divider sx={{ my: 0.5 }} />
+
               <DetailRow label="Total">
-                {formatCurrency(booking.totalAmount, booking.currencyCode)}
+                {formatCurrency(
+                  booking.totalAmount,
+                  booking.currencyCode
+                )}
               </DetailRow>
             </MaterialCard>
 
-            {(booking.status === 'CANCELLED' || refunds.length > 0 || refundsQuery.error) && (
+            {(booking.status === 'CANCELLED' ||
+              refunds.length > 0 ||
+              refundsQuery.error) && (
               <MaterialCard sx={{ p: { xs: 2, md: 3 } }}>
-                <Typography variant="h6">Refund status</Typography>
-                <Button onClick={() => refundsQuery.refetch()} disabled={refundsQuery.isFetching}>
+                <Typography variant="h6">
+                  Refund status
+                </Typography>
+
+                <Button
+                  onClick={() => refundsQuery.refetch()}
+                  disabled={refundsQuery.isFetching}
+                >
                   Refresh refund status
                 </Button>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Refunds are created by eligible paid cancellations and updated from the payment
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 2 }}
+                >
+                  Refunds are created by eligible paid
+                  cancellations and updated from the payment
                   provider. This view does not initiate refunds.
                 </Typography>
+
                 {hasPendingRefund && (
                   <Alert severity="info" sx={{ mb: 2 }}>
-                    A refund is processing. Automatic checks run briefly; use Refresh refund status
-                    for the latest update.
+                    A refund is processing. Automatic checks run
+                    briefly; use Refresh refund status for the
+                    latest update.
                   </Alert>
                 )}
+
                 {refundsQuery.error ? (
                   <Alert
                     severity="error"
                     action={
-                      <Button color="inherit" size="small" onClick={() => refundsQuery.refetch()}>
+                      <Button
+                        color="inherit"
+                        size="small"
+                        onClick={() => refundsQuery.refetch()}
+                      >
                         Retry
                       </Button>
                     }
                   >
-                    {refundsQuery.error.message || 'Refund status could not be loaded.'}
+                    {refundsQuery.error.message ||
+                      'Refund status could not be loaded.'}
                   </Alert>
                 ) : refundsQuery.isLoading ? (
                   <CircularProgress size={24} />
                 ) : refunds.length === 0 ? (
-                  <Alert severity="info">No refund has been recorded for this booking.</Alert>
+                  <Alert severity="info">
+                    No refund has been recorded for this booking.
+                  </Alert>
                 ) : (
                   <Stack spacing={2}>
                     {refunds.map((refund) => {
-                      const meta = REFUND_STATUS_META[refund.status] ?? {
-                        label: 'Status unavailable',
-                        color: 'default',
-                      }
+                      const meta =
+                        REFUND_STATUS_META[refund.status] ?? {
+                          label: 'Status unavailable',
+                          color: 'default',
+                        }
+
                       return (
                         <Box
                           key={refund.id}
-                          sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2 }}
+                          sx={{
+                            border: 1,
+                            borderColor: 'divider',
+                            borderRadius: 2,
+                            p: 2,
+                          }}
                         >
-                          <Stack direction="row" justifyContent="space-between" spacing={2}>
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            spacing={2}
+                          >
                             <Typography fontWeight={700}>
-                              {formatCurrency(refund.amount, refund.currencyCode)}
+                              {formatCurrency(
+                                refund.amount,
+                                refund.currencyCode
+                              )}
                             </Typography>
-                            <Chip label={meta.label} color={meta.color} size="small" />
+
+                            <Chip
+                              label={meta.label}
+                              color={meta.color}
+                              size="small"
+                            />
                           </Stack>
-                          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                            Requested {formatBusinessDateTime(refund.createdAt)}
+
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 1 }}
+                          >
+                            Requested{' '}
+                            {formatBusinessDateTime(
+                              refund.createdAt
+                            )}
                           </Typography>
+
                           {refund.reason && (
-                            <Typography variant="body2">Reason: {refund.reason}</Typography>
+                            <Typography variant="body2">
+                              Reason: {refund.reason}
+                            </Typography>
                           )}
+
                           {refund.processedAt && (
                             <Typography variant="body2">
-                              Completed {formatBusinessDateTime(refund.processedAt)}
+                              Completed{' '}
+                              {formatBusinessDateTime(
+                                refund.processedAt
+                              )}
                             </Typography>
                           )}
+
                           {refund.providerReference && (
-                            <Typography variant="body2" sx={{ overflowWrap: 'anywhere' }}>
-                              Provider reference: {refund.providerReference}
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                overflowWrap: 'anywhere',
+                              }}
+                            >
+                              Provider reference:{' '}
+                              {refund.providerReference}
                             </Typography>
                           )}
+
                           {refund.status === 'failed' && (
-                            <Alert severity="error" sx={{ mt: 1 }}>
-                              {refund.failureReason || 'The refund could not be processed.'}
+                            <Alert
+                              severity="error"
+                              sx={{ mt: 1 }}
+                            >
+                              {refund.failureReason ||
+                                'The refund could not be processed.'}
+
                               {refund.failedAt && (
-                                <Typography variant="caption" component="div" sx={{ mt: 0.5 }}>
-                                  Failed {formatBusinessDateTime(refund.failedAt)}
+                                <Typography
+                                  variant="caption"
+                                  component="div"
+                                  sx={{ mt: 0.5 }}
+                                >
+                                  Failed{' '}
+                                  {formatBusinessDateTime(
+                                    refund.failedAt
+                                  )}
                                 </Typography>
                               )}
                             </Alert>
@@ -393,25 +691,40 @@ function BookingDetailsPage() {
 
             <MaterialCard sx={{ p: { xs: 2, md: 3 } }}>
               {!invoiceEligible ? (
-                <Alert severity="info">An invoice is issued after a successful payment.</Alert>
+                <Alert severity="info">
+                  An invoice is issued after a successful payment.
+                </Alert>
               ) : invoiceQuery.isLoading ? (
                 <Box sx={{ py: 3, textAlign: 'center' }}>
                   <CircularProgress size={28} />
                 </Box>
               ) : invoiceQuery.error ? (
                 <Alert
-                  severity={invoiceQuery.error.status === 404 ? 'info' : 'error'}
+                  severity={
+                    invoiceQuery.error.status === 404
+                      ? 'info'
+                      : 'error'
+                  }
                   action={
-                    invoiceQuery.error.status === 404 ? undefined : (
-                      <Button color="inherit" size="small" onClick={() => invoiceQuery.refetch()}>
-                        Retry
-                      </Button>
-                    )
+                    invoiceQuery.error.status === 404
+                      ? undefined
+                      : (
+                        <Button
+                          color="inherit"
+                          size="small"
+                          onClick={() =>
+                            invoiceQuery.refetch()
+                          }
+                        >
+                          Retry
+                        </Button>
+                      )
                   }
                 >
                   {invoiceQuery.error.status === 404
                     ? 'The invoice has not been issued yet.'
-                    : invoiceQuery.error.message || 'The invoice could not be loaded.'}
+                    : invoiceQuery.error.message ||
+                      'The invoice could not be loaded.'}
                 </Alert>
               ) : (
                 <InvoicePreview invoice={invoiceQuery.data} />
@@ -421,38 +734,217 @@ function BookingDetailsPage() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
-          <MaterialCard sx={{ p: { xs: 2, md: 3 }, position: { md: 'sticky' }, top: 88 }}>
-            <Typography variant="h6">Booking actions</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
-              Review the cancellation options available for your booking.
-            </Typography>
-            {booking.status === 'PAYMENT_PENDING' && booking.paymentStatus === 'pending' && (
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{ mb: 1 }}
-                onClick={() => navigate(ROUTES.BOOKING_STATUS_WITH_ID(booking.id))}
+          <Stack spacing={3}>
+            {/* =====================================================
+                WRITE A REVIEW
+            ====================================================== */}
+            {booking.status === 'COMPLETED' && (
+              <MaterialCard
+                sx={{ p: { xs: 2, md: 3 } }}
               >
-                View Payment Status
-              </Button>
+                <Typography variant="h6">
+                  Write a Review
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mt: 0.5, mb: 2 }}
+                >
+                  How was your rental experience with{' '}
+                  {vehicleName || 'this vehicle'}?
+                </Typography>
+
+                {reviewsQuery.isLoading ? (
+                  <Box
+                    sx={{
+                      py: 2,
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <CircularProgress size={26} />
+                  </Box>
+                ) : existingReview ? (
+                  <Stack spacing={2}>
+                    {existingReviewMeta ? (
+                      <Alert severity={existingReviewMeta.severity}>
+                        {existingReviewMeta.message}
+                      </Alert>
+                    ) : (
+                      <Alert severity="info">
+                        You have already submitted a review for
+                        this booking.
+                      </Alert>
+                    )}
+
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 0.5 }}
+                      >
+                        Your rating
+                      </Typography>
+
+                      <Rating
+                        value={Number(
+                          existingReview.rating ?? 0
+                        )}
+                        readOnly
+                      />
+                    </Box>
+
+                    {existingReview.comment && (
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          borderRadius: 1.5,
+                          bgcolor: 'action.hover',
+                        }}
+                      >
+                        <Typography variant="body2">
+                          {existingReview.comment}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {existingReview.status === 'pending' && (
+                      <Button
+                        variant="outlined"
+                        onClick={() =>
+                          navigate(ROUTES.ACCOUNT_REVIEWS)
+                        }
+                      >
+                        Edit Review
+                      </Button>
+                    )}
+                  </Stack>
+                ) : (
+                  <Stack spacing={2}>
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 0.5 }}
+                      >
+                        Rating
+                      </Typography>
+
+                      <Rating
+                        value={rating}
+                        onChange={(_event, value) =>
+                          setRating(value ?? 0)
+                        }
+                        size="large"
+                      />
+                    </Box>
+
+                    <TextField
+                      fullWidth
+                      multiline
+                      minRows={4}
+                      label="Comment"
+                      placeholder="Tell us about your rental experience…"
+                      value={comment}
+                      onChange={(event) =>
+                        setComment(
+                          event.target.value.slice(0, 2000)
+                        )
+                      }
+                      helperText={`${comment.length}/2000 characters`}
+                      disabled={createReview.isPending}
+                    />
+
+                    {createReview.error && (
+                      <Alert severity="error">
+                        {createReview.error.message ||
+                          'Failed to submit review.'}
+                      </Alert>
+                    )}
+
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      onClick={submitReview}
+                      disabled={
+                        createReview.isPending ||
+                        rating === 0
+                      }
+                    >
+                      {createReview.isPending
+                        ? 'Submitting…'
+                        : 'Submit Review'}
+                    </Button>
+                  </Stack>
+                )}
+              </MaterialCard>
             )}
-            <Button
-              variant="outlined"
-              color="error"
-              fullWidth
-              disabled={!cancellationAllowed}
-              onClick={() => setCancelOpen(true)}
+
+            <MaterialCard
+              sx={{
+                p: { xs: 2, md: 3 },
+                position: { md: 'sticky' },
+                top: 88,
+              }}
             >
-              Cancel Booking
-            </Button>
-            {!cancellationAllowed && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-                {booking.status === 'CANCELLED'
-                  ? 'This booking is already cancelled.'
-                  : 'Online cancellation is not available for the current booking state.'}
+              <Typography variant="h6">
+                Booking actions
               </Typography>
-            )}
-          </MaterialCard>
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 1, mb: 2 }}
+              >
+                Review the cancellation options available for
+                your booking.
+              </Typography>
+
+              {booking.status === 'PAYMENT_PENDING' &&
+                booking.paymentStatus === 'pending' && (
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    sx={{ mb: 1 }}
+                    onClick={() =>
+                      navigate(
+                        ROUTES.BOOKING_STATUS_WITH_ID(
+                          booking.id
+                        )
+                      )
+                    }
+                  >
+                    View Payment Status
+                  </Button>
+                )}
+
+              <Button
+                variant="outlined"
+                color="error"
+                fullWidth
+                disabled={!cancellationAllowed}
+                onClick={() => setCancelOpen(true)}
+              >
+                Cancel Booking
+              </Button>
+
+              {!cancellationAllowed && (
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{
+                    display: 'block',
+                    mt: 1,
+                  }}
+                >
+                  {booking.status === 'CANCELLED'
+                    ? 'This booking is already cancelled.'
+                    : 'Online cancellation is not available for the current booking state.'}
+                </Typography>
+              )}
+            </MaterialCard>
+          </Stack>
         </Grid>
       </Grid>
 
@@ -464,12 +956,20 @@ function BookingDetailsPage() {
         aria-labelledby="cancel-booking-title"
         aria-describedby="cancel-booking-description"
       >
-        <DialogTitle id="cancel-booking-title">Cancel booking?</DialogTitle>
+        <DialogTitle id="cancel-booking-title">
+          Cancel booking?
+        </DialogTitle>
+
         <DialogContent>
-          <DialogContentText id="cancel-booking-description" sx={{ mb: 2 }}>
-            This action cannot be undone. If an eligible payment was captured, your refund will be
-            created automatically.
+          <DialogContentText
+            id="cancel-booking-description"
+            sx={{ mb: 2 }}
+          >
+            This action cannot be undone. If an eligible payment
+            was captured, your refund will be created
+            automatically.
           </DialogContentText>
+
           <TextField
             autoFocus
             fullWidth
@@ -477,22 +977,32 @@ function BookingDetailsPage() {
             minRows={3}
             label="Reason (optional)"
             value={reason}
-            onChange={(event) => setReason(event.target.value.slice(0, 500))}
+            onChange={(event) =>
+              setReason(event.target.value.slice(0, 500))
+            }
             helperText={`${reason.length}/500 characters`}
             disabled={cancelMutation.isPending}
           />
+
           {cancelMutation.error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {cancelMutation.error.isNetworkError
                 ? 'We could not confirm the cancellation. You can retry safely.'
-                : cancelMutation.error.message || 'Cancellation failed.'}
+                : cancelMutation.error.message ||
+                  'Cancellation failed.'}
             </Alert>
           )}
         </DialogContent>
+
         <DialogActions>
-          <Button color="inherit" onClick={closeCancelDialog} disabled={cancelMutation.isPending}>
+          <Button
+            color="inherit"
+            onClick={closeCancelDialog}
+            disabled={cancelMutation.isPending}
+          >
             Keep Booking
           </Button>
+
           <LoadingButton
             color="error"
             loading={cancelMutation.isPending}
@@ -508,6 +1018,7 @@ function BookingDetailsPage() {
 
 function BookingDetailsRoute() {
   const { id } = useParams()
+
   return <BookingDetailsPage key={id} />
 }
 
