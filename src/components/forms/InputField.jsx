@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'
+﻿import PropTypes from 'prop-types'
 import { Controller, useFormContext } from 'react-hook-form'
 import { TextField, InputAdornment, IconButton } from '@mui/material'
 import { useState } from 'react'
@@ -8,7 +8,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff'
 /**
  * Controlled text input wired to react-hook-form.
  */
-function InputField({ name, label, type = 'text', ...props }) {
+function InputField({ name, label, type = 'text', rules, ...props }) {
   const { control } = useFormContext()
   const [visible, setVisible] = useState(false)
 
@@ -16,6 +16,7 @@ function InputField({ name, label, type = 'text', ...props }) {
     <Controller
       name={name}
       control={control}
+      rules={rules}
       render={({ field: { ref, ...field }, fieldState }) => (
         <TextField
           {...field}
@@ -54,6 +55,7 @@ InputField.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string,
   type: PropTypes.string,
+  rules: PropTypes.object,
 }
 
 export default InputField

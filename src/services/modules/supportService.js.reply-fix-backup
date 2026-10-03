@@ -1,4 +1,4 @@
-import httpClient from '@/services/api/httpClient'
+﻿import httpClient from '@/services/api/httpClient'
 import { API_ENDPOINTS } from '@/constants/apiEndpoints'
 
 /**
@@ -23,11 +23,14 @@ export const supportService = {
   async getTickets() {
     const response = await httpClient.get('/support/my-tickets')
 
-    const payload = response?.data?.data ?? response?.data ?? {}
+    const data = response?.data?.data ?? response?.data ?? {}
 
     return {
-      tickets: Array.isArray(payload?.items) ? payload.items : [],
-      pagination: payload?.pagination ?? null,
+      ...response,
+      data: {
+        tickets: data.items ?? [],
+        pagination: data.pagination ?? null,
+      },
     }
   },
 
@@ -38,19 +41,14 @@ export const supportService = {
 
     const messagesResponse = await httpClient.get(`/support/my-tickets/${id}/messages`)
 
-    const messagesPayload = messagesResponse?.data?.data ?? messagesResponse?.data ?? []
-
-    const messages = Array.isArray(messagesPayload)
-      ? messagesPayload
-      : Array.isArray(messagesPayload?.items)
-        ? messagesPayload.items
-        : Array.isArray(messagesPayload?.messages)
-          ? messagesPayload.messages
-          : []
+    const messagesData = messagesResponse?.data?.data ?? messagesResponse?.data ?? []
 
     return {
-      ...ticket,
-      messages,
+      ...response,
+      data: {
+        ...ticket,
+        messages: Array.isArray(messagesData) ? messagesData : [],
+      },
     }
   },
 

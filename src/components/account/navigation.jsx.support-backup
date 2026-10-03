@@ -3,7 +3,6 @@ import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined'
 import LuggageOutlinedIcon from '@mui/icons-material/LuggageOutlined'
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined'
-import SupportAgentIcon from '@mui/icons-material/SupportAgent'
 import { ROUTES } from '@/constants/routes'
 
 const ACCOUNT_NAV = [
@@ -19,13 +18,7 @@ const ACCOUNT_NAV = [
         to: ROUTES.WALLET,
         icon: <AccountBalanceWalletOutlinedIcon />,
       },
-      {
-        label: 'Support',
-        to: ROUTES.ACCOUNT_SUPPORT,
-        icon: <SupportAgentIcon />,
-      },
     ],
   },
 ]
-
 export default ACCOUNT_NAV

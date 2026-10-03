@@ -1,0 +1,298 @@
+import { useMemo, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { Grid, Box, Typography, Chip, Divider, Alert } from '@mui/material'
+import { AccountPageShell } from '@/components/account'
+import { useTicketDetails, useReplyToTicket } from '@/features/support'
+import { useToast } from '@/contexts/ToastContext'
+import MaterialCard from '@/components/ui/MaterialCard'
+import InputField from '@/components/forms/InputField'
+import LoadingButton from '@/components/buttons/LoadingButton'
+import { useForm, FormProvider } from 'react-hook-form'
+import { ROUTES } from '@/constants/routes'
+
+const STATUS_LABELS = {
+  open: 'Open',
+  pending: 'Pending',
+  resolved: 'Resolved',
+  closed: 'Closed',
+  reopened: 'Reopened',
+}
+
+const PRIORITY_LABELS = {
+  low: 'Low',
+  medium: 'Medium',
+  high: 'High',
+  urgent: 'Urgent',
+}
+
+function formatDate(value) {
+  if (!value) return ''
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) return ''
+
+  return date.toLocaleString('en-IN', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+}
+
+/**
+ * Customer support ticket conversation.
+ */
+function TicketDetailsPage() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { showSuccess, showError } = useToast()
+  const { data: ticketData, isLoading, isError, error } = useTicketDetails(id)
+  const reply = useReplyToTicket()
+  const [replyError, setReplyError] = useState('')
+
+  const ticket = useMemo(() => ticketData ?? {}, [ticketData])
+
+  const messages = useMemo(
+    () => (Array.isArray(ticket.messages) ? ticket.messages : []),
+    [ticket.messages]
+  )
+
+  const methods = useForm({
+    defaultValues: {
+      message: '',
+    },
+    mode: 'onTouched',
+  })
+
+  const handleReply = async (values) => {
+    setReplyError('')
+
+    try {
+      await reply.mutateAsync({
+        id,
+        message: values.message.trim(),
+      })
+
+      showSuccess('Reply sent.')
+      methods.reset()
+    } catch (requestError) {
+      const message =
+        requestError?.response?.data?.message || requestError?.message || 'Failed to send reply.'
+
+      setReplyError(message)
+      showError(message)
+    }
+  }
+
+  if (isError) {
+    return (
+      <AccountPageShell title="Ticket Details" description={`Ticket ${id}`}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error?.response?.data?.message ||
+            error?.message ||
+            'Unable to load this support ticket.'}
+        </Alert>
+
+        <LoadingButton variant="outlined" onClick={() => navigate(ROUTES.ACCOUNT_SUPPORT)}>
+          Back to Support
+        </LoadingButton>
+      </AccountPageShell>
+    )
+  }
+
+  return (
+    <AccountPageShell
+      title="Ticket Details"
+      description={ticket.ticketNumber ? `Ticket ${ticket.ticketNumber}` : `Ticket ${id}`}
+    >
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <MaterialCard sx={{ p: { xs: 2, sm: 3 } }}>
+            {isLoading ? (
+              <Typography variant="body2">Loading ticket…</Typography>
+            ) : (
+              <>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: { xs: 'flex-start', sm: 'center' },
+                    gap: 2,
+                    mb: 2,
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <Box>
+                    <Typography variant="h6">{ticket.subject || 'Support Ticket'}</Typography>
+
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      #{ticket.ticketNumber || ticket.id}
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: 1,
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <Chip
+                      size="small"
+                      label={STATUS_LABELS[ticket.status] || ticket.status || 'Open'}
+                    />
+
+                    {ticket.priority && (
+                      <Chip
+                        size="small"
+                        variant="outlined"
+                        label={PRIORITY_LABELS[ticket.priority] || ticket.priority}
+                      />
+                    )}
+                  </Box>
+                </Box>
+
+                {ticket.description && (
+                  <>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        whiteSpace: 'pre-wrap',
+                        mb: 2,
+                      }}
+                    >
+                      {ticket.description}
+                    </Typography>
+
+                    <Divider sx={{ mb: 2 }} />
+                  </>
+                )}
+
+                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                  Conversation
+                </Typography>
+
+                {messages.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary">
+                    No messages yet. Send a reply below if you need further assistance.
+                  </Typography>
+                ) : (
+                  <Box sx={{ display: 'grid', gap: 1.5 }}>
+                    {messages.map((msg) => {
+                      const isStaff = Boolean(msg.isStaff)
+
+                      return (
+                        <Box
+                          key={msg.id}
+                          sx={{
+                            display: 'flex',
+                            justifyContent: isStaff ? 'flex-start' : 'flex-end',
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              maxWidth: {
+                                xs: '92%',
+                                sm: '75%',
+                              },
+                              p: 1.5,
+                              borderRadius: 2,
+                              bgcolor: isStaff ? 'action.hover' : 'primary.main',
+                              color: isStaff ? 'text.primary' : 'primary.contrastText',
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                display: 'block',
+                                fontWeight: 600,
+                                mb: 0.5,
+                              }}
+                            >
+                              {isStaff ? 'Support Team' : 'You'}
+                            </Typography>
+
+                            <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                              {msg.message || msg.body || ''}
+                            </Typography>
+
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                display: 'block',
+                                mt: 0.75,
+                                opacity: 0.7,
+                              }}
+                            >
+                              {formatDate(msg.createdAt)}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      )
+                    })}
+                  </Box>
+                )}
+              </>
+            )}
+          </MaterialCard>
+        </Grid>
+
+        {!isLoading && ticket.status !== 'closed' && (
+          <Grid item xs={12}>
+            <MaterialCard sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant="h6" gutterBottom>
+                Reply
+              </Typography>
+
+              {replyError && (
+                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setReplyError('')}>
+                  {replyError}
+                </Alert>
+              )}
+
+              <FormProvider {...methods}>
+                <Box
+                  component="form"
+                  onSubmit={methods.handleSubmit(handleReply)}
+                  sx={{
+                    display: 'grid',
+                    gap: 2,
+                  }}
+                >
+                  <InputField
+                    name="message"
+                    label="Your message"
+                    required
+                    multiline
+                    minRows={3}
+                    rules={{
+                      required: 'Please enter a message.',
+                      maxLength: {
+                        value: 10000,
+                        message: 'Message cannot exceed 10,000 characters.',
+                      },
+                    }}
+                  />
+
+                  <Box>
+                    <LoadingButton type="submit" loading={reply.isPending}>
+                      Send Reply
+                    </LoadingButton>
+                  </Box>
+                </Box>
+              </FormProvider>
+            </MaterialCard>
+          </Grid>
+        )}
+
+        {ticket.status === 'closed' && (
+          <Grid item xs={12}>
+            <Alert severity="info">This ticket is closed and cannot receive new messages.</Alert>
+          </Grid>
+        )}
+      </Grid>
+    </AccountPageShell>
+  )
+}
+
+export default TicketDetailsPage

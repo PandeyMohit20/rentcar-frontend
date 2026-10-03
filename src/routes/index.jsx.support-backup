@@ -35,9 +35,6 @@ const WalletPage = lazy(() => import('@/pages/account/Wallet'))
 const WalletHistoryPage = lazy(() => import('@/pages/account/WalletHistory'))
 const BookingDetailsPage = lazy(() => import('@/pages/account/BookingDetails'))
 const SavedAddressesPage = lazy(() => import('@/pages/account/SavedAddresses'))
-const SupportPage = lazy(() => import('@/pages/account/Support'))
-const CreateTicketPage = lazy(() => import('@/pages/account/CreateTicket'))
-const TicketDetailsPage = lazy(() => import('@/pages/account/TicketDetails'))
 
 /**
  * Wraps a lazy component in Suspense with a fallback loader.
@@ -153,9 +150,6 @@ function AppRoutes() {
         <Route path={ROUTES.MY_BOOKINGS} element={withSuspense(MyBookingsPage)} />
         <Route path={ROUTES.BOOKING_DETAILS} element={withSuspense(BookingDetailsPage)} />
         <Route path={ROUTES.SAVED_ADDRESSES} element={withSuspense(SavedAddressesPage)} />
-        <Route path={ROUTES.ACCOUNT_SUPPORT} element={withSuspense(SupportPage)} />
-        <Route path={ROUTES.CREATE_TICKET} element={withSuspense(CreateTicketPage)} />
-        <Route path={ROUTES.TICKET_DETAILS} element={withSuspense(TicketDetailsPage)} />
       </Route>
 
       {/* ── Fallback ───────────────────────────────────────────────────── */}

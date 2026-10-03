@@ -1,10 +1,12 @@
-import { useApiQuery, useApiMutation } from '@/hooks/useApi'
+﻿import { useApiQuery, useApiMutation } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
 import { supportService } from '@/services/modules'
+import { useQueryClient } from '@tanstack/react-query'
 
 /**
  * Support feature hooks.
  */
+
 export function useTickets() {
   return useApiQuery({
     queryKey: QUERY_KEYS.SUPPORT.TICKETS,
@@ -35,8 +37,17 @@ export function useCreateTicket() {
 }
 
 export function useReplyToTicket() {
+  const queryClient = useQueryClient()
+
   return useApiMutation({
     mutationFn: ({ id, ...payload }) => supportService.replyToTicket(id, payload),
+
     invalidateKeys: [QUERY_KEYS.SUPPORT.TICKETS],
+
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.SUPPORT.TICKET_DETAILS(variables.id),
+      })
+    },
   })
 }

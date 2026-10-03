@@ -49,8 +49,11 @@ export const supportService = {
           : []
 
     return {
-      ...ticket,
-      messages,
+      ...response,
+      data: {
+        ...ticket,
+        messages,
+      },
     }
   },
 
