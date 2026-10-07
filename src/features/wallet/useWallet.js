@@ -1,14 +1,19 @@
 import { useApiQuery, useApiMutation } from '@/hooks/useApi'
 import { QUERY_KEYS } from '@/constants/queryKeys'
 import { walletService } from '@/services/modules'
+import { useAuth } from '@/hooks/useAuth'
+import { walletQueryEnabled } from './walletQueryEnabled'
 
 /**
  * Wallet feature hooks.
  */
 export function useWalletBalance() {
+  const { isAuthenticated, isRestoring } = useAuth()
+
   return useApiQuery({
     queryKey: QUERY_KEYS.WALLET.BALANCE,
     queryFn: walletService.getBalance,
+    enabled: walletQueryEnabled({ isAuthenticated, isRestoring }),
   })
 }
 
